@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prüfer werden · abgeklopft.de</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="proto">Prototyp · Vergütung und Regeln sind Annahmen · Bewerbung wird nicht versendet</div>
+<header class="top"><div class="wrap">
+  <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
+  <nav><a href="profil.html">Beispielprofil</a><a href="teilen.html">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html" aria-current="page">Prüfer werden</a></nav>
+</div></header>
+<main class="wrap" style="padding-top:28px;max-width:860px">
+  <h1>Prüfer werden</h1>
+  <p style="color:var(--muted);font-size:1.1rem">Ein Siegel ist nur so stark wie die Person, die prüft. Vieles prüft die Plattform automatisch, und Auftraggeber bestätigen selbst. Für Belege und Fachgespräche suchen wir Fachleute mit nachweisbarer Praxis. <a href="atelier.html">Zur Prüferansicht (Prototyp)</a></p>
+
+  <section><h2>Wen wir suchen</h2>
+    <div class="grid">
+      <div class="card"><h3>Praxis statt Titel</h3><p>Mehrjährige, nachweisbare Praxis im Fachgebiet, zum Beispiel KI und Daten, Cloud, Produktentwicklung, Projekt- und Führungsverantwortung, Lehre.</p></div>
+      <div class="card"><h3>Urteilsvermögen</h3><p>Sie erkennen, ob eine Arbeit trägt, auch wenn KI sie mit erstellt hat. Sie begründen ein Urteil schriftlich und knapp.</p></div>
+      <div class="card"><h3>Unabhängigkeit</h3><p>Sie prüfen nur Personen, mit denen Sie keine geschäftliche oder persönliche Bindung haben.</p></div>
+    </div>
+  </section>
+
+  <section><h2>Zwei Rollen</h2>
+    <div class="tbl"><table>
+      <tr><th>Rolle</th><th>Aufgabe</th><th>Zugang</th><th>Vergütung (Annahme)</th></tr>
+      <tr><td><span class="badge b2">S2</span> Belegprüfer</td><td>Belege einsehen, abgleichen, Ergebnis begründen. Ca. 20 Minuten je Anspruch.</td><td>Bewerbung, eigene Praxis im Feld, Probeprüfung</td><td>Anteil an der Gebühr, Höhe im Gespräch</td></tr>
+      <tr><td><span class="badge b3">S3</span> Gutachter</td><td>45-Minuten-Fachgespräch per Video nach Bewertungsraster, schriftliche Begründung. Kein Reiseaufwand, Sie arbeiten von Ihrem Standort aus. Ca. 75 Minuten mit Vor- und Nachbereitung.</td><td>Selbst S3 im Feld oder gleichwertiger Nachweis. Die ersten Gutachter werden direkt eingeladen.</td><td>Anteil an der Gebühr, Höhe im Gespräch</td></tr>
+    </table></div>
+    <p class="meta">In der Pilotphase gibt es noch keine festen Beträge. Wir klären Aufwand und Vergütung mit den ersten Gutachtern gemeinsam.</p>
+  </section>
+
+  <section><h2>Regeln zur Unabhängigkeit</h2>
+    <ul class="tick">
+      <li><b>Kein Coaching vor dem Urteil.</b> Wer eine Person gecoacht oder mentoriert hat, darf deren Anspruch nicht bewerten.</li>
+      <li><b>Keine Eigenprüfung.</b> Auch der Betreiber lässt sein eigenes Portfolio von Dritten prüfen.</li>
+      <li><b>Offenlegung.</b> Jede Attestation nennt den Gutachter oder eine Kennung und das angewendete Raster.</li>
+      <li><b>Stichprobe.</b> Jede zehnte S3 wird von einer zweiten Person gegengeprüft. Abweichungen gehen in die Qualitätsauswertung.</li>
+      <li><b>Vergütung unabhängig vom Ergebnis.</b> Sie werden gleich bezahlt, ob die Person besteht oder nicht. Die Quote nicht bestandener Prüfungen wird veröffentlicht, damit das Siegel nicht käuflich wirkt.</li>
+      <li><b>Widerruf.</b> Eine Attestation lässt sich zurückziehen, wenn sich ein Beleg als falsch erweist.</li>
+    </ul>
+  </section>
+
+  <section><h2>Beispiel-Bewertungsraster S3 (0 bis 3 Punkte je Kriterium)</h2>
+    <div class="tbl"><table>
+      <tr><th>Kriterium</th><th>Frage</th></tr>
+      <tr><td>Echtheit</td><td>Hat die Person die Arbeit selbst gemacht? Kann sie Entscheidungen und Fehler erklären?</td></tr>
+      <tr><td>Tiefe</td><td>Versteht sie Grenzen und Alternativen, nicht nur die Anwendung?</td></tr>
+      <tr><td>Wirkung</td><td>Gibt es ein nachprüfbares Ergebnis (Nutzer, Auftrag, Veröffentlichung)?</td></tr>
+      <tr><td>Aktualität</td><td>Entspricht das Wissen dem heutigen Stand?</td></tr>
+      <tr><td>Vermittlung</td><td>Kann sie es einem Fachfremden verständlich erklären?</td></tr>
+    </table></div>
+    <p class="meta">Bestanden ab 11 von 15 Punkten und keinem Kriterium mit 0. Auch diese Schwelle ist eine Annahme und müsste an echten Prüfungen kalibriert werden.</p>
+  </section>
+
+  <section><h2>Bewerbung (Prototyp)</h2>
+    <form id="g" autocomplete="off" class="two">
+      <div>
+        <label for="gn">Name</label><input id="gn" required>
+        <label for="gf">Fachgebiet</label><input id="gf" required placeholder="z. B. Generative KI in der Verwaltung">
+        <label for="gr">Rolle</label>
+        <select id="gr"><option>S2 · Belegprüfer</option><option>S3 · Gutachter</option></select>
+      </div>
+      <div>
+        <label for="gp">Nachweisbare Praxis (Jahre, Rollen, Links)</label><textarea id="gp" required></textarea>
+        <label for="gk">Interessenkonflikte, die Sie kennen</label><input id="gk" placeholder="z. B. Arbeitgeber, Kooperationen">
+      </div>
+      <div><button class="btn" type="submit">Bewerbung vorbereiten</button></div>
+    </form>
+    <div id="gerg"></div>
+  </section>
+</main>
+<footer><div class="wrap">Die Bewerbung bleibt in Ihrem Browser. Produktiv bräuchte es Identitätsprüfung, Vertrag, Verschwiegenheit und Datenschutzvereinbarung.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
+<script src="data.js"></script><script src="app.js"></script>
+<script>
+document.getElementById("g").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = id => document.getElementById(id).value.trim();
+  const b = { name: v("gn"), fach: v("gf"), rolle: v("gr"), praxis: v("gp"), konflikte: v("gk") || "keine genannt" };
+  try { localStorage.setItem("gaa_gutachter_bewerbung", JSON.stringify(b)); } catch {}
+  document.getElementById("gerg").innerHTML = `<div class="result ok"><b>Vorbereitet, nicht versendet.</b><br>${esc(b.name)} · ${esc(b.rolle)} · ${esc(b.fach)}<br>Nächster Schritt im Produktivbetrieb: Identitätsprüfung, Probeprüfung an einem Beispielfall, Vertrag.</div>`;
+});
+</script>
+</body>
+</html>

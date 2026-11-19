@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Link teilen · abgeklopft.de</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="proto">Prototyp · Ihre Ansicht als Person · alles nur in diesem Browser gespeichert, nichts wird versendet</div>
+<header class="top"><div class="wrap">
+  <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
+  <nav><a href="profil.html">Beispielprofil</a><a href="teilen.html" aria-current="page">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
+</div></header>
+<main class="wrap" style="padding-top:28px">
+  <h1>Link teilen</h1>
+  <p style="color:var(--muted);max-width:44em">Erstellen Sie für jeden Arbeit- oder Auftraggeber einen eigenen Link. Sie wählen die Einträge und die Laufzeit. Danach sehen Sie, ob und wann er geöffnet wurde.</p>
+
+  <section style="border-top:0;padding-top:10px">
+    <h2>1 · Persönlicher Link</h2>
+    <div class="two">
+      <form id="lf" autocomplete="off">
+        <label for="emp">Empfänger (Firma oder Person)</label>
+        <input id="emp" required placeholder="z. B. Musterfirma GmbH, Bereich KI">
+        <label for="tage">Gültig für Tage</label>
+        <input id="tage" type="number" min="1" max="365" value="30">
+        <div class="row"><button class="btn" type="submit">Link erstellen</button></div>
+        <p class="meta" id="lmeld"></p>
+      </form>
+      <div>
+        <label>Diese Einträge sieht der Empfänger</label>
+        <div id="auswahl"></div>
+      </div>
+    </div>
+    <h3 style="margin-top:24px">Ihre Links</h3>
+    <div id="links"></div>
+  </section>
+
+  <section>
+    <h2>2 · Bestätigung durch Auftraggeber anfragen</h2>
+    <p class="sub">Wer ein Ergebnis abgenommen hat, bestätigt es mit einem Klick. Dann steht der Eintrag auf S3, mit Namen und Datum.</p>
+    <form id="bf" autocomplete="off" class="two">
+      <div>
+        <label for="bein">Eintrag</label><select id="bein"></select>
+        <label for="bname">Name der bestätigenden Person</label><input id="bname" required placeholder="z. B. Projektleiterin beim Kunden">
+      </div>
+      <div>
+        <label for="bmail">Dienstliche E-Mail</label><input id="bmail" type="email" required placeholder="name@firma.de">
+        <p class="meta">Produktiv zählt nur eine Firmenadresse. Freemail-Adressen ergeben keine S3.</p>
+        <div class="row"><button class="btn" type="submit">Anfrage vorbereiten</button></div>
+      </div>
+    </form>
+    <div id="anfragen" style="margin-top:16px"></div>
+  </section>
+</main>
+<footer><div class="wrap">Produktiv: Links und Öffnungen auf dem Server, Versand der Anfrage per E-Mail, Bestätigung nur über geprüfte Firmenadresse.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
+<script src="data.js"></script><script src="app.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const basis = location.href.replace(/[^/]*$/, "");
+
+$("auswahl").innerHTML = PORTFOLIO.map(p =>
+  `<label style="font-weight:400"><input type="checkbox" class="aw" value="${esc(p.id)}" checked style="width:auto"> <span class="badge b${stufeVon(p)}">S${stufeVon(p)}</span>${esc(p.titel)}</label>`).join("");
+$("bein").innerHTML = PORTFOLIO.filter(p => p.kategorie === "Erfahrung" || p.kategorie === "Produkt")
+  .map(p => `<option value="${esc(p.id)}">${esc(p.titel)}</option>`).join("");
+
+$("lf").addEventListener("submit", e => {
+  e.preventDefault();
+  const auswahl = [...document.querySelectorAll(".aw:checked")].map(x => x.value);
+  if (!auswahl.length) { $("lmeld").textContent = "Bitte mindestens einen Eintrag wählen."; return; }
+  const bis = new Date(); bis.setDate(bis.getDate() + Number($("tage").value || 30));
+  const l = lesen(LINK_KEY);
+  l.push({ id: neueId(), empfaenger: $("emp").value.trim(), auswahl, erstellt: heuteIso(), gueltigBis: bis.toISOString().slice(0, 10), widerrufen: false });
+  schreiben(LINK_KEY, l); $("lmeld").textContent = "Link erstellt, siehe unten."; $("emp").value = ""; linksZeigen();
+});
+
+function linksZeigen() {
+  const l = lesen(LINK_KEY).slice().reverse(), oe = lesen(OEFF_KEY);
+  $("links").innerHTML = l.length ? `<div class="tbl"><table><tr><th>Empfänger</th><th>Link</th><th>Gültig bis</th><th>Geöffnet</th><th>Angesehen</th><th></th></tr>` +
+    l.map(x => {
+      const o = oe.filter(y => y.link === x.id), auf = o.filter(y => !y.eintrag), an = [...new Set(o.filter(y => y.eintrag).map(y => y.eintrag))];
+      const titel = an.map(id => (PORTFOLIO.find(p => p.id === id) || {}).titel).filter(Boolean);
+      const status = x.widerrufen ? '<span class="exp">widerrufen</span>' : x.gueltigBis < heuteIso() ? '<span class="exp">abgelaufen</span>' : esc(x.gueltigBis);
+      return `<tr><td>${esc(x.empfaenger)}<br><span class="meta">${x.auswahl.length} Einträge</span></td>
+        <td><a href="profil.html?l=${esc(x.id)}" target="_blank" rel="noopener">öffnen</a> · <button class="btn ghost" type="button" data-kopie="${esc(x.id)}" style="padding:3px 10px">kopieren</button></td>
+        <td>${status}</td>
+        <td>${auf.length ? auf.length + "×, zuletzt " + esc(new Date(auf[auf.length - 1].zeit).toLocaleString("de-DE")) : "noch nicht"}</td>
+        <td>${titel.length ? titel.map(esc).join("<br>") : "–"}</td>
+        <td>${x.widerrufen ? "" : `<button class="btn ghost" type="button" data-weg="${esc(x.id)}" style="padding:3px 10px">widerrufen</button>`}</td></tr>`;
+    }).join("") + `</table></div><p class="meta" id="kmeld"></p>`
+    : `<p class="meta">Noch keine Links.</p>`;
+}
+$("links").addEventListener("click", async e => {
+  const k = e.target.closest("[data-kopie]"), w = e.target.closest("[data-weg]");
+  if (k) {
+    try { await navigator.clipboard.writeText(basis + "profil.html?l=" + k.dataset.kopie); $("kmeld").textContent = "Link kopiert."; }
+    catch { $("kmeld").textContent = "Kopieren nicht möglich. Rechtsklick auf „öffnen“ und Adresse kopieren."; }
+  }
+  if (w) { const l = lesen(LINK_KEY), x = l.find(y => y.id === w.dataset.weg); if (x) { x.widerrufen = true; schreiben(LINK_KEY, l); linksZeigen(); } }
+});
+
+$("bf").addEventListener("submit", e => {
+  e.preventDefault();
+  const b = lesen(BEST_KEY);
+  b.push({ id: neueId(), eintrag: $("bein").value, name: $("bname").value.trim(), mail: $("bmail").value.trim(), erstellt: heuteIso(), status: "offen" });
+  schreiben(BEST_KEY, b); $("bname").value = ""; $("bmail").value = ""; anfragenZeigen();
+});
+function anfragenZeigen() {
+  const b = lesen(BEST_KEY).slice().reverse();
+  const st = { offen: "wartet", ja: "bestätigt", teilweise: "teilweise bestätigt", nein: "abgelehnt" };
+  $("anfragen").innerHTML = b.length ? `<div class="tbl"><table><tr><th>Eintrag</th><th>An</th><th>Status</th><th>Prüflink</th></tr>` +
+    b.map(x => `<tr><td>${esc((PORTFOLIO.find(p => p.id === x.eintrag) || {}).titel || x.eintrag)}</td><td>${esc(x.name)}<br><span class="meta">${esc(x.mail)}</span></td>
+      <td>${st[x.status]}${x.kommentar ? '<br><span class="meta">„' + esc(x.kommentar) + '“</span>' : ""}</td>
+      <td>${x.status === "offen" ? `<a href="bestaetigen.html?a=${esc(x.id)}" target="_blank" rel="noopener">Ansicht des Auftraggebers</a>` : "–"}</td></tr>`).join("") + `</table></div>
+    <p class="meta">Im Prototyp öffnen Sie den Prüflink selbst. Produktiv geht er per E-Mail an die dienstliche Adresse.</p>`
+    : `<p class="meta">Noch keine Anfragen.</p>`;
+}
+linksZeigen(); anfragenZeigen();
+window.addEventListener("focus", () => { linksZeigen(); anfragenZeigen(); });
+</script>
+</body>
+</html>

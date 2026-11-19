@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Attestation erstellen · abgeklopft.de</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="proto">Prototyp · Prüferansicht · Die Urkunde wird im Browser erzeugt und nur lokal gespeichert</div>
+<header class="top"><div class="wrap">
+  <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
+  <nav><a href="profil.html">Beispielprofil</a><a href="teilen.html">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
+</div></header>
+<main class="wrap" style="padding-top:28px">
+  <h1>Prüfbericht ausstellen (Prüferansicht)</h1>
+  <p class="sub" style="color:var(--muted)">Wählen Sie einen Eintrag oder formulieren Sie einen neuen Anspruch. Die Stufe richtet sich nach dem Prüfweg.</p>
+  <div class="two">
+    <form id="f" autocomplete="off">
+      <label for="vorlage">Aus dem Portfolio übernehmen</label>
+      <select id="vorlage"><option value="">– neuer Anspruch –</option></select>
+      <label for="pruefer">Prüfer (wird mit dem Signaturschlüssel verbunden)</label>
+      <input id="pruefer" value="Prüfstelle (Prototyp)" required>
+      <label for="name">Name der Person</label>
+      <input id="name" value="Alex Beispiel" required>
+      <label for="anspruch">Anspruch (ein Satz)</label>
+      <input id="anspruch" required placeholder="z. B. Kann LLM-gestützte Suchsysteme für Behörden entwerfen">
+      <label for="kat">Art</label>
+      <select id="kat"><option>Fähigkeit</option><option>Erfahrung</option><option>Produkt</option><option>Dienst</option><option>Abschluss</option><option>Zertifikat</option></select>
+      <label for="belege">Belege (je Zeile einer: Link, Dokument, Referenz)</label>
+      <textarea id="belege" placeholder="https://… oder Zeugnis, Seite 3"></textarea>
+      <label for="stufe">Stufe</label>
+      <select id="stufe">
+        <option value="1">S1 · Eigene Angabe</option>
+        <option value="2">S2 · Beleg geprüft</option>
+        <option value="3">S3 · Von Dritten bestätigt</option>
+      </select>
+      <p class="meta" id="stufenhinweis"></p>
+      <label for="monate">Gültigkeit in Monaten</label>
+      <input id="monate" type="number" min="1" max="60" value="12">
+      <div class="row"><button class="btn" type="submit">Prüfbericht ausstellen</button></div>
+    </form>
+    <div>
+      <div id="ausgabe"><p class="meta">Die Urkunde erscheint hier.</p></div>
+      <div class="row noprint" id="aktionen" hidden>
+        <button class="btn ghost" type="button" id="druck">Drucken</button>
+        <button class="btn ghost" type="button" id="kopie">JSON kopieren</button>
+      </div>
+      <p class="meta noprint" id="kopiemeldung"></p>
+    </div>
+  </div>
+</main>
+<footer><div class="wrap">S2 und S3 sind im Prototyp nur Auswahlfelder. Der Signaturschlüssel entsteht beim ersten Ausstellen in diesem Browser. Produktiv liegt er nur auf dem Server, und nur zugelassene Prüfer stellen aus.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
+<script src="data.js"></script><script src="app.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+PORTFOLIO.forEach(p => { const o = document.createElement("option"); o.value = p.id; o.textContent = p.titel; $("vorlage").append(o); });
+const wandel = { Abschluss: "Abschluss", Zertifikat: "Zertifikat", Produkt: "Produkt", Erfahrung: "Erfahrung" };
+$("vorlage").addEventListener("change", () => {
+  const p = PORTFOLIO.find(x => x.id === $("vorlage").value); if (!p) return;
+  $("anspruch").value = p.titel + (p.zeitraum ? " (" + p.zeitraum + ")" : "");
+  $("kat").value = wandel[p.kategorie] || "Fähigkeit";
+  $("belege").value = p.beleg;
+  $("stufe").value = p.stufe;
+  hinweis();
+});
+function hinweis() {
+  $("stufenhinweis").textContent = STUFEN[$("stufe").value].text;
+}
+$("stufe").addEventListener("change", hinweis); hinweis();
+
+let letzte = null;
+$("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const heute = new Date(), bis = new Date(heute);
+  bis.setMonth(bis.getMonth() + Number($("monate").value));
+  const iso = d => d.toISOString().slice(0, 10);
+  const inhalt = {
+    aussteller: "abgeklopft.de (Prototyp)",
+    version: 1,
+    person: $("name").value.trim(),
+    art: $("kat").value,
+    anspruch: $("anspruch").value.trim(),
+    belege: $("belege").value.split("\n").map(s => s.trim()).filter(Boolean),
+    stufe: Number($("stufe").value),
+    ausgestellt: iso(heute),
+    gueltigBis: iso(bis)
+  };
+  const text = kanonisch(inhalt);
+  const hash = await sha256(text);
+  let signatur;
+  try { signatur = await signieren(text, $("pruefer").value.trim()); }
+  catch (err) { $("ausgabe").innerHTML = `<div class="result bad">${esc(err.message)}</div>`; return; }
+  inhalt.kennung = "AK-" + hash.slice(0, 4).toUpperCase() + "-" + hash.slice(4, 8).toUpperCase();
+  // Kennung wird aus dem Hash abgeleitet und gehört nicht mit in Hash und Signatur
+  const urkunde = { inhalt, pruefsumme: hash, signatur };
+  letzte = urkunde;
+  const reg = registerLesen().filter(r => r.pruefsumme !== hash);
+  reg.push(urkunde); registerSchreiben(reg);
+  zeigen(urkunde);
+});
+function zeigen(u) {
+  const i = u.inhalt;
+  $("ausgabe").innerHTML = `
+  <div class="cert">
+    <div class="org">abgeklopft.de · Geprüfte Arbeitsergebnisse</div>
+    <h2>Prüfbericht</h2>
+    <dl>
+      <dt>Person</dt><dd>${esc(i.person)}</dd>
+      <dt>Art</dt><dd>${esc(i.art)}</dd>
+      <dt>Anspruch</dt><dd>${esc(i.anspruch)}</dd>
+      <dt>Stufe</dt><dd><span class="badge b${i.stufe}">S${i.stufe}</span> ${esc(STUFEN[i.stufe].name)}</dd>
+      <dt>Belege</dt><dd>${i.belege.length ? i.belege.map(esc).join("<br>") : "keine angegeben"}</dd>
+      <dt>Ausgestellt</dt><dd>${i.ausgestellt}</dd>
+      <dt>Gültig bis</dt><dd>${i.gueltigBis}</dd>
+      <dt>Kennung</dt><dd>${esc(i.kennung)}</dd>
+      <dt>Prüfsumme</dt><dd class="hash">${u.pruefsumme}</dd>
+      <dt>Signiert von</dt><dd>${esc(u.signatur.pruefer)} · Schlüssel ${esc(u.signatur.kid)} · ${esc(u.signatur.alg.name)}</dd>
+    </dl>
+    <div class="stamp">PROTOTYP · KEINE RECHTSWIRKUNG</div>
+  </div>`;
+  $("aktionen").hidden = false;
+}
+$("druck").onclick = () => window.print();
+$("kopie").onclick = async () => {
+  try { await navigator.clipboard.writeText(JSON.stringify(letzte, null, 2)); $("kopiemeldung").textContent = "Kopiert. Auf der Prüfseite einfügen."; }
+  catch { $("kopiemeldung").textContent = "Kopieren nicht möglich. Bitte das JSON auf der Prüfseite über die Kennung suchen."; }
+};
+</script>
+</body>
+</html>
