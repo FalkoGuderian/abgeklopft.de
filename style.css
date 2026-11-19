@@ -14,7 +14,7 @@
 
   --bg:#f4f6f9; --surface:#ffffff; --sunk:#e9edf3; --ink:#0d1626; --muted:#556073; --line:#dbe1ea;
   --brand:#2340d4; --brand-ink:#ffffff; --brand-hover:#1a32b0;
-  --accent:#2340d4; --ok:#12805c; --warn:#a35a00; --bad:#b4282d;
+  --accent:#2340d4; --signal:#e07b00; --ok:#12805c; --warn:#a35a00; --bad:#b4282d;
   --s1:#7d879a; --s2:#2340d4; --s3:#12805c; --on-s3:#ffffff;
   --shadow:0 1px 2px rgb(13 22 38/.05),0 8px 24px -8px rgb(13 22 38/.12);
   --shadow-lg:0 2px 4px rgb(13 22 38/.04),0 24px 60px -20px rgb(35 64 212/.28);
@@ -23,7 +23,7 @@
   :root:not([data-theme="light"]){
     --bg:#0a0f18; --surface:#111927; --sunk:#0e1520; --ink:#e7ecf4; --muted:#97a2b5; --line:#222e42;
     --brand:#8098ff; --brand-ink:#0a0f18; --brand-hover:#a2b3ff;
-    --accent:#8098ff; --ok:#3ccf97; --warn:#e9a54d; --bad:#f08a8a;
+    --accent:#8098ff; --signal:#f29a2e; --ok:#3ccf97; --warn:#e9a54d; --bad:#f08a8a;
     --s1:#8a94a7; --s2:#8098ff; --s3:#3ccf97; --on-s3:#06251a;
     --shadow:0 1px 2px rgb(0 0 0/.3),0 8px 24px -8px rgb(0 0 0/.5);
     --shadow-lg:0 2px 4px rgb(0 0 0/.3),0 24px 60px -20px rgb(128 152 255/.25);
@@ -33,7 +33,7 @@
 :root[data-theme="dark"]{
   --bg:#0a0f18; --surface:#111927; --sunk:#0e1520; --ink:#e7ecf4; --muted:#97a2b5; --line:#222e42;
   --brand:#8098ff; --brand-ink:#0a0f18; --brand-hover:#a2b3ff;
-  --accent:#8098ff; --ok:#3ccf97; --warn:#e9a54d; --bad:#f08a8a;
+  --accent:#8098ff; --signal:#f29a2e; --ok:#3ccf97; --warn:#e9a54d; --bad:#f08a8a;
   --s1:#8a94a7; --s2:#8098ff; --s3:#3ccf97; --on-s3:#06251a;
   --shadow:0 1px 2px rgb(0 0 0/.3),0 8px 24px -8px rgb(0 0 0/.5);
   --shadow-lg:0 2px 4px rgb(0 0 0/.3),0 24px 60px -20px rgb(128 152 255/.25);
@@ -52,7 +52,7 @@ a:hover{color:var(--brand-hover)}
 
 /* Hinweisleiste und Kopf */
 .proto{background:var(--sunk);color:var(--muted);text-align:center;font-size:.78rem;padding:6px 16px;border-bottom:1px solid var(--line)}
-.proto::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--warn);margin-right:8px;vertical-align:1px}
+.proto::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--signal);margin-right:8px;vertical-align:1px}
 header.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
 header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
 .logo{font-family:var(--display);font-weight:800;font-size:1.3rem;letter-spacing:-.02em;line-height:1.1;text-decoration:none;color:var(--ink)}
