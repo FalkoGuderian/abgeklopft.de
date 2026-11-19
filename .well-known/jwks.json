@@ -1,0 +1,14 @@
+{
+  "keys": [
+    {
+      "crv": "Ed25519",
+      "kty": "OKP",
+      "x": "Aj1jcTjMKZmkRJ9UfaWVNz7r-OQ-sDHHhn7RB1OJSWM",
+      "kid": "K-4F2F7C6D",
+      "use": "sig",
+      "alg": "EdDSA",
+      "name": "abgeklopft.de Pilot-Testschlüssel",
+      "gilt_fuer": "Pilot: nur erfundene Beispielprofile"
+    }
+  ]
+}

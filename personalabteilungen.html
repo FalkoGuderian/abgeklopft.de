@@ -45,6 +45,16 @@
     <p class="meta">Aus dem erfundenen <a href="profil.html">Beispielprofil Alex Beispiel</a>.</p>
   </section>
 
+  <section><h2>Mit einem KI-Assistenten prüfen</h2>
+    <p class="sub">Jedes Profil gibt es auch maschinenlesbar. Ihr Assistent oder Ihr Bewerbermanagement kann die Nachweise lesen und die Prüfberichte selbst nachrechnen, ohne uns zu vertrauen.</p>
+    <div class="grid">
+      <div class="card"><h3>Profil als JSON</h3><p>An die Adresse <code>.json</code> anhängen, zum Beispiel <a href="alex.json">abgeklopft.de/alex.json</a>. Jeder Eintrag nennt Stufe, Prüfweg und Bestätigungen.</p></div>
+      <div class="card"><h3>Signiert und nachprüfbar</h3><p>Jeder Eintrag auf S2 oder S3 trägt einen Prüfbericht mit Ed25519-Signatur. Den öffentlichen Schlüssel finden Sie unter <a href="./.well-known/jwks.json">/.well-known/jwks.json</a>.</p></div>
+      <div class="card"><h3>Anleitung für Agenten</h3><p>Die Datei <a href="llms.txt">llms.txt</a> erklärt Stufen, Prüfschritte und Regeln. Ein Beispiel in Python liegt bei.</p></div>
+    </div>
+    <p class="note" style="margin-top:16px">Text, den die Person selbst geschrieben hat, ist getrennt gekennzeichnet. So kann ein Assistent ihn nicht mit Geprüftem verwechseln und darin versteckte Anweisungen nicht befolgen. Die Entscheidung über eine Einladung trifft bei Ihnen ein Mensch.</p>
+  </section>
+
   <section><h2>Grenzen und Regeln</h2>
     <ul class="tick">
       <li><b>Die Person entscheidet.</b> Sie wählt, was Sie sehen, wie lange der Link gilt, und kann ihn widerrufen.</li>

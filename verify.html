@@ -25,7 +25,7 @@
     <p class="sub">Fügen Sie das JSON einer Urkunde ein. Die Seite berechnet die Prüfsumme neu und sucht die Urkunde im Register.</p>
     <label for="json">Urkunde (JSON)</label>
     <textarea id="json" placeholder='{"inhalt":{…},"pruefsumme":"…"}'></textarea>
-    <div class="row"><button class="btn" id="pruef" type="button">Prüfen</button><button class="btn ghost" id="manip" type="button">Test: Inhalt verfälschen</button><button class="btn ghost" id="faelsch" type="button">Test: Fälschung mit neu berechneter Prüfsumme</button></div>
+    <div class="row"><button class="btn" id="pruef" type="button">Prüfen</button><button class="btn ghost" id="beispiel" type="button">Beispiel laden</button><button class="btn ghost" id="manip" type="button">Test: Inhalt verfälschen</button><button class="btn ghost" id="faelsch" type="button">Test: Fälschung mit neu berechneter Prüfsumme</button></div>
     <div id="erg"></div>
     <h3 style="margin-top:30px">Zugelassene Prüfer (Schlüssel)</h3>
     <div id="schl"></div>
@@ -71,8 +71,23 @@ $("faelsch").onclick = async () => {
   u.pruefsumme = h;
   $("json").value = JSON.stringify(u, null, 2); pruefen();
 };
+// Veröffentlichte Prüfschlüssel der Plattform laden (wie ein KI-Agent es auch tut)
+async function plattformSchluessel() {
+  try {
+    const j = await (await fetch(".well-known/jwks.json")).json();
+    window.VERTRAUT_EXTRA = j.keys.map(k => ({ kid: k.kid, name: k.name, alg: { name: "Ed25519" }, pub: { crv: k.crv, kty: k.kty, x: k.x } }));
+  } catch { window.VERTRAUT_EXTRA = []; }
+  schlZeigen();
+}
+$("beispiel").onclick = async () => {
+  try {
+    const p = await (await fetch("alex.json")).json();
+    $("json").value = JSON.stringify(p.eintraege.find(e => e.pruefbericht).pruefbericht, null, 2); pruefen();
+  } catch { meld("bad", "Das Beispiel ließ sich nicht laden. Es geht nur, wenn die Seite über das Netz geöffnet ist."); }
+};
+plattformSchluessel();
 function schlZeigen() {
-  const v = lesen(VERTRAUT_KEY);
+  const v = [...(window.VERTRAUT_EXTRA || []), ...lesen(VERTRAUT_KEY)];
   $("schl").innerHTML = v.length ? `<div class="tbl"><table><tr><th>Schlüssel</th><th>Prüfer</th><th>Verfahren</th></tr>` +
     v.map(k => `<tr><td>${esc(k.kid)}</td><td>${esc(k.name)}</td><td>${esc(k.alg.name)}</td></tr>`).join("") + `</table></div>
     <p class="meta">Produktiv veröffentlicht die Plattform diese Liste. Im Prototyp entsteht ein Schlüssel beim ersten Ausstellen in diesem Browser.</p>`

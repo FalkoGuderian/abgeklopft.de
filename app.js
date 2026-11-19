@@ -62,7 +62,9 @@ async function signaturPruefen(sig, text) {
     const pub = await crypto.subtle.importKey("jwk", sig.pub, sig.alg, false, ["verify"]);
     const ok = await crypto.subtle.verify(signAlg(sig.alg), pub, unb64(sig.wert), new TextEncoder().encode(text));
     if (!ok) return { status: "falsch" };
-    const v = lesen(VERTRAUT_KEY).find(k => k.kid === sig.kid && kanonisch(k.pub) === kanonisch(sig.pub));
+    // Vertraut: Schlüssel aus diesem Browser oder veröffentlichte Plattform-Schlüssel (/.well-known/jwks.json)
+    const v = [...lesen(VERTRAUT_KEY), ...(window.VERTRAUT_EXTRA || [])]
+      .find(k => k.kid === sig.kid && kanonisch(k.pub) === kanonisch(sig.pub));
     return v ? { status: "vertraut", name: v.name, kid: v.kid } : { status: "fremd", kid: sig.kid };
   } catch { return { status: "falsch" }; }
 }

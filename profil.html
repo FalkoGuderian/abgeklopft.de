@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Profil · abgeklopft.de</title>
 <link rel="stylesheet" href="style.css">
+<link rel="alternate" type="application/json" href="alex.json" title="Nachweise maschinenlesbar">
+<link rel="help" type="text/plain" href="llms.txt" title="Anleitung für KI-Agenten">
 </head>
 <body>
 <div class="proto">Prototyp · Links funktionieren nur in diesem Browser</div>
 <main class="wrap">
+  <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="alex.json">abgeklopft.de/alex.json</a>. Eine Anleitung für KI-Agenten steht in <a href="llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
   <div class="lt">
     <p class="meta" id="padr" style="margin:0 0 8px"></p>
     <div class="lt-avatar" id="av"></div>
@@ -23,7 +26,7 @@
     <div class="note" id="hinweis">Erfundenes Beispiel. Personen, Firmen und Hochschulen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.</div>
   </div>
 </main>
-<footer><div class="wrap" style="text-align:center">Geprüft mit <a href="index.html">abgeklopft.de</a> · <a href="verify.html">Wie lese ich die Stufen?</a><span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
+<footer><div class="wrap" style="text-align:center">Geprüft mit <a href="index.html">abgeklopft.de</a> · <a href="verify.html">Wie lese ich die Stufen?</a> · <a href="alex.json">Für KI-Agenten (JSON)</a><span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
 <script src="data.js"></script><script src="app.js"></script>
 <script>
 const $ = id => document.getElementById(id);

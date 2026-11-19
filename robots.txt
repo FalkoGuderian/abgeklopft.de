@@ -1,2 +1,5 @@
 User-agent: *
+Allow: /llms.txt
+Allow: /alex.json
+Allow: /.well-known/
 Disallow: /
