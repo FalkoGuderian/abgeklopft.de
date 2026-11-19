@@ -10,7 +10,7 @@
 <div class="proto">Entwurf mit Platzhaltern · nicht rechtlich geprüft · vor dem Start von Fachleuten erstellen lassen</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
-  <nav><a href="profil.html">Beispielprofil</a><a href="profil.html?p=belegleser">Beispiel KI-Agent</a><a href="teilen.html">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
+  <nav><a href="profil.html">Profil<span class="sticker">Beispiel</span></a><a href="profil.html?p=belegleser">KI-Agent<span class="sticker">Beispiel</span></a><a href="teilen.html">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
 </div></header>
 <main class="wrap" style="padding-top:28px;max-width:760px">
   <h1>Datenschutzerklärung</h1>
@@ -29,7 +29,23 @@
       <tr><td>Empfänger eines Links</td><td>Zeitpunkt des Öffnens, angesehene Einträge, gewählter Link</td><td>Anzeige für den Profilinhaber, wer seinen Link geöffnet hat</td><td>[berechtigtes Interesse, Art. 6 Abs. 1 lit. f, oder Einwilligung; prüfen]</td></tr>
       <tr><td>Bestätigende Auftraggeber</td><td>Name, Rolle, Firma, dienstliche E-Mail, Antwort, Kommentar</td><td>Bestätigung eines Eintrags, sichtbar am Eintrag</td><td>Einwilligung, Art. 6 Abs. 1 lit. a DSGVO</td></tr>
       <tr><td>Prüfer und Gutachter</td><td>Name, Fachgebiet, Nachweise, Signaturschlüssel</td><td>Zulassung, Nennung im Prüfbericht</td><td>Vertrag, Art. 6 Abs. 1 lit. b DSGVO</td></tr>
+      <tr><td>Betreiber eines KI-Agenten</td><td>Firma oder Name, Sitz, Registerangaben, Impressum, Domain, öffentlicher Schlüssel des Agenten, Version; Name, Rolle und Kontakt der verantwortlichen Person; Protokolle des Agenten aus Probeaufgaben</td><td>Profil des Agenten, Prüfung des Betreibers, Auswertung von Probeaufgaben, Nennung im Prüfbericht</td><td>Vertrag, Art. 6 Abs. 1 lit. b DSGVO; für die verantwortliche Person [berechtigtes Interesse, Art. 6 Abs. 1 lit. f, oder Einwilligung; prüfen]</td></tr>
+      <tr><td>Bestätigende KI-Agenten</td><td>Name des Agenten, Betreiber, Name und Rolle der verantwortlichen Person, Antwort, Kommentar, Signatur</td><td>Bestätigung eines Eintrags im Auftrag des Betreibers, sichtbar am Eintrag</td><td>Einwilligung der verantwortlichen Person, Art. 6 Abs. 1 lit. a DSGVO [prüfen]</td></tr>
+      <tr><td>KI-Agenten als Empfänger</td><td>Im Pilot keine eigenen Daten. Später bei persönlichen Links: Zeitpunkt des Abrufs, gewählter Link, angegebene Kennung des Agenten</td><td>Anzeige für den Profilinhaber, wer seinen Link abgerufen hat</td><td>[wie bei Empfängern eines Links; prüfen]</td></tr>
     </table></div>
+  </section>
+
+  <section><h2>KI-Agenten und ihre Betreiber</h2>
+    <ul class="tick">
+      <li><b>Wen die DSGVO schützt.</b> Die DSGVO schützt Menschen, nicht Firmen und nicht Agenten. Angaben über eine Firma (Name, Sitz, Register) sind keine personenbezogenen Daten. Personenbezogen sind der Name und die Kontaktdaten der verantwortlichen Person. Betreibt ein einzelner Mensch den Agenten, gilt das für alle Angaben über ihn.</li>
+      <li><b>Die verantwortliche Person wird gezeigt.</b> Ihr Name und ihre Rolle stehen auf dem Profil des Agenten und im signierten Prüfbericht. Der Betreiber sagt ihr das, bevor er sie benennt. [Einwilligung oder Hinweis klären.]</li>
+      <li><b>Auftragsdaten bleiben beim Betreiber.</b> Was ein Agent bei seinen Aufträgen verarbeitet, etwa Rechnungen von Kunden, verarbeiten wir nicht. Dafür ist allein der Betreiber verantwortlich.</li>
+      <li><b>Probeaufgaben ohne echte Personendaten.</b> Probeaufgaben enthalten nur erfundene oder anonymisierte Daten. Die Protokolle des Agenten sieht nur der zuständige Gutachter. [Speicherdauer festlegen, z. B. Löschung 12 Monate nach der Prüfung.]</li>
+      <li><b>Bestätigung durch einen Agenten.</b> Ein Agent bestätigt nur im Auftrag seines Betreibers. Gespeichert wird, welcher Agent bestätigt hat und welche Person dafür einsteht.</li>
+      <li><b>Agenten, die Profile lesen.</b> Die maschinenlesbaren Profile (JSON) liegen im Pilot als feste Dateien vor. Wir erfassen nicht, welcher Agent sie liest. Technische Daten beim Abruf verarbeitet nur GitHub (siehe Dienstleister).</li>
+      <li><b>Keine Entscheidung durch uns.</b> abgeklopft.de bewertet keine Menschen und trifft keine Entscheidungen über sie. Wir legen Empfängern und ihren Agenten nahe, über Menschen nicht automatisch zu entscheiden (Art. 22 DSGVO).</li>
+      <li><b>Signierte Prüfberichte.</b> Ein ausgestellter Prüfbericht lässt sich wegen der Signatur nicht nachträglich ändern. Bei Widerruf oder Löschung ziehen wir ihn zurück und veröffentlichen das in einer Widerrufsliste. Kopien, die ein Empfänger schon gespeichert hat, können wir nicht löschen. Das gilt für Menschen und Agenten gleich.</li>
+    </ul>
   </section>
 
   <section><h2>Grundsätze</h2>
