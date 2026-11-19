@@ -3,89 +3,152 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://abgeklopft-api.falko-guderian.workers.dev http://localhost:8787; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
 <title>Profil · abgeklopft.de</title>
 <link rel="stylesheet" href="style.css">
 <link rel="alternate" type="application/json" href="alex.json" title="Nachweise maschinenlesbar" id="jsonlink">
 <link rel="help" type="text/plain" href="llms.txt" title="Anleitung für KI-Agenten">
+<script>
+// Agenten mit JavaScript: ?l=<kennung>&format=json führt direkt zur JSON-Fassung des persönlichen Links
+(function () {
+  var q = new URLSearchParams(location.search), l = q.get("l");
+  if (l && q.get("format") === "json" && /^[0-9a-z]{26}$/.test(l)) {
+    var api = location.protocol === "http:" && location.hostname === "localhost" ? "http://localhost:8787" : "https://abgeklopft-api.falko-guderian.workers.dev";
+    location.replace(api + "/v1/l/" + l + ".json");
+  }
+})();
+</script>
 </head>
 <body>
-<div class="proto">Prototyp · Links funktionieren nur in diesem Browser</div>
+<div class="proto" id="proto">Beispiele · Personen, Agenten und Firmen sind erfunden</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
-  <nav id="hauptnav"><a href="index.html">Start</a><a href="profil.html" aria-current="page">Beispiele</a><a href="teilen.html">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
+  <nav id="hauptnav"><a href="index.html">Start</a><a href="profil.html" aria-current="page">Beispiele</a><a href="teilen.html">Mein Profil</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
 </div></header>
 <main class="wrap">
-  <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="alex.json">abgeklopft.de/alex.json</a> (Mensch) und <a href="belegleser.json">abgeklopft.de/belegleser.json</a> (KI-Agent). Eine Anleitung für KI-Agenten steht in <a href="llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
+  <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="alex.json">abgeklopft.de/alex.json</a> (Mensch) und <a href="belegleser.json">abgeklopft.de/belegleser.json</a> (KI-Agent). Persönliche Links <code>profil.html?l=&lt;kennung&gt;</code> gibt es als JSON unter <code>https://abgeklopft-api.falko-guderian.workers.dev/v1/l/&lt;kennung&gt;.json</code>. Eine Anleitung für KI-Agenten steht in <a href="llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
   <nav class="profilwahl" id="wahl" aria-label="Beispielprofile"></nav>
-  <div class="lt">
-    <p class="meta" id="padr" style="margin:0 0 8px"></p>
-    <div class="lt-avatar" id="av"></div>
-    <h1 id="pn"></h1>
-    <p class="zeile" id="pz"></p>
-    <p class="meta" id="po"></p>
-    <p class="artzeile" id="part"></p>
-  </div>
-  <div class="betreiber" id="betr" hidden></div>
-  <div class="lt-banner" id="banner"></div>
-  <div id="liste"></div>
-  <div class="lt-banner">
-    <p class="meta" id="zusammen"></p>
-    <div class="note" id="hinweis">Erfundenes Beispiel. Personen, Firmen und Hochschulen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.</div>
+  <div id="vorab"></div>
+  <div id="profilteil">
+    <div class="lt">
+      <p class="meta" id="padr" style="margin:0 0 8px"></p>
+      <div class="lt-avatar" id="av"></div>
+      <h1 id="pn"></h1>
+      <p class="zeile" id="pz"></p>
+      <p class="meta" id="po"></p>
+      <p class="artzeile" id="part"></p>
+    </div>
+    <div class="betreiber" id="betr" hidden></div>
+    <div class="lt-banner" id="banner"></div>
+    <div id="liste"></div>
+    <div class="lt-banner">
+      <p class="meta" id="zusammen"></p>
+      <div class="note" id="hinweis">Erfundenes Beispiel. Personen, Firmen und Hochschulen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.</div>
+    </div>
   </div>
 </main>
 <footer><div class="wrap" style="text-align:center">Geprüft mit <a href="index.html">abgeklopft.de</a> · <a href="verify.html">Wie lese ich die Stufen?</a> · <a href="alex.json" id="jsonfuss">Für KI-Agenten (JSON)</a><span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
 <script src="data.js"></script><script src="app.js"></script>
 <script>
 const $ = id => document.getElementById(id);
-const agent = istAgent();
-const slug = PROFIL.adresse.split("/").pop();
-$("av").textContent = PROFIL.kuerzel; $("pn").textContent = PROFIL.name;
-$("pz").textContent = PROFIL.zeile; $("po").textContent = PROFIL.ort;
-$("padr").textContent = PROFIL.adresse || "";
-$("av").classList.toggle("agent", agent);
-$("part").innerHTML = agent
-  ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Kein Mensch. Vertragspartner ist der Betreiber.</span>`
-  : `<span class="tag art-mensch">Mensch</span>`;
-document.title = PROFIL.name + " · abgeklopft.de";
-$("jsonlink").href = $("jsonfuss").href = slug + ".json";
-if (agent) {
-  const b = PROFIL.betreiber, st = stufeVon(PORTFOLIO.find(p => p.weg === "betreiber") || { stufe: 1 });
+const q = new URLSearchParams(location.search);
+const linkId = q.get("l"), vorschau = q.get("vorschau") === "1";
+
+// Kopf eines Profils füllen (Beispiel oder Server)
+function kopf(p, adresse) {
+  const ag = p.art === "ki-agent";
+  $("av").textContent = p.kuerzel || kuerzelVon(p.name); $("pn").textContent = p.name;
+  $("pz").textContent = p.zeile || ""; $("po").textContent = p.ort || "";
+  $("padr").textContent = adresse || "";
+  $("av").classList.toggle("agent", ag);
+  $("part").innerHTML = ag
+    ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Kein Mensch. Vertragspartner ist der Betreiber.</span>`
+    : `<span class="tag art-mensch">Mensch</span>`;
+  document.title = p.name + " · abgeklopft.de";
+}
+function betreiberKasten(b, version, hinweis, siegel) {
   $("betr").hidden = false;
   $("betr").innerHTML = `<dl>
-    <dt>Betreiber</dt><dd>${esc(b.name)}, ${esc(b.sitz)} <span class="badge b${st}">${STUFEN[st].kurz}</span></dd>
+    <dt>Betreiber</dt><dd>${esc(b.name)}, ${esc(b.sitz)} ${siegel || ""}</dd>
     <dt>Verantwortlich</dt><dd>${esc(b.verantwortlich)}</dd>
-    <dt>Version</dt><dd>${esc(PROFIL.version)}</dd></dl>
-    <p class="meta" style="margin:6px 0 0">${esc(PROFIL.versionHinweis)}</p>`;
+    <dt>Version</dt><dd>${esc(version)}</dd></dl>
+    ${hinweis ? `<p class="meta" style="margin:6px 0 0">${esc(hinweis)}</p>` : ""}`;
 }
-// Umschalter nur ohne persönlichen Link
-const linkId = new URLSearchParams(location.search).get("l");
-// Persönlicher Link: nur das Logo, keine Navigation
-if (linkId) $("hauptnav").style.display = "none";
-if (!linkId) $("wahl").innerHTML = Object.entries(PROFILE).map(([id, x]) =>
-  `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name)} · ${esc(ARTEN[x.profil.art].kurz)}</a>`).join("");
-if (!PROFIL.erfunden) $("hinweis").hidden = true;
-else if (agent) $("hinweis").textContent = "Erfundenes Beispiel. Agent, Betreiber, Firmen und Personen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.";
+function zusammenfassung(liste, stufe) {
+  const n = s => liste.filter(p => stufe(p) === s).length;
+  $("zusammen").textContent = liste.length ? `${liste.length} Einträge: ${n(3)} von Dritten bestätigt, ${n(2)} Beleg geprüft, ${n(1)} eigene Angabe.` : "";
+}
+// Selbst angelegtes Profil vom Server zeigen
+function serverProfil(d, beimOeffnen) {
+  $("profilteil").hidden = false;
+  kopf(d.profil, "");
+  if (d.profil.art === "ki-agent") betreiberKasten(d.profil.betreiber, d.profil.agent_version, "Angaben des Betreibers, nicht geprüft.", `<span class="badge b1">${STUFEN[1].kurz}</span>`);
+  $("hinweis").textContent = "Selbst angelegtes Profil: Alle Einträge sind eigene Angaben. abgeklopft.de hat nichts davon geprüft. Antworten von Auftraggebern sind ebenfalls noch nicht geprüft. Klicken Sie auf einen Eintrag für Beschreibung und Links.";
+  profilZeigen("liste", d.eintraege, beimOeffnen, serverEintragHtml);
+  zusammenfassung(d.eintraege, () => 1);
+}
 
-let eintraege = PORTFOLIO, beimOeffnen = null;
-if (linkId) {
-  const link = lesen(LINK_KEY).find(x => x.id === linkId && (x.profil || "alex") === PROFIL_ID);
-  if (!link) {
-    $("banner").innerHTML = `<div class="result bad">Dieser Link ist unbekannt. Im Prototyp funktionieren Links nur in dem Browser, in dem sie erstellt wurden.</div>`;
-    eintraege = [];
-  } else if (link.widerrufen || link.gueltigBis < heuteIso()) {
-    $("banner").innerHTML = `<div class="result bad">Dieser Link ist ${link.widerrufen ? "widerrufen" : "abgelaufen"}. Bitte fragen Sie ${agent ? "den Betreiber" : "die Person"} nach einem neuen.</div>`;
-    eintraege = [];
-  } else {
-    eintraege = PORTFOLIO.filter(p => link.auswahl.includes(p.id));
-    const fuer = link.empfaengerArt === "ki-agent" ? `den KI-Agenten <b>${esc(link.empfaenger)}</b>` : `<b>${esc(link.empfaenger)}</b>`;
-    $("banner").innerHTML = `<div class="result ok">Persönlicher Link für ${fuer} · gültig bis ${esc(link.gueltigBis)}. ${agent ? "Der Betreiber von " + esc(PROFIL.name) : esc(PROFIL.name)} sieht, wann dieser Link geöffnet wurde.</div>`;
-    const oe = lesen(OEFF_KEY); oe.push({ link: linkId, zeit: new Date().toISOString(), eintrag: null }); schreiben(OEFF_KEY, oe);
-    beimOeffnen = id => { const o = lesen(OEFF_KEY); o.push({ link: linkId, zeit: new Date().toISOString(), eintrag: id }); schreiben(OEFF_KEY, o); };
-  }
+if (linkId || vorschau) {
+  // Persönlicher Link oder Vorschau: nur das Logo, keine Navigation, keine Beispiele
+  $("hauptnav").style.display = "none";
+  $("profilteil").hidden = true;
+  $("proto").textContent = vorschau ? "Vorschau · so sieht ein Empfänger Ihr Profil" : "Persönlicher Link · abgeklopft.de";
 }
-profilZeigen("liste", eintraege, beimOeffnen);
-const n = s => eintraege.filter(p => stufeVon(p) === s).length;
-if (eintraege.length) $("zusammen").textContent = `${eintraege.length} Einträge: ${n(3)} von Dritten bestätigt, ${n(2)} Beleg geprüft, ${n(1)} eigene Angabe.`;
+
+if (vorschau) {
+  const k = kontoLesen();
+  if (!k) $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">Auf diesem Gerät ist kein Profil geöffnet. <a href="teilen.html">Zu Mein Profil</a></div>`;
+  else api("GET", "/v1/profile/" + k.id, undefined, k.schluessel).then(d => {
+    $("vorab").innerHTML = `<div class="note" style="margin-top:20px">Vorschau mit allen Einträgen. Ein Empfänger sieht nur die Einträge, die Sie für seinen Link wählen. Diese Vorschau zählt nicht als Öffnung. <a href="teilen.html">Zurück zu Mein Profil</a></div>`;
+    serverProfil(d, null);
+  }, e => { $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">${esc(e.message)} <a href="teilen.html">Zu Mein Profil</a></div>`; });
+} else if (linkId) {
+  const jsonUrl = API + "/v1/l/" + encodeURIComponent(linkId) + ".json";
+  $("jsonlink").href = $("jsonfuss").href = jsonUrl;
+  const tot = m => { $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">${m}</div>`; };
+  const linkFehler = e => {
+    if (e.status === 410) tot(`${esc(e.message)} Bitte fragen Sie die Person nach einem neuen Link.`);
+    else if (e.status === 404) tot("Dieser Link ist unbekannt. Bitte prüfen Sie, ob er vollständig kopiert wurde.");
+    else tot(`${esc(e.message)} <button class="btn ghost klein" type="button" onclick="location.reload()">Erneut versuchen</button>`);
+  };
+  api("GET", "/v1/l/" + encodeURIComponent(linkId)).then(info => {
+    const ag = info.inhaber.art === "ki-agent";
+    const wer = ag ? `der Betreiber des KI-Agenten <b>${esc(info.inhaber.name)}</b>${info.inhaber.betreiber ? " (" + esc(info.inhaber.betreiber) + ")" : ""}` : `<b>${esc(info.inhaber.name)}</b>`;
+    $("vorab").innerHTML = `<div class="card" style="margin-top:24px;max-width:640px">
+      <h1 style="margin-top:0;font-size:1.6rem">${ag ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(info.inhaber.name)}</h1>
+      <p>Persönlicher Link für <b>${esc(info.fuer)}</b>, gültig bis ${esc(info.gueltig_bis)}.</p>
+      <div class="note"><b>Bevor Sie öffnen:</b> Wenn Sie das Profil öffnen, sieht ${wer}, wann dieser Link geöffnet wurde und welche Einträge angesehen wurden. Gespeichert wird nur das, keine IP-Adresse und kein Name. Mehr dazu im <a href="datenschutz.html">Datenschutz</a>.</div>
+      <div class="row"><button class="btn" type="button" id="oeffnen">Profil öffnen</button></div>
+      <p class="meta">Für KI-Agenten: dieselbe Auswahl als JSON unter <code>${esc(jsonUrl)}</code>. Auch dieser Abruf wird angezeigt.</p>
+    </div>`;
+    $("oeffnen").addEventListener("click", e => {
+      e.target.disabled = true;
+      api("POST", "/v1/l/" + encodeURIComponent(linkId) + "/oeffnen").then(d => {
+        $("vorab").innerHTML = "";
+        const fuer = d.link.empfaenger_art === "ki-agent" ? `den KI-Agenten <b>${esc(d.link.fuer)}</b>` : `<b>${esc(d.link.fuer)}</b>`;
+        $("banner").innerHTML = `<div class="result ok">Persönlicher Link für ${fuer} · gültig bis ${esc(d.link.gueltig_bis)}. ${ag ? "Der Betreiber von " + esc(d.profil.name) : esc(d.profil.name)} sieht, wann dieser Link geöffnet wurde.</div>`;
+        serverProfil(d, eid => { api("POST", "/v1/l/" + encodeURIComponent(linkId) + "/angesehen", { eintrag: eid }).catch(() => {}); });
+      }, err => { e.target.disabled = false; linkFehler(err); });
+    });
+  }, linkFehler);
+} else {
+  // Statische Beispielprofile, ohne Server
+  const agent = istAgent();
+  const slug = PROFIL.adresse.split("/").pop();
+  kopf(PROFIL, PROFIL.adresse);
+  $("jsonlink").href = $("jsonfuss").href = slug + ".json";
+  if (agent) {
+    const st = stufeVon(PORTFOLIO.find(p => p.weg === "betreiber") || { stufe: 1 });
+    betreiberKasten(PROFIL.betreiber, PROFIL.version, PROFIL.versionHinweis, `<span class="badge b${st}">${STUFEN[st].kurz}</span>`);
+  }
+  $("wahl").innerHTML = Object.entries(PROFILE).map(([id, x]) =>
+    `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name)} · ${esc(ARTEN[x.profil.art].kurz)}</a>`).join("");
+  if (!PROFIL.erfunden) $("hinweis").hidden = true;
+  else if (agent) $("hinweis").textContent = "Erfundenes Beispiel. Agent, Betreiber, Firmen und Personen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.";
+  profilZeigen("liste", PORTFOLIO, null);
+  zusammenfassung(PORTFOLIO, stufeVon);
+}
 </script>
 </body>
 </html>

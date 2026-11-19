@@ -6,7 +6,7 @@ Wie eine Link-Seite, aber jeder Eintrag trägt ein Prüfsiegel. Ein Mensch oder 
 
 Live unter **https://abgeklopft.de**
 
-> **Prototyp in der Pilotphase.** Alle Profile sind erfunden. Die Verfahren sind Annahmen. Das ist kein amtliches oder notarielles Verfahren. Links, Bestätigungen und Prüfberichte aus dem Browser werden nur im Browser gespeichert (localStorage), nicht auf einem Server.
+> **Prototyp in der Pilotphase.** Die Beispielprofile sind erfunden. Die Verfahren sind Annahmen. Das ist kein amtliches oder notarielles Verfahren. Selbst angelegte Profile (Einladungscode, Pilot) liegen auf einem Server (Cloudflare Worker + D1, Daten in der EU) und sind nur über persönliche Links sichtbar. Alle selbst angelegten Einträge sind eigene Angaben (S1); signierte Prüfberichte stellt nur ein Prüfer aus.
 
 ## Stufen
 
@@ -57,7 +57,7 @@ Unter **Beispiele** in der Navigation, mit Umschalter zwischen Mensch und KI-Age
 
 ## Aufbau der Seite
 
-- Navigation auf allen Seiten: **Start · Beispiele · Link teilen · Prüfen · Für Empfänger · Prüfer werden**. Das Logo führt ebenfalls zur Startseite.
+- Navigation auf allen Seiten: **Start · Beispiele · Mein Profil · Prüfen · Für Empfänger · Prüfer werden**. Das Logo führt ebenfalls zur Startseite.
 - Wer einen persönlichen Link bekommt, sieht nur das Profil mit Logo, ohne Navigation. Dasselbe gilt für die Bestätigungsseite der Auftraggeber.
 - Hell und dunkel, am Handy ohne seitliches Scrollen, Navigation dort waagerecht wischbar.
 
@@ -67,7 +67,7 @@ Unter **Beispiele** in der Navigation, mit Umschalter zwischen Mensch und KI-Age
 |---|---|
 | `index.html` | Startseite |
 | `profil.html` | Profil, `?p=<name>` wählt das Profil, `?l=<kennung>` ist ein persönlicher Link (nur Logo, keine Navigation) |
-| `teilen.html` | Links je Empfänger (Mensch oder Agent), Öffnungen, Widerruf, Bestätigung anfragen |
+| `teilen.html` | Mein Profil: mit Einladungscode anlegen, Einträge, Links je Empfänger (Mensch oder Agent) mit Ablauf, Öffnungen und Widerruf, Bestätigung anfragen, Löschen. Daten über die API (Cloudflare Worker + D1, EU) |
 | `bestaetigen.html` | Ansicht des Auftraggebers: bestätigen als Mensch oder als Agent |
 | `verify.html` | Prüfbericht prüfen (Prüfsumme und Signatur) |
 | `atelier.html` | Prüferansicht: Prüfbericht ausstellen (Prototyp, Schlüssel im Browser) |

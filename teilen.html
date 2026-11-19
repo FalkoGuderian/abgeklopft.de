@@ -3,136 +3,439 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Link teilen · abgeklopft.de</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://abgeklopft-api.falko-guderian.workers.dev http://localhost:8787; base-uri 'none'; object-src 'none'">
+<meta name="robots" content="noindex">
+<title>Mein Profil · abgeklopft.de</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="proto">Prototyp · Ihre Ansicht als Person · alles nur in diesem Browser gespeichert, nichts wird versendet</div>
+<div class="proto">Pilotphase · Ihr Profil liegt auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU) · sichtbar nur über Ihre persönlichen Links</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
-  <nav><a href="index.html">Start</a><a href="profil.html">Beispiele</a><a href="teilen.html" aria-current="page">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
+  <nav><a href="index.html">Start</a><a href="profil.html">Beispiele</a><a href="teilen.html" aria-current="page">Mein Profil</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
 </div></header>
 <main class="wrap" style="padding-top:28px">
-  <h1>Link teilen</h1>
-  <p style="color:var(--muted);max-width:44em">Erstellen Sie für jeden Arbeit- oder Auftraggeber einen eigenen Link. Sie wählen die Einträge und die Laufzeit. Danach sehen Sie, ob und wann er geöffnet wurde. Empfänger kann ein Mensch oder ein KI-Agent sein.</p>
-  <nav class="profilwahl" id="wahl" aria-label="Beispielprofile" style="justify-content:flex-start"></nav>
+  <h1>Mein Profil</h1>
+  <div class="result bad fehlerzeile" id="fehler" role="alert" hidden><span id="fehlertext"></span> <button class="btn ghost klein" type="button" id="nochmal" hidden>Erneut versuchen</button></div>
+  <div class="result ok fehlerzeile" id="erfolg" role="status" hidden></div>
+  <p class="meta" id="laedt" hidden>Lädt …</p>
 
-  <section style="border-top:0;padding-top:10px">
-    <h2>1 · Persönlicher Link</h2>
+  <!-- A: noch kein Profil auf diesem Gerät -->
+  <div id="ohne" hidden>
+    <p style="color:var(--muted);max-width:44em">Legen Sie Ihr Profil an, tragen Sie Ihre Arbeitsergebnisse ein und schicken Sie jedem Arbeit- oder Auftraggeber einen eigenen Link. Ohne Link sieht niemand Ihr Profil. Sie brauchen kein Konto und keine E-Mail-Adresse.</p>
     <div class="two">
-      <form id="lf" autocomplete="off">
-        <label for="emp">Empfänger (Firma, Person oder KI-Agent)</label>
-        <input id="emp" required placeholder="z. B. Musterfirma GmbH, Bereich KI">
-        <label for="eart">Der Link geht an</label>
-        <select id="eart"><option value="mensch">einen Menschen (Seite im Browser)</option><option value="ki-agent">einen KI-Agenten (Seite und JSON)</option></select>
-        <label for="tage">Gültig für Tage</label>
-        <input id="tage" type="number" min="1" max="365" value="30">
-        <div class="row"><button class="btn" type="submit">Link erstellen</button></div>
-        <p class="meta" id="lmeld"></p>
+      <form id="anlegen" autocomplete="off" class="card">
+        <h2 style="margin-top:0">Profil anlegen</h2>
+        <label for="einl">Einladungscode (Pilotphase)</label>
+        <input id="einl" required placeholder="PILOT-XXXX-XXXX" autocapitalize="characters" spellcheck="false">
+        <label for="part">Das Profil gehört</label>
+        <select id="part"><option value="mensch">einem Menschen (mir)</option><option value="ki-agent">einem KI-Agenten (ich bin der Betreiber)</option></select>
+        <label for="pname" id="pnamel">Ihr Name</label>
+        <input id="pname" required maxlength="120" placeholder="z. B. Alex Beispiel">
+        <label for="pzeile">Eine Zeile über Sie</label>
+        <input id="pzeile" maxlength="200" placeholder="z. B. Datenanalyse · Produktentwicklung">
+        <label for="port">Ort</label>
+        <input id="port" maxlength="120" placeholder="z. B. Leipzig · remote">
+        <div id="agentfelder" hidden>
+          <label for="bname">Betreiber (Firma oder Name)</label><input id="bname" maxlength="160" placeholder="z. B. Beispiel Automaten GmbH">
+          <label for="bsitz">Sitz des Betreibers</label><input id="bsitz" maxlength="160" placeholder="z. B. Dresden">
+          <label for="bverantw">Verantwortliche Person</label><input id="bverantw" maxlength="160" placeholder="z. B. Kim Sauer, Geschäftsführung">
+          <label for="bversion">Version des Agenten</label><input id="bversion" maxlength="40" placeholder="z. B. 2.3">
+          <p class="meta">Ein Agentenprofil ist immer sichtbar als KI-Agent gekennzeichnet. Vertragspartner ist der Betreiber.</p>
+        </div>
+        <label style="font-weight:400;margin-top:12px"><input type="checkbox" id="dsok" required style="width:auto"> Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen. Mein Profil wird auf dem Server von abgeklopft.de gespeichert.</label>
+        <div class="row"><button class="btn" type="submit">Profil anlegen</button></div>
       </form>
-      <div>
-        <label>Diese Einträge sieht der Empfänger</label>
-        <div id="auswahl"></div>
-      </div>
+      <form id="geraet" autocomplete="off" class="card">
+        <h2 style="margin-top:0">Auf diesem Gerät öffnen</h2>
+        <p class="meta">Sie haben schon ein Profil, zum Beispiel auf einem anderen Gerät? Geben Sie Ihren Wiederherstellungscode ein.</p>
+        <label for="wcode">Wiederherstellungscode</label>
+        <input id="wcode" required placeholder="XXXX-XXXX-XXXX-…" autocapitalize="characters" spellcheck="false" style="font-family:var(--mono)">
+        <div class="row"><button class="btn ghost" type="submit">Profil öffnen</button></div>
+        <p class="meta" style="margin-top:18px">Erst einmal schauen? Die <a href="profil.html">Beispielprofile</a> sind erfunden und funktionieren ohne Anmeldung.</p>
+      </form>
     </div>
-    <h3 style="margin-top:24px">Ihre Links</h3>
-    <div id="links"></div>
-  </section>
+  </div>
 
-  <section>
-    <h2>2 · Bestätigung durch Auftraggeber anfragen</h2>
-    <p class="sub">Wer ein Ergebnis abgenommen hat, bestätigt es mit einem Klick. Dann gilt der Eintrag als „Bestätigt“, mit Namen und Datum.</p>
-    <form id="bf" autocomplete="off" class="two">
-      <div>
-        <label for="bein">Eintrag</label><select id="bein"></select>
-        <label for="bname">Name der bestätigenden Person oder des Agenten</label><input id="bname" required placeholder="z. B. Projektleiterin beim Kunden">
+  <!-- Wiederherstellungscode, nur direkt nach dem Anlegen -->
+  <div id="code" hidden>
+    <div class="card" style="max-width:640px">
+      <h2 style="margin-top:0">Ihr Wiederherstellungscode</h2>
+      <p>Ihr Profil ist angelegt. Dieser Code ist Ihr Schlüssel. <b>Er wird nur jetzt angezeigt.</b> Schreiben Sie ihn auf oder speichern Sie ihn in Ihrem Passwortmanager.</p>
+      <div class="codebox" id="codetext"></div>
+      <div class="row"><button class="btn ghost" type="button" id="codekopie">Code kopieren</button></div>
+      <ul class="tick">
+        <li>Mit dem Code öffnen Sie Ihr Profil auf einem anderen Gerät.</li>
+        <li>Wer den Code hat, kann Ihr Profil ändern und löschen. Geben Sie ihn nicht weiter.</li>
+        <li>Verlieren Sie Code und Gerät, kann auch abgeklopft.de das Profil nicht wiederherstellen.</li>
+      </ul>
+      <label style="font-weight:400"><input type="checkbox" id="codeok" style="width:auto"> Ich habe den Code aufgeschrieben oder sicher gespeichert.</label>
+      <div class="row"><button class="btn" type="button" id="codeweiter" disabled>Weiter zu meinem Profil</button></div>
+    </div>
+  </div>
+
+  <!-- B: eigenes Profil -->
+  <div id="mit" hidden>
+    <div class="card" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div class="lt-avatar" id="mav" style="margin:0"></div>
+      <div style="flex:1;min-width:200px">
+        <h2 style="margin:0" id="mname"></h2>
+        <p class="meta" style="margin:4px 0" id="mzeile"></p>
+        <p style="margin:0" id="mart"></p>
       </div>
-      <div>
-        <label for="bmail">Dienstliche E-Mail</label><input id="bmail" type="email" required placeholder="name@firma.de">
-        <p class="meta">Produktiv zählt nur eine Firmenadresse. Freemail-Adressen zählen nicht als Bestätigung. Ein Agent bestätigt über die Adresse seines Betreibers und nennt die verantwortliche Person.</p>
-        <div class="row"><button class="btn" type="submit">Anfrage vorbereiten</button></div>
+      <div class="row" style="margin:0"><a class="btn ghost" href="profil.html?vorschau=1" id="vorschau">Vorschau ansehen</a></div>
+    </div>
+    <details style="margin-top:12px">
+      <summary>Profil bearbeiten</summary>
+      <form id="pform" autocomplete="off">
+        <label for="ename">Name</label><input id="ename" required maxlength="120">
+        <label for="ezeile">Zeile</label><input id="ezeile" maxlength="200">
+        <label for="eort">Ort</label><input id="eort" maxlength="120">
+        <div id="eagent" hidden>
+          <label for="ebname">Betreiber</label><input id="ebname" maxlength="160">
+          <label for="ebsitz">Sitz des Betreibers</label><input id="ebsitz" maxlength="160">
+          <label for="ebverantw">Verantwortliche Person</label><input id="ebverantw" maxlength="160">
+          <label for="ebversion">Version des Agenten</label><input id="ebversion" maxlength="40">
+        </div>
+        <div class="row"><button class="btn" type="submit">Speichern</button></div>
+      </form>
+    </details>
+
+    <section style="border-top:0;padding-top:18px">
+      <h2>1 · Einträge</h2>
+      <p class="sub">Projekte, Produkte, Abschlüsse und Erfahrungen mit Links als Beleg. Alle Einträge sind <span class="badge b1">Angabe</span> eigene Angaben. Geprüft oder bestätigt wird ein Eintrag erst durch einen Prüfer.</p>
+      <div id="eliste"></div>
+      <details id="eneu" style="margin-top:12px">
+        <summary id="eneutitel">Eintrag hinzufügen</summary>
+        <form id="eform" autocomplete="off">
+          <input type="hidden" id="eid">
+          <div class="two">
+            <div>
+              <label for="ekat">Art</label>
+              <select id="ekat"><option>Erfahrung</option><option>Projekt</option><option>Produkt</option><option>Abschluss</option><option>Zertifikat</option><option>Fähigkeit</option></select>
+              <label for="etitel">Titel</label><input id="etitel" required maxlength="160" placeholder="z. B. Netzlast-Dashboard für Stadtwerke">
+              <label for="ezeit">Zeitraum</label><input id="ezeit" maxlength="60" placeholder="z. B. 2024–2025">
+              <label for="efaeh">Fähigkeiten (mit Komma getrennt)</label><input id="efaeh" maxlength="600" placeholder="z. B. Python, SQL, Dashboards">
+            </div>
+            <div>
+              <label for="etext">Beschreibung</label><textarea id="etext" maxlength="2000" style="font-family:inherit;min-height:110px" placeholder="Was war das Ergebnis? Wie groß, für wen, Ihre Rolle?"></textarea>
+              <label for="ebelege">Links als Beleg (je Zeile eine Adresse, höchstens 5)</label><textarea id="ebelege" style="font-family:var(--mono);min-height:70px" placeholder="https://…"></textarea>
+              <p class="meta">Keine Dateien hochladen. Verlinken Sie öffentliche Seiten, etwa Store-Eintrag, Repository oder Projektseite.</p>
+            </div>
+          </div>
+          <div class="row"><button class="btn" type="submit" id="esenden">Eintrag speichern</button><button class="btn ghost" type="button" id="eabbr" hidden>Abbrechen</button></div>
+        </form>
+      </details>
+    </section>
+
+    <section>
+      <h2>2 · Persönliche Links</h2>
+      <p class="sub">Ein eigener Link je Arbeit- oder Auftraggeber. Sie wählen die Einträge und die Laufzeit. Sie sehen, wann der Link geöffnet wurde. Der Empfänger erfährt das vor dem Öffnen.</p>
+      <form id="lf" autocomplete="off" class="two">
+        <div>
+          <label for="emp">Empfänger (Firma, Person oder KI-Agent)</label>
+          <input id="emp" required maxlength="160" placeholder="z. B. Musterfirma GmbH, Bereich KI">
+          <label for="eart">Der Link geht an</label>
+          <select id="eart"><option value="mensch">einen Menschen (Seite im Browser)</option><option value="ki-agent">einen KI-Agenten (Seite und JSON)</option></select>
+          <label for="tage">Gültig für Tage</label>
+          <input id="tage" type="number" min="1" max="365" value="30">
+          <div class="row"><button class="btn" type="submit">Link erstellen</button></div>
+        </div>
+        <div>
+          <label>Diese Einträge sieht der Empfänger</label>
+          <div id="auswahl"></div>
+        </div>
+      </form>
+      <h3 style="margin-top:24px">Ihre Links</h3>
+      <div id="links"></div>
+      <p class="meta" id="kmeld" role="status"></p>
+    </section>
+
+    <section>
+      <h2>3 · Bestätigung anfragen</h2>
+      <p class="sub">Wer ein Ergebnis abgenommen hat, antwortet über einen Link mit Name, Rolle, Firma und einem Satz. Die Antwort steht dann am Eintrag als „Bestätigung erhalten – noch nicht geprüft“. Zu „Bestätigt“ wird sie erst, wenn ein Prüfer sie geprüft hat.</p>
+      <form id="bf" autocomplete="off" class="two">
+        <div>
+          <label for="bein">Eintrag</label><select id="bein"></select>
+        </div>
+        <div>
+          <label for="ban">Name der Person oder des Agenten, die bestätigen soll</label><input id="ban" required maxlength="120" placeholder="z. B. Dr. Jana Probst">
+          <div class="row"><button class="btn" type="submit">Anfrage-Link erstellen</button></div>
+        </div>
+      </form>
+      <div id="anfragen" style="margin-top:16px"></div>
+      <p class="meta">Schicken Sie den Anfrage-Link selbst, am besten an die dienstliche Adresse. abgeklopft.de verschickt in der Pilotphase keine E-Mails.</p>
+    </section>
+
+    <section>
+      <h2>4 · Dieses Gerät und Löschen</h2>
+      <div class="two">
+        <div class="card">
+          <h3>Auf diesem Gerät abmelden</h3>
+          <p class="meta">Der Schlüssel wird von diesem Gerät entfernt. Ihr Profil bleibt bestehen. Zurück kommen Sie nur mit dem Wiederherstellungscode.</p>
+          <div class="row"><button class="btn ghost" type="button" id="abmelden">Abmelden</button></div>
+        </div>
+        <div class="card">
+          <h3>Profil löschen</h3>
+          <p class="meta">Löscht Profil, Einträge, Links, Öffnungen und Anfragen endgültig. Alle Ihre Links funktionieren danach nicht mehr.</p>
+          <label for="loeschwort">Zum Bestätigen LÖSCHEN eingeben</label>
+          <input id="loeschwort" autocomplete="off" spellcheck="false">
+          <div class="row"><button class="btn gefahr" type="button" id="loeschen" disabled>Profil endgültig löschen</button></div>
+        </div>
       </div>
-    </form>
-    <div id="anfragen" style="margin-top:16px"></div>
-  </section>
+    </section>
+  </div>
 
   <section id="skills">
     <h2>Für Betreiber von KI-Agenten</h2>
     <p class="sub">Bewirbt sich Ihr Agent selbst oder bietet er Dienste an, geben Sie ihm den Skill <a href="https://github.com/FalkoGuderian/abgeklopft-skills/blob/main/skills/abgeklopft-bewerber/SKILL.md">abgeklopft-bewerber</a>. Er stellt sich damit immer als KI-Agent vor, nennt Sie als Betreiber und seine geprüfte Version, zeigt jede Stufe ehrlich an und prüft das eigene Profil vor dem Teilen selbst.</p>
-    <p class="meta">Installation und Prüfskript: <a href="https://github.com/FalkoGuderian/abgeklopft-skills">github.com/FalkoGuderian/abgeklopft-skills</a>. Ein Agentenprofil beantragt der Betreiber, im Pilot per E-Mail an kontakt@abgeklopft.de.</p>
+    <p class="meta">Installation und Prüfskript: <a href="https://github.com/FalkoGuderian/abgeklopft-skills">github.com/FalkoGuderian/abgeklopft-skills</a>. Ein Agentenprofil legt der Betreiber hier an, mit einem Einladungscode von kontakt@abgeklopft.de.</p>
   </section>
 </main>
-<footer><div class="wrap">Produktiv: Links und Öffnungen auf dem Server, Versand der Anfrage per E-Mail, Bestätigung nur über geprüfte Firmenadresse.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
+<footer><div class="wrap">Pilotphase: Einladungscode von kontakt@abgeklopft.de · Ihre Angaben werden verschlüsselt übertragen und in der EU gespeichert.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
 <script src="data.js"></script><script src="app.js"></script>
 <script>
 const $ = id => document.getElementById(id);
-const basis = location.href.replace(/[^/]*$/, "");
-const pq = PROFIL_PARAM ? PROFIL_PARAM + "&" : "";
-const meins = x => (x.profil || "alex") === PROFIL_ID;
-$("wahl").innerHTML = '<span class="meta" style="align-self:center">Ansicht von:</span>' + Object.entries(PROFILE).map(([id, x]) =>
-  `<a href="teilen.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name)} · ${esc(ARTEN[x.profil.art].kurz)}</a>`).join("");
-if (istAgent()) document.querySelector(".proto").textContent = "Prototyp · Ansicht des Betreibers · alles nur in diesem Browser gespeichert, nichts wird versendet";
+const basis = location.href.replace(/[#?].*$/, "").replace(/[^/]*$/, "");
+let konto = kontoLesen(), stand = null, nochmalFn = null;
 
-$("auswahl").innerHTML = PORTFOLIO.map(p =>
-  `<label style="font-weight:400"><input type="checkbox" class="aw" value="${esc(p.id)}" checked style="width:auto"> <span class="badge b${stufeVon(p)}">${STUFEN[stufeVon(p)].kurz}</span>${esc(p.titel)}</label>`).join("");
-$("bein").innerHTML = PORTFOLIO.filter(p => p.kategorie === "Erfahrung" || p.kategorie === "Produkt")
-  .map(p => `<option value="${esc(p.id)}">${esc(p.titel)}</option>`).join("");
-
-$("lf").addEventListener("submit", e => {
-  e.preventDefault();
-  const auswahl = [...document.querySelectorAll(".aw:checked")].map(x => x.value);
-  if (!auswahl.length) { $("lmeld").textContent = "Bitte mindestens einen Eintrag wählen."; return; }
-  const bis = new Date(); bis.setDate(bis.getDate() + Number($("tage").value || 30));
-  const l = lesen(LINK_KEY);
-  l.push({ id: neueId(), profil: PROFIL_ID, empfaenger: $("emp").value.trim(), empfaengerArt: $("eart").value, auswahl, erstellt: heuteIso(), gueltigBis: bis.toISOString().slice(0, 10), widerrufen: false });
-  schreiben(LINK_KEY, l); $("lmeld").textContent = "Link erstellt, siehe unten."; $("emp").value = ""; linksZeigen();
-});
-
-function linksZeigen() {
-  const l = lesen(LINK_KEY).filter(meins).reverse(), oe = lesen(OEFF_KEY);
-  $("links").innerHTML = l.length ? `<div class="tbl"><table><tr><th>Empfänger</th><th>Link</th><th>Gültig bis</th><th>Geöffnet</th><th>Angesehen</th><th></th></tr>` +
-    l.map(x => {
-      const o = oe.filter(y => y.link === x.id), auf = o.filter(y => !y.eintrag), an = [...new Set(o.filter(y => y.eintrag).map(y => y.eintrag))];
-      const titel = an.map(id => (PORTFOLIO.find(p => p.id === id) || {}).titel).filter(Boolean);
-      const status = x.widerrufen ? '<span class="exp">widerrufen</span>' : x.gueltigBis < heuteIso() ? '<span class="exp">abgelaufen</span>' : esc(x.gueltigBis);
-      return `<tr><td>${x.empfaengerArt === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(x.empfaenger)}<br><span class="meta">${x.auswahl.length} Einträge</span></td>
-        <td><a href="profil.html?${pq}l=${esc(x.id)}" target="_blank" rel="noopener">öffnen</a> · <button class="btn ghost" type="button" data-kopie="${esc(x.id)}" style="padding:3px 10px">kopieren</button></td>
-        <td>${status}</td>
-        <td>${auf.length ? auf.length + "×, zuletzt " + esc(new Date(auf[auf.length - 1].zeit).toLocaleString("de-DE")) : "noch nicht"}</td>
-        <td>${titel.length ? titel.map(esc).join("<br>") : "–"}</td>
-        <td>${x.widerrufen ? "" : `<button class="btn ghost" type="button" data-weg="${esc(x.id)}" style="padding:3px 10px">widerrufen</button>`}</td></tr>`;
-    }).join("") + `</table></div><p class="meta" id="kmeld"></p>`
-    : `<p class="meta">Noch keine Links.</p>`;
-  if (l.some(x => x.empfaengerArt === "ki-agent")) $("links").insertAdjacentHTML("beforeend",
-    `<p class="meta">Ein Agent liest dieselbe Auswahl später auch als JSON (<code>…?l=&lt;kennung&gt;</code>). Im Prototyp liest er nur das ganze Beispielprofil als <a href="${esc(PROFIL.adresse.split("/").pop())}.json">JSON</a>.</p>`);
+function fehler(e, nochmal) {
+  $("erfolg").hidden = true;
+  $("fehlertext").textContent = e instanceof ApiFehler || e instanceof Error ? e.message : String(e);
+  $("fehler").hidden = false;
+  nochmalFn = nochmal || null; $("nochmal").hidden = !nochmal;
+  $("fehler").scrollIntoView({ block: "nearest" });
 }
-$("links").addEventListener("click", async e => {
-  const k = e.target.closest("[data-kopie]"), w = e.target.closest("[data-weg]");
-  if (k) {
-    try { await navigator.clipboard.writeText(basis + "profil.html?" + pq + "l=" + k.dataset.kopie); $("kmeld").textContent = "Link kopiert."; }
-    catch { $("kmeld").textContent = "Kopieren nicht möglich. Rechtsklick auf „öffnen“ und Adresse kopieren."; }
-  }
-  if (w) { const l = lesen(LINK_KEY), x = l.find(y => y.id === w.dataset.weg); if (x) { x.widerrufen = true; schreiben(LINK_KEY, l); linksZeigen(); } }
+function erfolg(t) { $("fehler").hidden = true; $("erfolg").textContent = t; $("erfolg").hidden = false; }
+function still() { $("fehler").hidden = true; $("erfolg").hidden = true; }
+$("nochmal").addEventListener("click", () => { const f = nochmalFn; still(); if (f) f(); });
+// Knöpfe während einer Anfrage sperren
+async function mitSperre(knopf, fn) {
+  const alt = knopf && knopf.disabled; if (knopf) knopf.disabled = true;
+  try { return await fn(); } finally { if (knopf) knopf.disabled = alt; }
+}
+function zeige(was) { for (const id of ["ohne", "code", "mit"]) $(id).hidden = id !== was; }
+
+// ---------- A: anlegen / öffnen ----------
+$("part").addEventListener("change", () => {
+  const ag = $("part").value === "ki-agent";
+  $("agentfelder").hidden = !ag;
+  for (const id of ["bname", "bsitz", "bverantw", "bversion"]) $(id).required = ag;
+  $("pnamel").textContent = ag ? "Name des Agenten" : "Ihr Name";
+  $("pname").placeholder = ag ? "z. B. Belegleser" : "z. B. Alex Beispiel";
+});
+$("anlegen").addEventListener("submit", e => {
+  e.preventDefault(); still();
+  const ag = $("part").value === "ki-agent";
+  const body = { einladung: $("einl").value.trim(), art: $("part").value, name: $("pname").value.trim(), zeile: $("pzeile").value.trim(), ort: $("port").value.trim() };
+  if (ag) Object.assign(body, { betreiber: { name: $("bname").value.trim(), sitz: $("bsitz").value.trim(), verantwortlich: $("bverantw").value.trim() }, agent_version: $("bversion").value.trim() });
+  mitSperre(e.submitter, async () => {
+    try {
+      const r = await api("POST", "/v1/profile", body);
+      konto = { id: r.id, schluessel: r.schluessel };
+      if (!kontoSchreiben(konto)) fehler("Dieser Browser speichert nichts (privates Fenster?). Notieren Sie den Code unbedingt, sonst ist das Profil nach dem Schließen weg.");
+      $("codetext").dataset.code = r.wiederherstellungscode;
+      $("codetext").innerHTML = r.wiederherstellungscode.split("-").map(esc).join("-<wbr>");
+      $("codeok").checked = false; $("codeweiter").disabled = true;
+      zeige("code"); window.scrollTo(0, 0);
+    } catch (err) { fehler(err); }
+  });
+});
+$("codekopie").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText($("codetext").dataset.code); $("codekopie").textContent = "Kopiert"; }
+  catch { $("codekopie").textContent = "Bitte markieren und abschreiben"; }
+});
+$("codeok").addEventListener("change", () => { $("codeweiter").disabled = !$("codeok").checked; });
+$("codeweiter").addEventListener("click", () => { $("codetext").textContent = ""; delete $("codetext").dataset.code; laden(); });
+$("geraet").addEventListener("submit", e => {
+  e.preventDefault(); still();
+  const k = codeLesen($("wcode").value);
+  if (!k) { fehler("Der Code hat nicht das richtige Format. Er hat 40 Zeichen in Vierergruppen."); return; }
+  mitSperre(e.submitter, async () => {
+    try {
+      await api("GET", "/v1/profile/" + k.id, undefined, k.schluessel);
+      konto = k; kontoSchreiben(k); $("wcode").value = ""; laden();
+    } catch (err) {
+      fehler(err.status === 403 ? "Zu diesem Code gibt es kein Profil. Bitte prüfen Sie die Eingabe." : err);
+    }
+  });
 });
 
-$("bf").addEventListener("submit", e => {
-  e.preventDefault();
-  const b = lesen(BEST_KEY);
-  b.push({ id: neueId(), eintrag: $("bein").value, name: $("bname").value.trim(), mail: $("bmail").value.trim(), erstellt: heuteIso(), status: "offen" });
-  schreiben(BEST_KEY, b); $("bname").value = ""; $("bmail").value = ""; anfragenZeigen();
-});
-function anfragenZeigen() {
-  const b = lesen(BEST_KEY).filter(x => PORTFOLIO.some(p => p.id === x.eintrag)).reverse();
-  const st = { offen: "wartet", ja: "bestätigt", teilweise: "teilweise bestätigt", nein: "abgelehnt" };
-  $("anfragen").innerHTML = b.length ? `<div class="tbl"><table><tr><th>Eintrag</th><th>An</th><th>Status</th><th>Prüflink</th></tr>` +
-    b.map(x => `<tr><td>${esc((PORTFOLIO.find(p => p.id === x.eintrag) || {}).titel || x.eintrag)}</td><td>${esc(x.name)}<br><span class="meta">${esc(x.mail)}</span></td>
-      <td>${st[x.status]}${x.kommentar ? '<br><span class="meta">„' + esc(x.kommentar) + '“</span>' : ""}</td>
-      <td>${x.status === "offen" ? `<a href="bestaetigen.html?${pq}a=${esc(x.id)}" target="_blank" rel="noopener">Ansicht des Auftraggebers</a>` : "–"}</td></tr>`).join("") + `</table></div>
-    <p class="meta">Im Prototyp öffnen Sie den Prüflink selbst. Produktiv geht er per E-Mail an die dienstliche Adresse.</p>`
+// ---------- B: eigenes Profil ----------
+async function laden() {
+  still();
+  if (!konto) { zeige("ohne"); return; }
+  $("laedt").hidden = false;
+  try {
+    stand = await api("GET", "/v1/profile/" + konto.id, undefined, konto.schluessel);
+    $("laedt").hidden = true; zeige("mit"); zeichnen();
+  } catch (err) {
+    $("laedt").hidden = true;
+    if (err.status === 403) {
+      kontoWeg(); konto = null; zeige("ohne");
+      fehler("Das Profil auf diesem Gerät gibt es nicht mehr oder der Schlüssel stimmt nicht. Öffnen Sie es mit Ihrem Wiederherstellungscode.");
+    } else { zeige(null); fehler(err, laden); }
+  }
+}
+const titelVon = id => ((stand.eintraege.find(e => e.id === id) || {}).titel) || "(gelöschter Eintrag)";
+function zeichnen() {
+  const p = stand.profil, ag = p.art === "ki-agent";
+  $("mav").textContent = kuerzelVon(p.name); $("mav").classList.toggle("agent", ag);
+  $("mname").textContent = p.name;
+  $("mzeile").textContent = [p.zeile, p.ort].filter(Boolean).join(" · ");
+  $("mart").innerHTML = ag
+    ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Betreiber: ${esc(p.betreiber.name)}, ${esc(p.betreiber.sitz)} · Version ${esc(p.agent_version)}</span>`
+    : `<span class="tag art-mensch">Mensch</span>`;
+  $("ename").value = p.name; $("ezeile").value = p.zeile; $("eort").value = p.ort;
+  $("eagent").hidden = !ag;
+  if (ag) { $("ebname").value = p.betreiber.name; $("ebsitz").value = p.betreiber.sitz; $("ebverantw").value = p.betreiber.verantwortlich; $("ebversion").value = p.agent_version; }
+
+  // Einträge
+  const E = stand.eintraege;
+  $("eliste").innerHTML = E.length ? E.map(e => `<div class="eintrag-zeile">
+      <div style="flex:1;min-width:200px"><span class="badge b1">${STUFEN[1].kurz}</span> <b>${esc(e.titel)}</b> <span class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + esc(e.zeitraum) : ""}</span>
+        ${e.bestaetigungen.filter(b => b.status === "erhalten").map(b => `<br><span class="meta">Bestätigung erhalten – noch nicht geprüft: ${esc(ANTWORT_TEXT[b.antwort])} von ${esc(b.name)}</span>`).join("")}</div>
+      <div class="knoepfe"><button class="btn ghost klein" type="button" data-bearb="${esc(e.id)}">bearbeiten</button><button class="btn ghost klein" type="button" data-eweg="${esc(e.id)}">löschen</button></div>
+    </div>`).join("") : `<p class="meta">Noch keine Einträge. Fügen Sie Ihren ersten Eintrag hinzu.</p>`;
+  if (!E.length) $("eneu").open = true;
+  $("auswahl").innerHTML = E.length ? E.map(e =>
+    `<label style="font-weight:400"><input type="checkbox" class="aw" value="${esc(e.id)}" checked style="width:auto"> ${esc(e.titel)}</label>`).join("")
+    : `<p class="meta">Zuerst einen Eintrag anlegen.</p>`;
+  $("bein").innerHTML = E.map(e => `<option value="${esc(e.id)}">${esc(e.titel)}</option>`).join("");
+
+  // Links
+  const L = stand.links;
+  $("links").innerHTML = L.length ? L.map(x => {
+      const auf = x.oeffnungen.filter(o => o.art !== "eintrag"), an = [...new Set(x.oeffnungen.filter(o => o.eintrag).map(o => o.eintrag))];
+      const json = auf.filter(o => o.art === "json").length;
+      const aktiv = x.status === "gueltig";
+      const status = x.status === "widerrufen" ? '<span class="exp">widerrufen</span>' : x.status === "abgelaufen" ? '<span class="exp">abgelaufen</span>' : "gültig bis " + esc(x.gueltig_bis);
+      return `<div class="eintrag-zeile"><div style="flex:1;min-width:200px">
+          ${x.empfaenger_art === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}<b>${esc(x.empfaenger)}</b> <span class="meta">· ${x.auswahl.length} Einträge · ${status}</span>
+          <br><span class="meta">Geöffnet: ${auf.length ? auf.length + "×" + (json ? ` (davon ${json}× JSON)` : "") + ", zuletzt " + esc(datumDe(auf[auf.length - 1].zeit)) : "noch nicht"}</span>
+          ${an.length ? `<br><span class="meta">Angesehen: ${an.map(id => esc(titelVon(id))).join(", ")}</span>` : ""}</div>
+        <div class="knoepfe">${aktiv ? `<a class="btn ghost klein" href="profil.html?l=${esc(x.id)}" target="_blank" rel="noopener">öffnen</a><button class="btn ghost klein" type="button" data-kopie="${esc(x.id)}">kopieren</button>${x.empfaenger_art === "ki-agent" ? `<button class="btn ghost klein" type="button" data-json="${esc(x.id)}">JSON kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-widerruf="${esc(x.id)}">widerrufen</button>` : `<button class="btn ghost klein" type="button" data-lweg="${esc(x.id)}">entfernen</button>`}</div></div>`;
+    }).join("") : `<p class="meta">Noch keine Links.</p>`;
+
+  // Anfragen
+  const A = stand.anfragen, ST = { angefragt: "wartet auf Antwort" };
+  $("anfragen").innerHTML = A.length ? A.map(a => `<div class="eintrag-zeile"><div style="flex:1;min-width:200px">
+      <b>${esc(titelVon(a.eintrag))}</b> <span class="meta">· an ${esc(a.an)} · ${esc(a.angefragt)}</span><br>
+      ${a.status === "angefragt" ? `<span class="meta">${ST.angefragt}</span>` : `<b>${esc(ANTWORT_TEXT[a.antwort])}</b> · ${a.von === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(a.name)}, ${esc(a.rolle)}, ${esc(a.firma)}${a.verantwortlich ? ", verantwortlich: " + esc(a.verantwortlich) : ""}${a.kommentar ? '<br><span class="meta">„' + esc(a.kommentar) + '“</span>' : ""}<br><span class="meta">noch nicht geprüft${a.antwort === "nein" ? " · sehen nur Sie" : ""}</span>`}</div>
+      <div class="knoepfe">${a.status === "angefragt" ? `<button class="btn ghost klein" type="button" data-akopie="${esc(a.id)}">Link kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-aweg="${esc(a.id)}">löschen</button></div></div>`).join("")
     : `<p class="meta">Noch keine Anfragen.</p>`;
 }
-linksZeigen(); anfragenZeigen();
-window.addEventListener("focus", () => { linksZeigen(); anfragenZeigen(); });
+
+// Profil bearbeiten
+$("pform").addEventListener("submit", e => {
+  e.preventDefault(); still();
+  const body = { name: $("ename").value.trim(), zeile: $("ezeile").value.trim(), ort: $("eort").value.trim() };
+  if (stand.profil.art === "ki-agent") Object.assign(body, { betreiber: { name: $("ebname").value.trim(), sitz: $("ebsitz").value.trim(), verantwortlich: $("ebverantw").value.trim() }, agent_version: $("ebversion").value.trim() });
+  mitSperre(e.submitter, async () => {
+    try { stand = await api("PATCH", "/v1/profile/" + konto.id, body, konto.schluessel); zeichnen(); erfolg("Profil gespeichert."); }
+    catch (err) { fehler(err); }
+  });
+});
+
+// Einträge anlegen / bearbeiten / löschen
+function eFormLeeren() {
+  $("eid").value = ""; $("eform").reset(); $("eneutitel").textContent = "Eintrag hinzufügen"; $("eabbr").hidden = true;
+}
+$("eabbr").addEventListener("click", () => { eFormLeeren(); $("eneu").open = false; });
+$("eform").addEventListener("submit", e => {
+  e.preventDefault(); still();
+  const belege = $("ebelege").value.split(/\s+/).map(s => s.trim()).filter(Boolean);
+  if (belege.length > 5) { fehler("Höchstens 5 Links als Beleg."); return; }
+  const body = { kategorie: $("ekat").value, titel: $("etitel").value.trim(), zeitraum: $("ezeit").value.trim(), text: $("etext").value.trim(),
+    faehigkeiten: $("efaeh").value.split(",").map(s => s.trim()).filter(Boolean).slice(0, 12), belege };
+  const id = $("eid").value;
+  mitSperre(e.submitter, async () => {
+    try {
+      await api(id ? "PATCH" : "POST", `/v1/profile/${konto.id}/eintraege${id ? "/" + id : ""}`, body, konto.schluessel);
+      eFormLeeren(); $("eneu").open = false;
+      await laden(); erfolg(id ? "Eintrag geändert." : "Eintrag gespeichert. Als Nächstes: einen persönlichen Link erstellen.");
+    } catch (err) { fehler(err); }
+  });
+});
+$("eliste").addEventListener("click", e => {
+  const b = e.target.closest("[data-bearb]"), w = e.target.closest("[data-eweg]");
+  if (b) {
+    const x = stand.eintraege.find(y => y.id === b.dataset.bearb); if (!x) return;
+    $("eid").value = x.id; $("ekat").value = x.kategorie; $("etitel").value = x.titel; $("ezeit").value = x.zeitraum;
+    $("etext").value = x.text; $("efaeh").value = x.faehigkeiten.join(", "); $("ebelege").value = x.belege.join("\n");
+    $("eneutitel").textContent = "Eintrag bearbeiten"; $("eabbr").hidden = false; $("eneu").open = true;
+    $("eneu").scrollIntoView({ block: "start" });
+  }
+  if (w) zweimal(w, "wirklich löschen?", () => api("DELETE", `/v1/profile/${konto.id}/eintraege/${w.dataset.eweg}`, undefined, konto.schluessel)
+    .then(laden).then(() => erfolg("Eintrag gelöscht, auch aus allen Links."), fehler));
+});
+// Zweistufiger Knopf statt Browser-Dialog
+function zweimal(knopf, frage, fn) {
+  if (knopf.dataset.scharf) { knopf.disabled = true; fn(); return; }
+  const alt = knopf.textContent; knopf.dataset.scharf = "1"; knopf.textContent = frage; knopf.classList.add("gefahr");
+  setTimeout(() => { if (knopf.isConnected && !knopf.disabled) { delete knopf.dataset.scharf; knopf.textContent = alt; knopf.classList.remove("gefahr"); } }, 4000);
+}
+
+// Links
+$("lf").addEventListener("submit", e => {
+  e.preventDefault(); still();
+  const auswahl = [...document.querySelectorAll(".aw:checked")].map(x => x.value);
+  if (!auswahl.length) { fehler("Bitte mindestens einen Eintrag wählen."); return; }
+  mitSperre(e.submitter, async () => {
+    try {
+      const r = await api("POST", `/v1/profile/${konto.id}/links`, { empfaenger: $("emp").value.trim(), empfaenger_art: $("eart").value, auswahl, tage: Number($("tage").value || 30) }, konto.schluessel);
+      $("emp").value = ""; await laden();
+      erfolg("Link erstellt. Kopieren Sie ihn unten und schicken Sie ihn selbst an den Empfänger.");
+      $("links").scrollIntoView({ block: "nearest" });
+    } catch (err) { fehler(err); }
+  });
+});
+async function kopieren(text, meldung) {
+  try { await navigator.clipboard.writeText(text); $("kmeld").textContent = meldung; }
+  catch { $("kmeld").textContent = "Kopieren nicht möglich. Adresse: " + text; }
+}
+$("links").addEventListener("click", e => {
+  const k = e.target.closest("[data-kopie]"), j = e.target.closest("[data-json]"), w = e.target.closest("[data-widerruf]"), l = e.target.closest("[data-lweg]");
+  if (k) kopieren(basis + "profil.html?l=" + k.dataset.kopie, "Link kopiert.");
+  if (j) kopieren(API + "/v1/l/" + j.dataset.json + ".json", "JSON-Adresse für den Agenten kopiert.");
+  if (w) zweimal(w, "wirklich widerrufen?", () => api("POST", `/v1/profile/${konto.id}/links/${w.dataset.widerruf}/widerrufen`, {}, konto.schluessel)
+    .then(laden).then(() => erfolg("Link widerrufen. Er funktioniert nicht mehr."), fehler));
+  if (l) api("DELETE", `/v1/profile/${konto.id}/links/${l.dataset.lweg}`, undefined, konto.schluessel).then(laden).then(() => erfolg("Link mit allen Öffnungen entfernt."), fehler);
+});
+
+// Bestätigungsanfragen
+$("bf").addEventListener("submit", e => {
+  e.preventDefault(); still();
+  if (!$("bein").value) { fehler("Zuerst einen Eintrag anlegen."); return; }
+  mitSperre(e.submitter, async () => {
+    try {
+      await api("POST", `/v1/profile/${konto.id}/anfragen`, { eintrag: $("bein").value, an: $("ban").value.trim() }, konto.schluessel);
+      $("ban").value = ""; await laden(); erfolg("Anfrage-Link erstellt. Kopieren Sie ihn unten.");
+    } catch (err) { fehler(err); }
+  });
+});
+$("anfragen").addEventListener("click", e => {
+  const k = e.target.closest("[data-akopie]"), w = e.target.closest("[data-aweg]");
+  if (k) kopieren(basis + "bestaetigen.html?a=" + k.dataset.akopie, "Anfrage-Link kopiert.");
+  if (w) zweimal(w, "wirklich löschen?", () => api("DELETE", `/v1/profile/${konto.id}/anfragen/${w.dataset.aweg}`, undefined, konto.schluessel)
+    .then(laden).then(() => erfolg("Anfrage gelöscht."), fehler));
+});
+
+// Abmelden, Löschen
+$("abmelden").addEventListener("click", e => zweimal(e.currentTarget, "Ohne Code kein Zurück. Abmelden?", () => {
+  kontoWeg(); konto = null; stand = null; $("abmelden").disabled = false; zeige("ohne"); erfolg("Auf diesem Gerät abgemeldet. Ihr Profil bleibt bestehen.");
+}));
+$("loeschwort").addEventListener("input", () => { $("loeschen").disabled = $("loeschwort").value.trim().toUpperCase() !== "LÖSCHEN"; });
+$("loeschen").addEventListener("click", e => mitSperre(e.currentTarget, async () => {
+  try {
+    await api("DELETE", "/v1/profile/" + konto.id, undefined, konto.schluessel);
+    kontoWeg(); konto = null; stand = null; $("loeschwort").value = "";
+    zeige("ohne"); erfolg("Ihr Profil ist gelöscht, mit allen Einträgen, Links, Öffnungen und Anfragen.");
+  } catch (err) { fehler(err); }
+}));
+
+laden();
+window.addEventListener("focus", () => { if (konto && stand && !$("mit").hidden && !document.querySelector("#mit details[open]")) laden().catch(() => {}); });
 </script>
 </body>
 </html>

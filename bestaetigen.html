@@ -3,69 +3,81 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://abgeklopft-api.falko-guderian.workers.dev http://localhost:8787; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
 <title>Ergebnis bestätigen · abgeklopft.de</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="proto">Prototyp · Ansicht des Auftraggebers · nichts wird versendet</div>
+<div class="proto">Bestätigungsanfrage · abgeklopft.de</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
 </div></header>
 <main class="wrap" style="padding-top:28px;max-width:640px">
-  <div id="inhalt"></div>
+  <div id="inhalt"><p class="meta">Lädt …</p></div>
 </main>
-<footer><div class="wrap">Ihre Angaben werden nur zusammen mit dieser Bestätigung gezeigt. Produktiv: Bestätigung nur über die dienstliche Adresse, an die diese Anfrage ging.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
+<footer><div class="wrap">Ihre Antwort wird am Eintrag gezeigt, für alle, denen der Inhaber einen persönlichen Link schickt. Eine „Nein“-Antwort sieht nur der Inhaber.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
 <script src="data.js"></script><script src="app.js"></script>
 <script>
 const $ = id => document.getElementById(id);
-const id = new URLSearchParams(location.search).get("a");
-const liste = lesen(BEST_KEY), a = liste.find(x => x.id === id);
-const p = a && PORTFOLIO.find(x => x.id === a.eintrag);
-if (!a || !p) {
-  $("inhalt").innerHTML = `<div class="result bad">Diese Anfrage ist unbekannt. Im Prototyp funktioniert sie nur in dem Browser, in dem sie erstellt wurde.</div>`;
-} else if (a.status !== "offen") {
-  $("inhalt").innerHTML = `<div class="result ok">Diese Anfrage ist bereits beantwortet. Danke.</div>`;
-} else {
+const aid = new URLSearchParams(location.search).get("a") || "";
+const fehlerZeigen = e => {
+  $("inhalt").innerHTML = e.status === 404
+    ? `<div class="result bad">Diese Anfrage ist unbekannt oder wurde gelöscht. Bitte prüfen Sie, ob der Link vollständig ist.</div>`
+    : `<div class="result bad">${esc(e.message)} <button class="btn ghost klein" type="button" onclick="location.reload()">Erneut versuchen</button></div>`;
+};
+if (!/^[0-9a-z]{26}$/.test(aid)) fehlerZeigen({ status: 404 });
+else api("GET", "/v1/a/" + aid).then(a => {
+  if (a.status !== "offen") { $("inhalt").innerHTML = `<div class="result ok">Diese Anfrage ist bereits beantwortet. Danke.</div>`; return; }
+  const ag = a.profil.art === "ki-agent", e = a.eintrag;
+  const belege = (e.belege || []).filter(sichereUrl).map(u => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow ugc">${esc(urlKurz(u))}</a>`).join(" · ");
   $("inhalt").innerHTML = `
     <h1>Können Sie dieses Ergebnis bestätigen?</h1>
-    <p>Guten Tag ${esc(a.name)}, ${istAgent()
-      ? `der Betreiber des KI-Agenten <b>${esc(PROFIL.name)}</b> (${esc(PROFIL.betreiber.name)}) bittet Sie um eine kurze Bestätigung einer Arbeit des Agenten.`
-      : `<b>${esc(PROFIL.name)}</b> bittet Sie um eine kurze Bestätigung.`} Es dauert etwa eine Minute.</p>
-    <div class="card"><h3>${istAgent() ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(p.titel)}</h3><p class="meta">${esc(p.zeitraum)}</p><p>${esc(p.text)}</p></div>
+    <p>Guten Tag ${esc(a.an)}, ${ag
+      ? `der Betreiber des KI-Agenten <b>${esc(a.profil.name)}</b> (${esc(a.profil.betreiber.name)}) bittet Sie um eine kurze Bestätigung einer Arbeit des Agenten.`
+      : `<b>${esc(a.profil.name)}</b> bittet Sie um eine kurze Bestätigung.`} Es dauert etwa eine Minute.</p>
+    <div class="card"><h3>${ag ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(e.titel)}</h3><p class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + esc(e.zeitraum) : ""}</p>${e.text ? `<p class="mehrzeilig">${esc(e.text)}</p>` : ""}${belege ? `<p class="meta">Links: ${belege}</p>` : ""}</div>
     <form id="af" autocomplete="off">
       <label for="aals">Sie antworten als</label>
       <select id="aals"><option value="mensch">Mensch, mit meinem Namen</option><option value="ki-agent">KI-Agent im Auftrag meines Betreibers</option></select>
-      <label for="arolle">Ihre Rolle und Firma damals</label>
-      <input id="arolle" required placeholder="z. B. Projektleiterin, Musterbehörde">
+      <label for="aname">Ihr Name</label>
+      <input id="aname" required maxlength="120" value="${esc(a.an)}">
+      <label for="arolle">Ihre Rolle damals</label>
+      <input id="arolle" required maxlength="160" placeholder="z. B. Projektleiterin">
+      <label for="afirma">Firma oder Behörde</label>
+      <input id="afirma" required maxlength="160" placeholder="z. B. Musterbehörde">
       <div id="averantw" hidden>
         <label for="avname">Verantwortliche Person beim Betreiber</label>
-        <input id="avname" placeholder="z. B. Leitung Einkauf">
-        <p class="meta">Ein Agent bestätigt nur im Auftrag. Produktiv signiert er mit dem Schlüssel seines geprüften Betreibers, und ein Mensch steht dafür ein.</p>
+        <input id="avname" maxlength="120" placeholder="z. B. Tom Weber, Leitung Einkauf">
+        <p class="meta">Ein Agent bestätigt nur im Auftrag. Ein Mensch steht dafür ein.</p>
       </div>
       <label>Ihre Antwort</label>
       <label style="font-weight:400"><input type="radio" name="ant" value="ja" required style="width:auto"> Ja, das stimmt so.</label>
       <label style="font-weight:400"><input type="radio" name="ant" value="teilweise" style="width:auto"> Teilweise. Ich erläutere unten.</label>
       <label style="font-weight:400"><input type="radio" name="ant" value="nein" style="width:auto"> Nein, das kann ich nicht bestätigen.</label>
       <label for="akom">Kommentar (optional, wird angezeigt)</label>
-      <textarea id="akom" style="font-family:inherit;min-height:80px"></textarea>
-      <p class="meta">Sie bestätigen mit Ihrem Namen. Bitte nur, was Sie aus eigener Anschauung wissen. Als Agent: nur, was in Ihren eigenen Protokollen steht.</p>
+      <textarea id="akom" maxlength="1000" style="font-family:inherit;min-height:80px"></textarea>
+      <div class="note">Gespeichert werden Name, Rolle, Firma, Antwort, Kommentar und das Datum, keine E-Mail- oder IP-Adresse. Die Antwort steht am Eintrag als <b>„Bestätigung erhalten – noch nicht geprüft“</b>. Bitte bestätigen Sie nur, was Sie aus eigener Anschauung wissen. Als Agent: nur, was in Ihren eigenen Protokollen steht. <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz</a></div>
       <div class="row"><button class="btn" type="submit">Antwort senden</button></div>
+      <p class="meta" id="ameld" role="alert"></p>
     </form>`;
   $("aals").addEventListener("change", () => {
-    const ag = $("aals").value === "ki-agent";
-    $("averantw").hidden = !ag; $("avname").required = ag;
-    $("arolle").placeholder = ag ? "z. B. Einkaufsagent der Musterfirma GmbH" : "z. B. Projektleiterin, Musterbehörde";
+    const x = $("aals").value === "ki-agent";
+    $("averantw").hidden = !x; $("avname").required = x;
+    $("arolle").placeholder = x ? "z. B. Einkaufsagent" : "z. B. Projektleiterin";
   });
-  $("af").addEventListener("submit", e => {
-    e.preventDefault();
-    const ag = $("aals").value === "ki-agent";
-    Object.assign(a, { status: document.querySelector("input[name=ant]:checked").value, antwortName: a.name, agent: ag,
-      antwortRolle: $("arolle").value.trim() + (ag ? ", verantwortlich: " + $("avname").value.trim() : ""),
-      kommentar: $("akom").value.trim(), antwortDatum: heuteIso() });
-    schreiben(BEST_KEY, liste);
-    $("inhalt").innerHTML = `<div class="result ok"><b>Danke.</b> Ihre Antwort ist gespeichert.${a.status === "ja" ? " Der Eintrag gilt jetzt als „Bestätigt“, mit Ihrem Namen." : ""}</div>`;
+  $("af").addEventListener("submit", ev => {
+    ev.preventDefault();
+    const x = $("aals").value === "ki-agent", knopf = ev.submitter; if (knopf) knopf.disabled = true;
+    const body = { antwort: document.querySelector("input[name=ant]:checked").value, als: $("aals").value,
+      name: $("aname").value.trim(), rolle: $("arolle").value.trim(), firma: $("afirma").value.trim(), kommentar: $("akom").value.trim(),
+      ...(x ? { verantwortlich: $("avname").value.trim() } : {}) };
+    api("POST", "/v1/a/" + aid, body).then(() => {
+      $("inhalt").innerHTML = `<div class="result ok"><b>Danke.</b> Ihre Antwort ist gespeichert.${body.antwort !== "nein" ? " Sie steht jetzt am Eintrag als „Bestätigung erhalten – noch nicht geprüft“." : " Sie wird nur dem Inhaber angezeigt."}</div>`;
+    }, err => { if (knopf) knopf.disabled = false; $("ameld").textContent = err.message; });
   });
-}
+}, fehlerZeigen);
 </script>
 </body>
 </html>

@@ -230,3 +230,14 @@ nav.profilwahl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin
 .profilwahl a{font-size:.85rem;border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none;color:var(--muted);background:var(--surface)}
 .profilwahl a[aria-current="page"]{color:var(--brand);border-color:var(--brand)}
 .matrix th:first-child{white-space:nowrap}
+
+/* Selbst angelegte Profile (Server, 2026-11-19) */
+.mehrzeilig{white-space:pre-line}
+.codebox{font-family:var(--mono);font-size:1.05rem;letter-spacing:.04em;overflow-wrap:normal;word-break:normal;line-height:1.7;background:var(--surface);color:var(--ink);border:2px dashed var(--brand);border-radius:10px;padding:14px 16px;margin:10px 0;user-select:all}
+.eintrag-zeile{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;border-top:1px solid var(--line);padding:10px 0}
+.eintrag-zeile:first-child{border-top:0}
+.eintrag-zeile .knoepfe{display:flex;gap:6px;flex-wrap:wrap}
+.btn.klein{padding:3px 10px}
+.btn.gefahr{background:var(--bad);border-color:var(--bad);color:var(--brand-ink)}
+.fehlerzeile[hidden]{display:none}
+#mname,.lt h1,.eintrag-zeile b,.lt-titel,.card h3,code{overflow-wrap:anywhere}

@@ -10,7 +10,7 @@
 <div class="proto">Prototyp · Verfahren sind Annahmen</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
-  <nav><a href="index.html">Start</a><a href="profil.html">Beispiele</a><a href="teilen.html">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html" aria-current="page">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
+  <nav><a href="index.html">Start</a><a href="profil.html">Beispiele</a><a href="teilen.html">Mein Profil</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html" aria-current="page">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
 </div></header>
 <main class="wrap" style="padding-top:28px;max-width:860px">
   <h1>Sie haben einen Link bekommen</h1>
@@ -60,7 +60,7 @@
   <section><h2>Mit einem KI-Assistenten prüfen</h2>
     <p class="sub">Jedes Profil gibt es auch maschinenlesbar. Ihr Assistent oder Ihr Bewerbermanagement kann die Nachweise lesen und die Prüfberichte selbst nachrechnen, ohne uns zu vertrauen.</p>
     <div class="grid">
-      <div class="card"><h3>Profil als JSON</h3><p>An die Adresse <code>.json</code> anhängen, zum Beispiel <a href="alex.json">abgeklopft.de/alex.json</a>. Jeder Eintrag nennt Stufe, Prüfweg und Bestätigungen.</p></div>
+      <div class="card"><h3>Profil als JSON</h3><p>Beispiele: <a href="alex.json">abgeklopft.de/alex.json</a>. Persönliche Links <code>profil.html?l=&lt;kennung&gt;</code> gibt es als JSON unter <code>…/v1/l/&lt;kennung&gt;.json</code> (Adresse in <a href="llms.txt">llms.txt</a>). Jeder Eintrag nennt Stufe, Prüfweg und Bestätigungen.</p></div>
       <div class="card"><h3>Signiert und nachprüfbar</h3><p>Jeder geprüfte oder bestätigte Eintrag trägt einen Prüfbericht mit Ed25519-Signatur. Den öffentlichen Schlüssel finden Sie unter <a href="./.well-known/jwks.json">/.well-known/jwks.json</a>.</p></div>
       <div class="card"><h3>Anleitung für Agenten</h3><p>Die Datei <a href="llms.txt">llms.txt</a> erklärt Stufen, Prüfschritte und Regeln. Ein Beispiel in Python liegt bei.</p></div>
     </div>

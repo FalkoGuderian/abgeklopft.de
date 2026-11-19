@@ -95,10 +95,10 @@ function eintragHtml(p, i) {
     </div>
   </li>`;
 }
-function profilZeigen(ziel, eintraege, beimOeffnen) {
+function profilZeigen(ziel, eintraege, beimOeffnen, darstellen = eintragHtml) {
   const el = document.getElementById(ziel);
   if (!el) return;
-  el.innerHTML = `<ul class="lt-liste">${eintraege.map(eintragHtml).join("")}</ul>`;
+  el.innerHTML = `<ul class="lt-liste">${eintraege.map(darstellen).join("")}</ul>`;
   el.addEventListener("click", e => {
     const b = e.target.closest(".lt-btn"); if (!b) return;
     const d = document.getElementById(b.getAttribute("aria-controls"));
@@ -106,4 +106,78 @@ function profilZeigen(ziel, eintraege, beimOeffnen) {
     b.setAttribute("aria-expanded", auf); d.hidden = !auf;
     if (auf && beimOeffnen) beimOeffnen(b.dataset.id);
   });
+}
+
+// ---------- Server (abgeklopft-api, Cloudflare Worker + D1 in der EU) ----------
+// Lokal (http://localhost:<port>) spricht die Seite mit "wrangler dev" auf Port 8787, sonst mit der Live-API.
+// Alle anderen Herkünfte (auch https://localhost) nutzen die Live-API.
+const API_LIVE = "https://abgeklopft-api.falko-guderian.workers.dev";
+const API = location.protocol === "http:" && location.hostname === "localhost" ? "http://localhost:8787" : API_LIVE;
+const KONTO_KEY = "ak_konto_v1"; // { id, schluessel } des eigenen Profils, nur auf diesem Gerät
+
+class ApiFehler extends Error {
+  constructor(status, code, meldung) { super(meldung); this.status = status; this.code = code; }
+}
+async function api(methode, pfad, body, schluessel) {
+  const h = {};
+  if (body !== undefined) h["Content-Type"] = "application/json";
+  if (schluessel) h.Authorization = "Bearer " + schluessel;
+  let r;
+  try {
+    r = await fetch(API + pfad, { method: methode, headers: h, body: body === undefined ? undefined : JSON.stringify(body), cache: "no-store" });
+  } catch {
+    throw new ApiFehler(0, "offline", navigator.onLine === false
+      ? "Keine Internetverbindung. Bitte verbinden Sie sich und versuchen Sie es erneut."
+      : "Keine Verbindung zum Server von abgeklopft.de. Bitte prüfen Sie Ihre Internetverbindung oder versuchen Sie es in ein paar Minuten erneut.");
+  }
+  let j = null; try { j = await r.json(); } catch {}
+  if (!r.ok) {
+    const m = (j && j.meldung) || (r.status >= 500 ? "Der Server hat einen Fehler gemeldet. Bitte später erneut versuchen." : "Fehler " + r.status + ".");
+    throw new ApiFehler(r.status, (j && j.fehler) || "fehler", m);
+  }
+  return j;
+}
+function kontoLesen() {
+  try { const k = JSON.parse(localStorage.getItem(KONTO_KEY) || "null"); return k && k.id && k.schluessel ? k : null; } catch { return null; }
+}
+function kontoSchreiben(k) { try { localStorage.setItem(KONTO_KEY, JSON.stringify({ id: k.id, schluessel: k.schluessel })); return true; } catch { return false; } }
+function kontoWeg() { try { localStorage.removeItem(KONTO_KEY); } catch {} }
+// Wiederherstellungscode: 10 Zeichen Profil-ID + 30 Zeichen Schlüssel, in Vierergruppen. Verwechslungen O/0, I/L/1 egal.
+function codeLesen(s) {
+  const t = String(s || "").toUpperCase().replace(/O/g, "0").replace(/[IL]/g, "1").replace(/[^0-9A-Z]/g, "");
+  return t.length === 40 && !/[U]/.test(t) ? { id: t.slice(0, 10), schluessel: t.slice(10) } : null;
+}
+const kuerzelVon = name => String(name || "?").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase() || "?";
+const sichereUrl = u => /^https?:\/\//i.test(String(u || ""));
+function urlKurz(u) {
+  try { const x = new URL(u); return (x.hostname + x.pathname).replace(/\/$/, "").slice(0, 60); } catch { return String(u).slice(0, 60); }
+}
+function datumDe(iso) {
+  try { return new Date(iso).toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" }); } catch { return iso; }
+}
+const ANTWORT_TEXT = { ja: "Ja, stimmt so", teilweise: "Teilweise", nein: "Nein" };
+// Antwort eines Auftraggebers als Zeile: noch nicht geprüft, hebt die Stufe NICHT
+function bestaetigungHtml(b) {
+  if (b.status === "angefragt") return `<p class="meta">Bestätigung angefragt am ${esc(b.angefragt)}${b.an ? " bei " + esc(b.an) : ""}.</p>`;
+  return `<p class="meta"><b>Bestätigung erhalten – noch nicht geprüft.</b> ${esc(ANTWORT_TEXT[b.antwort] || b.antwort)} · ${b.von === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(b.name)} (${esc(b.rolle)}, ${esc(b.firma)}${b.verantwortlich ? ", verantwortlich: " + esc(b.verantwortlich) : ""}) am ${esc(b.datum)}${b.kommentar ? ": „" + esc(b.kommentar) + "“" : ""}</p>`;
+}
+// Eintrag eines selbst angelegten Profils (immer Stufe 1)
+function serverEintragHtml(e, i) {
+  const belege = (e.belege || []).map(u => sichereUrl(u)
+    ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow ugc">${esc(urlKurz(u))}</a>` : esc(u)).join(" · ");
+  return `
+  <li class="lt-item">
+    <button type="button" class="lt-btn" aria-expanded="false" aria-controls="d-${i}" data-id="${esc(e.id)}">
+      <span class="badge b1" title="${esc(STUFEN[1].text)}">${STUFEN[1].kurz}</span>
+      <span class="lt-titel">${esc(e.titel)}</span>
+      <span class="lt-zeit">${esc(e.zeitraum || "")}</span>
+    </button>
+    <div class="lt-detail" id="d-${i}" hidden>
+      ${e.text ? `<p class="mehrzeilig">${esc(e.text)}</p>` : ""}
+      <p class="meta"><b>${esc(STUFEN[1].name)}.</b> Selbst eingetragen, von abgeklopft.de nicht geprüft.</p>
+      ${(e.bestaetigungen || []).map(bestaetigungHtml).join("")}
+      <p class="meta">Links der Person: ${belege || "keine"}</p>
+      <div>${(e.faehigkeiten || []).map(s => `<span class="tag">${esc(s)}</span>`).join("")}</div>
+    </div>
+  </li>`;
 }
