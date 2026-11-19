@@ -10,7 +10,7 @@
 <div class="proto">Prototyp · Verfahren sind Annahmen · in der Pilotphase kostenlos · kein amtliches oder notarielles Verfahren</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
-  <nav><a href="profil.html">Beispielprofil</a><a href="teilen.html">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
+  <nav><a href="profil.html">Beispielprofil</a><a href="profil.html?p=belegleser">Beispiel KI-Agent</a><a href="teilen.html">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
 </div></header>
 
 <main>
@@ -24,6 +24,7 @@
       <div class="row">
         <a class="btn" href="teilen.html">Link erstellen</a>
         <a class="btn ghost" href="profil.html">Beispielprofil ansehen</a>
+        <a class="btn ghost" href="profil.html?p=belegleser">Beispiel KI-Agent</a>
       </div>
     </div>
     <div class="mock" aria-label="Vorschau einer Profilseite">
@@ -34,10 +35,10 @@
         <p class="zeile">Datenanalyse · Produktentwicklung</p>
       </div>
       <ul class="lt-liste" style="margin-top:14px">
-        <li class="lt-item"><div class="lt-btn"><span class="badge b3">S3</span><span class="lt-titel">Netzlast-Dashboard für Stadtwerke</span></div></li>
-        <li class="lt-item"><div class="lt-btn"><span class="badge b2">S2</span><span class="lt-titel">Haushaltsbuch-App im Play Store</span></div></li>
-        <li class="lt-item"><div class="lt-btn"><span class="badge b2">S2</span><span class="lt-titel">M.Sc. Informatik, TU Musterstadt</span></div></li>
-        <li class="lt-item"><div class="lt-btn"><span class="badge b1">S1</span><span class="lt-titel">Open Source: Bibliothek für Zeitreihen</span></div></li>
+        <li class="lt-item"><div class="lt-btn"><span class="badge b3">Bestätigt</span><span class="lt-titel">Netzlast-Dashboard für Stadtwerke</span></div></li>
+        <li class="lt-item"><div class="lt-btn"><span class="badge b2">Geprüft</span><span class="lt-titel">Haushaltsbuch-App im Play Store</span></div></li>
+        <li class="lt-item"><div class="lt-btn"><span class="badge b2">Geprüft</span><span class="lt-titel">M.Sc. Informatik, TU Musterstadt</span></div></li>
+        <li class="lt-item"><div class="lt-btn"><span class="badge b1">Angabe</span><span class="lt-titel">Open Source: Bibliothek für Zeitreihen</span></div></li>
       </ul>
     </div>
   </div>
@@ -82,18 +83,18 @@
     <p class="sub">Jedes Ergebnis wird so geprüft, wie es am besten passt. Die teure Prüfung durch Menschen bleibt die Ausnahme.</p>
     <div class="tbl"><table>
       <tr><th>Ergebnis</th><th>Prüfweg</th><th>Aufwand</th><th>Stufe</th></tr>
-      <tr><td>App, Webseite, Repository</td><td>Inhaberschaft: Store-Konto, Domain oder Repository gehört der Person</td><td>automatisch</td><td><span class="badge b2">S2</span></td></tr>
-      <tr><td>Abschluss, Zertifikat</td><td>Urkunde eingesehen und beim Aussteller abgeglichen</td><td>wenige Minuten</td><td><span class="badge b2">S2</span></td></tr>
-      <tr><td>Projekt, Erfahrung</td><td>Früherer Auftraggeber oder Vorgesetzter bestätigt über einen Prüflink</td><td>fast keiner</td><td><span class="badge b3">S3</span></td></tr>
-      <tr><td>Fähigkeit ohne Beleg</td><td>Fachgespräch per Video mit unabhängigem Gutachter</td><td>hoch</td><td><span class="badge b3">S3</span></td></tr>
-      <tr><td><span class="tag art-agent">KI-Agent</span> Betreiber</td><td>Register, Impressum und Domain des Betreibers abgeglichen, Schlüssel des Agenten dort hinterlegt</td><td>wenige Minuten</td><td><span class="badge b2">S2</span></td></tr>
-      <tr><td><span class="tag art-agent">KI-Agent</span> Fähigkeit</td><td>Probeaufgabe: unbekannte Aufgaben aus festem Satz, ausgewertet von unabhängigem Gutachter, gilt je Version</td><td>mittel</td><td><span class="badge b3">S3</span></td></tr>
+      <tr><td>App, Webseite, Repository</td><td>Inhaberschaft: Store-Konto, Domain oder Repository gehört der Person</td><td>automatisch</td><td><span class="badge b2">Geprüft</span></td></tr>
+      <tr><td>Abschluss, Zertifikat</td><td>Urkunde eingesehen und beim Aussteller abgeglichen</td><td>wenige Minuten</td><td><span class="badge b2">Geprüft</span></td></tr>
+      <tr><td>Projekt, Erfahrung</td><td>Früherer Auftraggeber oder Vorgesetzter bestätigt über einen Prüflink</td><td>fast keiner</td><td><span class="badge b3">Bestätigt</span></td></tr>
+      <tr><td>Fähigkeit ohne Beleg</td><td>Fachgespräch per Video mit unabhängigem Gutachter</td><td>hoch</td><td><span class="badge b3">Bestätigt</span></td></tr>
+      <tr><td><span class="tag art-agent">KI-Agent</span> Betreiber</td><td>Register, Impressum und Domain des Betreibers abgeglichen, Schlüssel des Agenten dort hinterlegt</td><td>wenige Minuten</td><td><span class="badge b2">Geprüft</span></td></tr>
+      <tr><td><span class="tag art-agent">KI-Agent</span> Fähigkeit</td><td>Probeaufgabe: unbekannte Aufgaben aus festem Satz, ausgewertet von unabhängigem Gutachter, gilt je Version</td><td>mittel</td><td><span class="badge b3">Bestätigt</span></td></tr>
     </table></div>
     <h3 style="margin-top:26px">Die drei Stufen</h3>
     <div class="grid">
-      <div class="card"><span class="badge b1">S1</span><h3>Eigene Angabe</h3><p>Die Person verlinkt selbst. Nichts ist geprüft. Wie ein normaler Link-Baum.</p></div>
-      <div class="card"><span class="badge b2">S2</span><h3>Beleg geprüft</h3><p>Dokument, Inhaberschaft oder Aussteller wurde geprüft und abgeglichen.</p></div>
-      <div class="card"><span class="badge b3">S3</span><h3>Von Dritten bestätigt</h3><p>Ein Auftraggeber, eine Vorgesetzte oder ein Fachgutachter steht mit Namen dafür ein. Bestätigt ein Agent, dann im Auftrag seines Betreibers, mit verantwortlicher Person.</p></div>
+      <div class="card"><span class="badge b1">Angabe</span><h3>Eigene Angabe</h3><p>Die Person verlinkt selbst. Nichts ist geprüft. Wie ein normaler Link-Baum.</p></div>
+      <div class="card"><span class="badge b2">Geprüft</span><h3>Beleg geprüft</h3><p>Dokument, Inhaberschaft oder Aussteller wurde geprüft und abgeglichen.</p></div>
+      <div class="card"><span class="badge b3">Bestätigt</span><h3>Von Dritten bestätigt</h3><p>Ein Auftraggeber, eine Vorgesetzte oder ein Fachgutachter steht mit Namen dafür ein. Bestätigt ein Agent, dann im Auftrag seines Betreibers, mit verantwortlicher Person.</p></div>
     </div>
   </section>
 
@@ -102,7 +103,7 @@
     <div class="grid">
       <div class="card"><h3>Kein Konto nötig</h3><p>Ein Klick auf den Link genügt. Jeder Eintrag zeigt Stufe, Prüfweg, Datum und wer bestätigt hat.</p></div>
       <div class="card"><h3>Nur, was Sie freigeben</h3><p>Jeder Empfänger bekommt seinen eigenen Link mit Ihrer Auswahl. Sie können ihn jederzeit widerrufen.</p></div>
-      <div class="card"><h3>Offene Punkte sichtbar</h3><p>Ungeprüftes steht als S1 da, nicht versteckt. Das macht den Rest glaubwürdig.</p></div>
+      <div class="card"><h3>Offene Punkte sichtbar</h3><p>Ungeprüftes steht als „Angabe“ da, nicht versteckt. Das macht den Rest glaubwürdig.</p></div>
     </div>
     <p style="margin-top:14px"><a href="personalabteilungen.html">Mehr für Arbeit- und Auftraggeber</a></p>
   </section>
@@ -123,11 +124,11 @@
     <p class="sub">Die Seite selbst ist gratis. Bezahlt wird die Prüfung, denn sie macht den Link wertvoll. In der Pilotphase ist alles kostenlos.</p>
     <div class="grid">
       <div class="card"><h3>Gratis</h3>
-        <ul class="tick"><li>Eigene Profilseite</li><li>Unbegrenzt Einträge mit Links (S1)</li><li>Bestätigung durch Auftraggeber anfragen</li></ul></div>
+        <ul class="tick"><li>Eigene Profilseite</li><li>Unbegrenzt Einträge mit Links (Angabe)</li><li>Bestätigung durch Auftraggeber anfragen</li></ul></div>
       <div class="card"><h3>Pro</h3><div class="price"><small>Preis nach der Pilotphase</small></div>
         <ul class="tick"><li>Eigener Link je Empfänger</li><li>Sehen, wer wann geöffnet hat</li><li>Ablaufdatum und Widerruf</li><li>PDF zum Anhängen an Bewerbungen</li></ul></div>
       <div class="card"><h3>Prüfungen</h3><div class="price"><small>je Prüfung, Preis nach der Pilotphase</small></div>
-        <ul class="tick"><li>Inhaberschaft und Aussteller-Abgleich (S2)</li><li>Fachgespräch mit Gutachter (S3)</li><li>Gültigkeit 12 Monate, Erinnerung vor Ablauf</li></ul></div>
+        <ul class="tick"><li>Inhaberschaft und Aussteller-Abgleich (Geprüft)</li><li>Fachgespräch mit Gutachter (Bestätigt)</li><li>Gültigkeit 12 Monate, Erinnerung vor Ablauf</li></ul></div>
     </div>
   </section>
 
@@ -138,7 +139,7 @@
     <details><summary>Vermitteln Sie Stellen?</summary><p>Nein. Sie entscheiden selbst, wem Sie den Link schicken. Wir schlagen keine Kandidaten vor und bringen niemanden zusammen.</p></details>
     <details><summary>Was, wenn ein Auftraggeber aus Gefälligkeit bestätigt?</summary><p>Die Bestätigung nennt Namen, Rolle und Firma. Sie gilt nur über eine geprüfte Firmenadresse. Wer falsch bestätigt, steht mit seinem Namen dafür ein.</p></details>
     <details><summary>Kann KI die Belege fälschen?</summary><p>Dokumente ja. Deshalb zählen Inhaberschaft, Abgleich beim Aussteller, Bestätigung durch Dritte und Fachgespräch mehr als ein hochgeladenes PDF.</p></details>
-    <details><summary>Können KI-Assistenten die Nachweise lesen?</summary><p>Ja. Jedes Profil gibt es auch als JSON, zum Beispiel <a href="alex.json">abgeklopft.de/alex.json</a> oder <a href="belegleser.json">abgeklopft.de/belegleser.json</a>. Geprüfte Einträge tragen einen signierten Prüfbericht, den ein Assistent selbst nachrechnen kann. Die Anleitung steht in <a href="llms.txt">llms.txt</a>. Eigene Angaben der Person sind dabei getrennt gekennzeichnet.</p></details>
+    <details><summary>Können KI-Assistenten die Nachweise lesen?</summary><p>Ja. Jedes Profil gibt es auch als JSON (dort heißen die Stufen S1 Angabe, S2 Geprüft, S3 Bestätigt), zum Beispiel <a href="alex.json">abgeklopft.de/alex.json</a> oder <a href="belegleser.json">abgeklopft.de/belegleser.json</a>. Geprüfte Einträge tragen einen signierten Prüfbericht, den ein Assistent selbst nachrechnen kann. Die Anleitung steht in <a href="llms.txt">llms.txt</a>. Eigene Angaben der Person sind dabei getrennt gekennzeichnet.</p></details>
     <details><summary>Kann ein KI-Agent ein eigenes Profil haben?</summary><p>Ja. Den Antrag stellt sein Betreiber, eine Firma oder ein Mensch. Zuerst wird der Betreiber geprüft. Danach bestätigen frühere Auftraggeber die Arbeit des Agenten, oder er löst eine Probeaufgabe. Das Profil zeigt immer, dass es ein Agent ist, wer ihn betreibt und für welche Version die Prüfungen gelten.</p></details>
     <details><summary>Darf mein Agent einen Bewerber oder Agenten auswählen?</summary><p>Einen Agenten auswählen und beauftragen darf Ihr Agent selbst, wenn Sie es erlauben. Bei Menschen trifft die Entscheidung ein Mensch (Art. 22 DSGVO). Ihr Agent darf die Nachweise aber lesen, prüfen und zusammenfassen.</p></details>
     <details><summary>Wer erkennt das an?</summary><p>Heute niemand automatisch. Der Wert entsteht, wenn Empfänger die Siegel lesen und ihnen trauen. Das prüft der Pilot.</p></details>

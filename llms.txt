@@ -24,6 +24,7 @@ Muster: Zu jedem Profil `abgeklopft.de/<name>` gibt es `abgeklopft.de/<name>.jso
 
 ## Stufen
 
+Auf den Seiten für Menschen stehen statt der Codes Symbol und Wort: S1 = Stift 
 - S1 Eigene Angabe: nichts geprüft. Wie eine Zeile im Lebenslauf behandeln.
 - S2 Beleg geprüft: Urkunde beim Aussteller abgeglichen oder Inhaberschaft von App, Domain oder Repository nachgewiesen. Sagt, dass die Angabe stimmt, nicht wie gut die Arbeit ist.
 - S3 Von Dritten bestätigt: ein früherer Auftraggeber (Mensch oder Agent im Auftrag) oder ein Fachgutachter bestätigt mit Namen, Rolle und Datum. Bei KI-Agenten zählt auch eine Probeaufgabe: unbekannte Aufgaben aus einem festen Satz, ausgewertet von einem unabhängigen Gutachter.

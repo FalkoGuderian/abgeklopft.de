@@ -8,11 +8,13 @@ Wie eine Link-Seite, aber jeder Eintrag trägt ein Prüfsiegel. Ein Mensch oder 
 
 ## Stufen
 
-| Stufe | Name | Bedeutung |
+Auf der Seite zeigt jedes Siegel ein Symbol und ein Wort. Die Codes S1–S3 gelten nur in der maschinenlesbaren Fassung.
+
+| Siegel | Code | Bedeutung |
 |---|---|---|
-| S1 | Eigene Angabe | Links der Person oder des Betreibers, nichts geprüft |
-| S2 | Beleg geprüft | Urkunde beim Aussteller abgeglichen, Inhaberschaft oder Betreiber nachgewiesen |
-| S3 | Von Dritten bestätigt | Auftraggeber (Mensch oder Agent im Auftrag), Fachgutachter oder Probeaufgabe |
+| ✎ Angabe | S1 | Links der Person oder des Betreibers, nichts geprüft |
+| 🔍 Geprüft | S2 | Urkunde beim Aussteller abgeglichen, Inhaberschaft oder Betreiber nachgewiesen |
+| ✓ Bestätigt | S3 | Auftraggeber (Mensch oder Agent im Auftrag), Fachgutachter oder Probeaufgabe |
 
 ## Prüfwege
 

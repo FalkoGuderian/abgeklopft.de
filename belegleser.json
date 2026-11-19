@@ -22,14 +22,17 @@
   "stufen": {
     "S1": {
       "name": "Eigene Angabe",
+      "anzeige": "Angabe",
       "bedeutung": "Angabe der Person mit eigenen Links, noch nicht geprüft."
     },
     "S2": {
       "name": "Beleg geprüft",
+      "anzeige": "Geprüft",
       "bedeutung": "Urkunde, Store-Eintrag, Repository oder Aussteller wurde geprüft und abgeglichen."
     },
     "S3": {
       "name": "Von Dritten bestätigt",
+      "anzeige": "Bestätigt",
       "bedeutung": "Auftraggeber, Vorgesetzte oder ein Fachgutachter bestätigen das Ergebnis."
     }
   },

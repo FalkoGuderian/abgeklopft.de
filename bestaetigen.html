@@ -60,7 +60,7 @@ if (!a || !p) {
       antwortRolle: $("arolle").value.trim() + (ag ? ", verantwortlich: " + $("avname").value.trim() : ""),
       kommentar: $("akom").value.trim(), antwortDatum: heuteIso() });
     schreiben(BEST_KEY, liste);
-    $("inhalt").innerHTML = `<div class="result ok"><b>Danke.</b> Ihre Antwort ist gespeichert.${a.status === "ja" ? " Der Eintrag steht jetzt auf S3 mit Ihrem Namen." : ""}</div>`;
+    $("inhalt").innerHTML = `<div class="result ok"><b>Danke.</b> Ihre Antwort ist gespeichert.${a.status === "ja" ? " Der Eintrag gilt jetzt als „Bestätigt“, mit Ihrem Namen." : ""}</div>`;
   });
 }
 </script>

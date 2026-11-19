@@ -93,11 +93,17 @@ section .sub{color:var(--muted);font-size:1.05rem;margin:0 0 28px;max-width:42em
 .card > .badge:first-child{margin-bottom:14px}
 
 /* Stufen-Siegel: S1 gestrichelt (ungeprüft), S2 getönt (Beleg), S3 gefüllt mit Haken (bestätigt) */
-.badge{display:inline-flex;align-items:center;gap:4px;font:700 .72rem/1 var(--mono);letter-spacing:.02em;padding:5px 8px;border-radius:6px;margin-right:6px;white-space:nowrap;position:relative;flex:none;min-width:3.9em;justify-content:center}
+/* Siegel: Symbol + Wort. Angabe = Stift (selbst geschrieben), Geprüft = Lupe, Bestätigt = Siegel mit Haken.
+   Die Form bleibt zusätzlich unterscheidbar: gestrichelt, getönt, gefüllt. */
+.badge{display:inline-flex;align-items:center;gap:5px;font:650 .76rem/1 var(--text);letter-spacing:.005em;padding:5px 9px 5px 7px;border-radius:7px;margin-right:6px;white-space:nowrap;position:relative;flex:none;min-width:7.4em;justify-content:flex-start}
+.badge::before{content:"";flex:none;width:1.2em;height:1.2em;background:currentColor;-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
+.b1{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19.5 8.5a2.1 2.1 0 0 0-4-4L4 16z'/%3E%3Cpath d='M13.5 6.5l4 4'/%3E%3C/svg%3E")}
+.b2{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E")}
+.b3{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.5l2.3 1.7 2.9-.1.9 2.7 2.4 1.6-.9 2.7.9 2.7-2.4 1.6-.9 2.7-2.9-.1L12 21.5l-2.3-1.7-2.9.1-.9-2.7-2.4-1.6.9-2.7-.9-2.7 2.4-1.6.9-2.7 2.9.1z'/%3E%3Cpath d='M8.3 12.2l2.5 2.5 5-5'/%3E%3C/svg%3E")}
 .b1{color:var(--s1);background:transparent;border:1.5px dashed var(--s1)}
 .b2{color:var(--s2);background:color-mix(in srgb,var(--s2) 12%,var(--surface));border:1.5px solid color-mix(in srgb,var(--s2) 40%,transparent)}
 .b3{color:var(--on-s3);background:var(--s3);border:1.5px solid var(--s3)}
-.b3::before{content:"✓";font-weight:800}
+
 .tag{display:inline-block;font-size:.78rem;border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:2px 4px 2px 0;color:var(--muted);background:var(--sunk)}
 .meta{font-size:.82rem;color:var(--muted)}
 .exp{color:var(--bad);font-weight:600}

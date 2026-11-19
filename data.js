@@ -3,10 +3,11 @@
 // Das echte Profil liegt in profil-falko.js und wird von keiner Seite geladen.
 
 // Stufen: 1 = Eigene Angabe · 2 = Beleg geprüft · 3 = Von Dritten bestätigt
+// kurz = Wort im Siegel (Symbol kommt aus style.css), code = Schlüssel für Maschinen (JSON, llms.txt)
 window.STUFEN = {
-  1: { name: "Eigene Angabe", kurz: "S1", text: "Angabe der Person mit eigenen Links, noch nicht geprüft." },
-  2: { name: "Beleg geprüft", kurz: "S2", text: "Urkunde, Store-Eintrag, Repository oder Aussteller wurde geprüft und abgeglichen." },
-  3: { name: "Von Dritten bestätigt", kurz: "S3", text: "Auftraggeber, Vorgesetzte oder ein Fachgutachter bestätigen das Ergebnis." }
+  1: { name: "Eigene Angabe", kurz: "Angabe", code: "S1", text: "Angabe der Person mit eigenen Links, noch nicht geprüft." },
+  2: { name: "Beleg geprüft", kurz: "Geprüft", code: "S2", text: "Urkunde, Store-Eintrag, Repository oder Aussteller wurde geprüft und abgeglichen." },
+  3: { name: "Von Dritten bestätigt", kurz: "Bestätigt", code: "S3", text: "Auftraggeber, Vorgesetzte oder ein Fachgutachter bestätigen das Ergebnis." }
 };
 
 // Wie ein Eintrag geprüft werden kann

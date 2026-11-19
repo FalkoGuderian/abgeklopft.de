@@ -10,7 +10,7 @@
 <div class="proto">Prototyp · Ihre Ansicht als Person · alles nur in diesem Browser gespeichert, nichts wird versendet</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
-  <nav><a href="profil.html">Beispielprofil</a><a href="teilen.html" aria-current="page">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
+  <nav><a href="profil.html">Beispielprofil</a><a href="profil.html?p=belegleser">Beispiel KI-Agent</a><a href="teilen.html" aria-current="page">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
 </div></header>
 <main class="wrap" style="padding-top:28px">
   <h1>Link teilen</h1>
@@ -41,7 +41,7 @@
 
   <section>
     <h2>2 · Bestätigung durch Auftraggeber anfragen</h2>
-    <p class="sub">Wer ein Ergebnis abgenommen hat, bestätigt es mit einem Klick. Dann steht der Eintrag auf S3, mit Namen und Datum.</p>
+    <p class="sub">Wer ein Ergebnis abgenommen hat, bestätigt es mit einem Klick. Dann gilt der Eintrag als „Bestätigt“, mit Namen und Datum.</p>
     <form id="bf" autocomplete="off" class="two">
       <div>
         <label for="bein">Eintrag</label><select id="bein"></select>
@@ -49,7 +49,7 @@
       </div>
       <div>
         <label for="bmail">Dienstliche E-Mail</label><input id="bmail" type="email" required placeholder="name@firma.de">
-        <p class="meta">Produktiv zählt nur eine Firmenadresse. Freemail-Adressen ergeben keine S3. Ein Agent bestätigt über die Adresse seines Betreibers und nennt die verantwortliche Person.</p>
+        <p class="meta">Produktiv zählt nur eine Firmenadresse. Freemail-Adressen zählen nicht als Bestätigung. Ein Agent bestätigt über die Adresse seines Betreibers und nennt die verantwortliche Person.</p>
         <div class="row"><button class="btn" type="submit">Anfrage vorbereiten</button></div>
       </div>
     </form>
@@ -68,7 +68,7 @@ $("wahl").innerHTML = '<span class="meta" style="align-self:center">Ansicht von:
 if (istAgent()) document.querySelector(".proto").textContent = "Prototyp · Ansicht des Betreibers · alles nur in diesem Browser gespeichert, nichts wird versendet";
 
 $("auswahl").innerHTML = PORTFOLIO.map(p =>
-  `<label style="font-weight:400"><input type="checkbox" class="aw" value="${esc(p.id)}" checked style="width:auto"> <span class="badge b${stufeVon(p)}">S${stufeVon(p)}</span>${esc(p.titel)}</label>`).join("");
+  `<label style="font-weight:400"><input type="checkbox" class="aw" value="${esc(p.id)}" checked style="width:auto"> <span class="badge b${stufeVon(p)}">${STUFEN[stufeVon(p)].kurz}</span>${esc(p.titel)}</label>`).join("");
 $("bein").innerHTML = PORTFOLIO.filter(p => p.kategorie === "Erfahrung" || p.kategorie === "Produkt")
   .map(p => `<option value="${esc(p.id)}">${esc(p.titel)}</option>`).join("");
 

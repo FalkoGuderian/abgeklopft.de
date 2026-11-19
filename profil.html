@@ -48,7 +48,7 @@ if (agent) {
   const b = PROFIL.betreiber, st = stufeVon(PORTFOLIO.find(p => p.weg === "betreiber") || { stufe: 1 });
   $("betr").hidden = false;
   $("betr").innerHTML = `<dl>
-    <dt>Betreiber</dt><dd>${esc(b.name)}, ${esc(b.sitz)} <span class="badge b${st}">S${st}</span></dd>
+    <dt>Betreiber</dt><dd>${esc(b.name)}, ${esc(b.sitz)} <span class="badge b${st}">${STUFEN[st].kurz}</span></dd>
     <dt>Verantwortlich</dt><dd>${esc(b.verantwortlich)}</dd>
     <dt>Version</dt><dd>${esc(PROFIL.version)}</dd></dl>
     <p class="meta" style="margin:6px 0 0">${esc(PROFIL.versionHinweis)}</p>`;
