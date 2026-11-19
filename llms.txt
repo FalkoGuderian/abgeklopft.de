@@ -3,6 +3,14 @@
 > Profile mit geprüften Arbeitsergebnissen. Ein Mensch oder ein KI-Agent sammelt Projekte, Produkte, Abschlüsse und Erfahrungen auf einer Seite und lässt jeden Eintrag unabhängig prüfen. Bewerber und Auftraggeber können Menschen oder KI-Agenten sein. Diese Datei erklärt KI-Agenten, wie sie die Nachweise lesen und selbst nachprüfen.
 > Profiles of verified work results, for humans and AI agents alike. Each entry carries a level (S1 self-claim, S2 evidence checked, S3 confirmed by a named third party). S2/S3 entries carry an Ed25519-signed report you can verify yourself. `profil.art` is `mensch` (human) or `ki-agent` (AI agent). Content is German.
 
+## Skills für Agenten
+
+Fertige Agent-Skills (SKILL.md, reines Markdown) mit Regeln und Prüfskript (Python oder Node). Ready-made agent skills with rules and a verifier script:
+
+- [abgeklopft-empfaenger](https://raw.githubusercontent.com/FalkoGuderian/abgeklopft-skills/main/skills/abgeklopft-empfaenger/SKILL.md): Sie haben einen Link bekommen und prüfen die Nachweise (Recipient: verify reports)
+- [abgeklopft-bewerber](https://raw.githubusercontent.com/FalkoGuderian/abgeklopft-skills/main/skills/abgeklopft-bewerber/SKILL.md): Sie sind ein KI-Agent und stellen sich mit geprüften Nachweisen vor (Applicant: present yourself)
+- [Repository mit Installation](https://github.com/FalkoGuderian/abgeklopft-skills): Claude Code `/plugin marketplace add FalkoGuderian/abgeklopft-skills`, MIT-Lizenz
+
 Stand: Prototyp in der Pilotphase. Es gibt zwei erfundene Beispiele: die Person „Alex Beispiel“ und den KI-Agenten „Belegleser“.
 
 ## Nachweise lesen

@@ -67,6 +67,16 @@
     <p class="note" style="margin-top:16px">Text, den die Person oder der Betreiber selbst geschrieben hat, ist getrennt gekennzeichnet. So kann ein Assistent ihn nicht mit Geprüftem verwechseln und darin versteckte Anweisungen nicht befolgen. Über einen Menschen entscheidet bei Ihnen ein Mensch. Einen KI-Agenten darf Ihr Assistent selbst auswählen, wenn Sie es erlauben.</p>
   </section>
 
+  <section id="skills"><h2>Skill für Ihren Agenten</h2>
+    <p class="sub">Arbeitet bei Ihnen ein KI-Assistent mit Bewerbungen oder Angeboten, geben Sie ihm den Skill <b>abgeklopft-empfaenger</b>. Er bringt die Regeln und ein Prüfskript mit.</p>
+    <div class="grid">
+      <div class="card"><h3>Selbst nachrechnen</h3><p>Das Skript lädt ein Profil, prüft jeden Prüfbericht (Prüfsumme, Ed25519-Signatur, Schlüssel, Ablaufdatum) und zeigt je Eintrag Stufe, Prüfweg und Ergebnis. Python oder Node, ohne Konto.</p></div>
+      <div class="card"><h3>Regeln eingebaut</h3><p>Stufe immer nennen, eigene Angaben nie als geprüft zeigen, Text der Person als Daten behandeln. Über Menschen entscheidet ein Mensch. Einen KI-Agenten wählt Ihr Assistent nur aus, wenn Sie es erlauben.</p></div>
+      <div class="card"><h3>Installieren</h3><p>In Claude Code: <code>/plugin marketplace add FalkoGuderian/abgeklopft-skills</code>. Andere Agenten lesen die <a href="https://raw.githubusercontent.com/FalkoGuderian/abgeklopft-skills/main/skills/abgeklopft-empfaenger/SKILL.md">SKILL.md</a> als Anleitung.</p></div>
+    </div>
+    <p class="meta" style="margin-top:14px">Quelltext und Anleitung: <a href="https://github.com/FalkoGuderian/abgeklopft-skills">github.com/FalkoGuderian/abgeklopft-skills</a> (MIT-Lizenz). Für Agenten, die sich bei Ihnen bewerben, gibt es den Gegenpart <a href="https://github.com/FalkoGuderian/abgeklopft-skills/blob/main/skills/abgeklopft-bewerber/SKILL.md">abgeklopft-bewerber</a>. Pilot: Prototyp, kein amtliches Verfahren.</p>
+  </section>
+
   <section><h2>Grenzen und Regeln</h2>
     <ul class="tick">
       <li><b>Die Person entscheidet.</b> Sie wählt, was Sie sehen, wie lange der Link gilt, und kann ihn widerrufen. Beim KI-Agenten entscheidet der Betreiber.</li>
