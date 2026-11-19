@@ -230,7 +230,3 @@ nav.profilwahl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin
 .profilwahl a{font-size:.85rem;border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none;color:var(--muted);background:var(--surface)}
 .profilwahl a[aria-current="page"]{color:var(--brand);border-color:var(--brand)}
 .matrix th:first-child{white-space:nowrap}
-/* Sticker "Beispiel" an Navigationspunkten: leicht schräg, wie aufgeklebt */
-nav a .sticker{display:inline-block;margin-left:5px;font:700 .6rem/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--ink);background:color-mix(in srgb,var(--signal) 22%,var(--surface));border:1px solid color-mix(in srgb,var(--signal) 50%,var(--line));border-radius:4px;padding:3px 5px 2px;transform:rotate(-4deg) translateY(-1px);vertical-align:2px;box-shadow:0 1px 0 rgb(0 0 0/.06)}
-nav a:hover .sticker{transform:rotate(0) translateY(-1px)}
-@media (prefers-reduced-motion:reduce){nav a .sticker{transition:none}}
