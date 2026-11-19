@@ -10,6 +10,10 @@
 </head>
 <body>
 <div class="proto">Prototyp · Links funktionieren nur in diesem Browser</div>
+<header class="top"><div class="wrap">
+  <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
+  <nav id="hauptnav"><a href="index.html">Start</a><a href="profil.html" aria-current="page">Beispiele</a><a href="teilen.html">Link teilen</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html">Prüfer werden</a></nav>
+</div></header>
 <main class="wrap">
   <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="alex.json">abgeklopft.de/alex.json</a> (Mensch) und <a href="belegleser.json">abgeklopft.de/belegleser.json</a> (KI-Agent). Eine Anleitung für KI-Agenten steht in <a href="llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
   <nav class="profilwahl" id="wahl" aria-label="Beispielprofile"></nav>
@@ -55,6 +59,8 @@ if (agent) {
 }
 // Umschalter nur ohne persönlichen Link
 const linkId = new URLSearchParams(location.search).get("l");
+// Persönlicher Link: nur das Logo, keine Navigation
+if (linkId) $("hauptnav").style.display = "none";
 if (!linkId) $("wahl").innerHTML = Object.entries(PROFILE).map(([id, x]) =>
   `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name)} · ${esc(ARTEN[x.profil.art].kurz)}</a>`).join("");
 if (!PROFIL.erfunden) $("hinweis").hidden = true;
