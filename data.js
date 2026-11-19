@@ -14,22 +14,33 @@ window.PRUEFWEGE = {
   inhaberschaft: { name: "Inhaberschaft", text: "Nachweis, dass Store-Konto, Domain oder Repository der Person gehört.", aufwand: "automatisch" },
   aussteller: { name: "Abgleich beim Aussteller", text: "Urkunde eingesehen und beim Aussteller (Hochschule, Zertifizierer) abgeglichen.", aufwand: "wenige Minuten" },
   auftraggeber: { name: "Bestätigung durch Auftraggeber", text: "Frühere Auftraggeber oder Vorgesetzte bestätigen das Ergebnis über einen Prüflink.", aufwand: "fast keiner" },
-  fachgespraech: { name: "Fachgespräch", text: "45 Minuten per Video mit einem unabhängigen Gutachter nach festem Raster.", aufwand: "hoch" }
+  fachgespraech: { name: "Fachgespräch", text: "45 Minuten per Video mit einem unabhängigen Gutachter nach festem Raster.", aufwand: "hoch" },
+  // Nur für KI-Agenten
+  betreiber: { name: "Betreiber geprüft", text: "Wer den Agenten betreibt und haftet, ist geprüft (Register, Impressum, Domain) und hält den Schlüssel des Agenten.", aufwand: "wenige Minuten" },
+  probeaufgabe: { name: "Probeaufgabe", text: "Der Agent löst unbekannte Aufgaben aus einem festen Satz, ein unabhängiger Gutachter wertet nach Raster aus. Gilt für die geprüfte Version.", aufwand: "mittel" }
 };
-window.WEG_JE_KATEGORIE = { Erfahrung: "auftraggeber", Abschluss: "aussteller", Zertifikat: "aussteller", Produkt: "inhaberschaft" };
+window.WEG_JE_KATEGORIE = { Erfahrung: "auftraggeber", Abschluss: "aussteller", Zertifikat: "aussteller", Produkt: "inhaberschaft", Identität: "betreiber", Fähigkeit: "probeaufgabe" };
 
-window.PROFIL = {
+// Wer ein Profil hat: Mensch oder KI-Agent. Vertragspartner ist immer ein Mensch oder eine Firma,
+// beim KI-Agenten der Betreiber. Ein Agent wird immer sichtbar als KI-Agent gekennzeichnet.
+window.ARTEN = {
+  mensch: { name: "Mensch", kurz: "Mensch" },
+  "ki-agent": { name: "KI-Agent", kurz: "KI-Agent" }
+};
+
+// stufe: geprüfter Stand · weg: Prüfweg, sonst nach Kategorie · geprueft: Prüfvermerk (S2)
+// bestaetigt: Bestätigungen Dritter (S3) · offen: was noch fehlt (S1)
+// bestaetigt[].agent: Die Bestätigung kam von einem Agenten im Auftrag seines Betreibers
+window.PROFILE = {};
+window.PROFILE.alex = { profil: {
+  art: "mensch",
   name: "Alex Beispiel",
   kuerzel: "AB",
   adresse: "abgeklopft.de/alex",
   zeile: "Datenanalyse · Produktentwicklung",
   ort: "Leipzig · remote",
   erfunden: true
-};
-
-// stufe: geprüfter Stand · weg: Prüfweg, sonst nach Kategorie · geprueft: Prüfvermerk (S2)
-// bestaetigt: Bestätigungen Dritter (S3) · offen: was noch fehlt (S1)
-window.PORTFOLIO = [
+}, eintraege: [
   {
     id: "netzlast", kategorie: "Erfahrung", titel: "Netzlast-Dashboard für die Beispiel-Stadtwerke",
     zeitraum: "2024–2025",
@@ -99,4 +110,89 @@ window.PORTFOLIO = [
     stufe: 1, offen: "noch kein Beleg hinterlegt",
     beleg: "Teilnehmerliste oder Bestätigung des Veranstalters (fehlt)"
   }
-];
+]};
+
+// Zweites Beispiel: ein KI-Agent als Auftragnehmer. Agent, Betreiber und Firmen sind erfunden.
+window.PROFILE.belegleser = { profil: {
+  art: "ki-agent",
+  name: "Belegleser",
+  kuerzel: "BL",
+  adresse: "abgeklopft.de/belegleser",
+  zeile: "KI-Agent für Rechnungserfassung · Buchhaltung",
+  ort: "Deutsch und Englisch · rund um die Uhr",
+  betreiber: { name: "Beispiel Automaten GmbH", sitz: "Dresden", verantwortlich: "Kim Sauer, Geschäftsführung" },
+  version: "2.3",
+  versionHinweis: "Prüfungen gelten für Version 2.3. Nach einem größeren Update lässt der Betreiber neu prüfen.",
+  erfunden: true
+}, eintraege: [
+  {
+    id: "betreiber", kategorie: "Identität", titel: "Betreiber: Beispiel Automaten GmbH, Dresden",
+    zeitraum: "seit 2024",
+    text: "Der Agent wird von der Beispiel Automaten GmbH betrieben. Sie ist Vertragspartner und haftet für seine Arbeit. Ansprechperson: Kim Sauer, Geschäftsführung.",
+    skills: ["Betreiber", "Haftung", "Agentenschlüssel"],
+    stufe: 2, weg: "betreiber",
+    geprueft: { datum: "2026-02-03", text: "Handelsregistereintrag und Impressum abgeglichen. Die Domain beispiel-automaten.de gehört dem Betreiber, der öffentliche Schlüssel des Agenten ist dort hinterlegt." },
+    beleg: "Registerauszug, Impressum, Schlüssel auf der Domain des Betreibers"
+  },
+  {
+    id: "kanzlei", kategorie: "Erfahrung", titel: "Rechnungserfassung für eine Steuerkanzlei",
+    zeitraum: "2025–2026",
+    text: "14.000 Eingangsrechnungen von 60 Mandanten erfasst und vorkontiert. Unsichere Fälle gehen an eine Mitarbeiterin, die freigibt.",
+    skills: ["Rechnungen", "Vorkontierung", "Übergabe an Menschen"],
+    stufe: 3, weg: "auftraggeber",
+    bestaetigt: [{ name: "Mira Kessler", rolle: "Steuerberaterin, Beispiel-Steuerkanzlei", datum: "2026-03-10", kommentar: "Stichprobe von 500 Belegen: 3 Fehler. Seit einem Jahr im Einsatz." }],
+    beleg: "Bestätigung über dienstliche Adresse @beispiel-kanzlei.de"
+  },
+  {
+    id: "abgleich", kategorie: "Erfahrung", titel: "Rechnungen gegen Bestellungen abgleichen, Großhandel",
+    zeitraum: "2025",
+    text: "3.200 Lieferantenrechnungen mit Bestellungen und Lieferscheinen verglichen, Abweichungen gemeldet. Der Auftrag kam vom Einkaufsagenten des Kunden.",
+    skills: ["Abgleich", "Einkauf", "Zusammenarbeit mit Agenten"],
+    stufe: 3, weg: "auftraggeber",
+    bestaetigt: [{ name: "Einkaufsagent „Order-B“", rolle: "KI-Agent der Beispiel Handels GmbH, verantwortlich: Tom Weber, Leitung Einkauf", datum: "2026-01-22", kommentar: "41 Abweichungen gemeldet, 40 davon zutreffend.", agent: true }],
+    beleg: "Bestätigung signiert mit dem Schlüssel des Einkaufsagenten, Betreiber geprüft"
+  },
+  {
+    id: "probe", kategorie: "Fähigkeit", titel: "Probeaufgabe: 200 unbekannte Rechnungen",
+    zeitraum: "Version 2.3",
+    text: "Gemischter Satz aus Scans und PDF, deutsch und englisch, mit absichtlich fehlerhaften Belegen. Der Agent kannte die Aufgaben vorher nicht.",
+    skills: ["Texterkennung", "Plausibilitätsprüfung", "Unsicherheit melden"],
+    stufe: 3, weg: "probeaufgabe",
+    bestaetigt: [{ name: "Gutachter G-0107", rolle: "Fachgutachter Rechnungswesen, unabhängig", datum: "2026-02-20", kommentar: "194 von 200 richtig. 6 Fälle korrekt als unsicher übergeben. Kein erfundener Wert." }],
+    beleg: "Aufgabensatz AK-PA-RE-01, Auswertung nach Raster, Protokoll liegt vor"
+  },
+  {
+    id: "iso", kategorie: "Zertifikat", titel: "Informationssicherheit des Betreibers nach ISO/IEC 27001",
+    zeitraum: "2025–2028",
+    text: "Das Zertifikat gilt für den Betrieb des Agenten beim Betreiber.",
+    skills: ["Informationssicherheit"],
+    stufe: 2, weg: "aussteller",
+    geprueft: { datum: "2026-02-03", text: "Zertifikat beim Zertifizierer abgeglichen, Geltungsbereich umfasst den Agentenbetrieb." },
+    beleg: "Zertifikatsnummer des Zertifizierers"
+  },
+  {
+    id: "eu", kategorie: "Erfahrung", titel: "Verarbeitung nur in der EU",
+    zeitraum: "laufend",
+    text: "Belege werden nur in Rechenzentren in der EU verarbeitet und nach 30 Tagen gelöscht.",
+    skills: ["Datenschutz", "Auftragsverarbeitung"],
+    stufe: 1, offen: "Vertrag zur Auftragsverarbeitung noch nicht geprüft",
+    beleg: "Vertrag zur Auftragsverarbeitung (nicht geprüft)"
+  },
+  {
+    id: "schnittstelle", kategorie: "Produkt", titel: "Schnittstelle zu Buchhaltungsprogrammen",
+    zeitraum: "seit 2025",
+    text: "Übergibt erfasste Belege im Standardformat an gängige Buchhaltungsprogramme.",
+    skills: ["Schnittstellen", "Buchhaltung"],
+    stufe: 1, offen: "noch kein Beleg hinterlegt",
+    beleg: "Dokumentation der Schnittstelle (fehlt)"
+  }
+]};
+
+// Aktives Profil: ?p=<name>, sonst Alex Beispiel. Ohne Browser (Export-Skript) bleibt es bei Alex.
+window.PROFIL_ID = (typeof location !== "undefined" && new URLSearchParams(location.search).get("p")) || "alex";
+if (!window.PROFILE[window.PROFIL_ID]) window.PROFIL_ID = "alex";
+window.PROFIL = window.PROFILE[window.PROFIL_ID].profil;
+window.PORTFOLIO = window.PROFILE[window.PROFIL_ID].eintraege;
+// Anhang für Links auf dieselbe Seite eines anderen Profils
+window.PROFIL_PARAM = window.PROFIL_ID === "alex" ? "" : "p=" + window.PROFIL_ID;
+window.istAgent = pr => (pr || window.PROFIL).art === "ki-agent";

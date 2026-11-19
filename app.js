@@ -75,7 +75,7 @@ function stufeVon(p) { return bestaetigungenZu(p.id).length ? 3 : p.stufe; }
 
 function eintragHtml(p, i) {
   const st = stufeVon(p), weg = PRUEFWEGE[p.weg || WEG_JE_KATEGORIE[p.kategorie]] || PRUEFWEGE.fachgespraech;
-  const best = [...(p.bestaetigt || []).map(b => ({ antwortName: b.name, antwortRolle: b.rolle, antwortDatum: b.datum, kommentar: b.kommentar })),
+  const best = [...(p.bestaetigt || []).map(b => ({ antwortName: b.name, antwortRolle: b.rolle, antwortDatum: b.datum, kommentar: b.kommentar, agent: b.agent })),
     ...bestaetigungenZu(p.id)];
   return `
   <li class="lt-item">
@@ -89,7 +89,7 @@ function eintragHtml(p, i) {
       <p class="meta"><b>${esc(STUFEN[st].name)}.</b> ${esc(STUFEN[st].text)}${p.abgelaufen ? ' <span class="exp">Gültigkeit abgelaufen.</span>' : ""}</p>
       ${p.geprueft && st === 2 ? `<p class="meta">Geprüft am ${esc(p.geprueft.datum)}: ${esc(p.geprueft.text)}</p>` : ""}
       ${p.offen && st === 1 ? `<p class="meta">Offen: ${esc(p.offen)}</p>` : ""}
-      ${best.map(b => `<p class="meta">Bestätigt von ${esc(b.antwortName)} (${esc(b.antwortRolle)}) am ${esc(b.antwortDatum)}${b.kommentar ? ": „" + esc(b.kommentar) + "“" : ""}</p>`).join("")}
+      ${best.map(b => `<p class="meta">Bestätigt von ${b.agent ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(b.antwortName)} (${esc(b.antwortRolle)}) am ${esc(b.antwortDatum)}${b.kommentar ? ": „" + esc(b.kommentar) + "“" : ""}</p>`).join("")}
       <p class="meta">${st === 1 ? "Möglicher Prüfweg" : "Prüfweg"}: ${esc(weg.name)}. Beleg: ${esc(p.beleg)}</p>
       <div>${p.skills.map(s => `<span class="tag">${esc(s)}</span>`).join("")}</div>
     </div>

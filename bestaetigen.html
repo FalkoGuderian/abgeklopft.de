@@ -25,24 +25,40 @@ if (!a || !p) {
 } else {
   $("inhalt").innerHTML = `
     <h1>Können Sie dieses Ergebnis bestätigen?</h1>
-    <p>Guten Tag ${esc(a.name)}, <b>${esc(PROFIL.name)}</b> bittet Sie um eine kurze Bestätigung. Es dauert etwa eine Minute.</p>
-    <div class="card"><h3>${esc(p.titel)}</h3><p class="meta">${esc(p.zeitraum)}</p><p>${esc(p.text)}</p></div>
+    <p>Guten Tag ${esc(a.name)}, ${istAgent()
+      ? `der Betreiber des KI-Agenten <b>${esc(PROFIL.name)}</b> (${esc(PROFIL.betreiber.name)}) bittet Sie um eine kurze Bestätigung einer Arbeit des Agenten.`
+      : `<b>${esc(PROFIL.name)}</b> bittet Sie um eine kurze Bestätigung.`} Es dauert etwa eine Minute.</p>
+    <div class="card"><h3>${istAgent() ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(p.titel)}</h3><p class="meta">${esc(p.zeitraum)}</p><p>${esc(p.text)}</p></div>
     <form id="af" autocomplete="off">
+      <label for="aals">Sie antworten als</label>
+      <select id="aals"><option value="mensch">Mensch, mit meinem Namen</option><option value="ki-agent">KI-Agent im Auftrag meines Betreibers</option></select>
       <label for="arolle">Ihre Rolle und Firma damals</label>
       <input id="arolle" required placeholder="z. B. Projektleiterin, Musterbehörde">
+      <div id="averantw" hidden>
+        <label for="avname">Verantwortliche Person beim Betreiber</label>
+        <input id="avname" placeholder="z. B. Leitung Einkauf">
+        <p class="meta">Ein Agent bestätigt nur im Auftrag. Produktiv signiert er mit dem Schlüssel seines geprüften Betreibers, und ein Mensch steht dafür ein.</p>
+      </div>
       <label>Ihre Antwort</label>
       <label style="font-weight:400"><input type="radio" name="ant" value="ja" required style="width:auto"> Ja, das stimmt so.</label>
       <label style="font-weight:400"><input type="radio" name="ant" value="teilweise" style="width:auto"> Teilweise. Ich erläutere unten.</label>
       <label style="font-weight:400"><input type="radio" name="ant" value="nein" style="width:auto"> Nein, das kann ich nicht bestätigen.</label>
       <label for="akom">Kommentar (optional, wird angezeigt)</label>
       <textarea id="akom" style="font-family:inherit;min-height:80px"></textarea>
-      <p class="meta">Sie bestätigen mit Ihrem Namen. Bitte nur, was Sie aus eigener Anschauung wissen.</p>
+      <p class="meta">Sie bestätigen mit Ihrem Namen. Bitte nur, was Sie aus eigener Anschauung wissen. Als Agent: nur, was in Ihren eigenen Protokollen steht.</p>
       <div class="row"><button class="btn" type="submit">Antwort senden</button></div>
     </form>`;
+  $("aals").addEventListener("change", () => {
+    const ag = $("aals").value === "ki-agent";
+    $("averantw").hidden = !ag; $("avname").required = ag;
+    $("arolle").placeholder = ag ? "z. B. Einkaufsagent der Musterfirma GmbH" : "z. B. Projektleiterin, Musterbehörde";
+  });
   $("af").addEventListener("submit", e => {
     e.preventDefault();
-    Object.assign(a, { status: document.querySelector("input[name=ant]:checked").value, antwortName: a.name,
-      antwortRolle: $("arolle").value.trim(), kommentar: $("akom").value.trim(), antwortDatum: heuteIso() });
+    const ag = $("aals").value === "ki-agent";
+    Object.assign(a, { status: document.querySelector("input[name=ant]:checked").value, antwortName: a.name, agent: ag,
+      antwortRolle: $("arolle").value.trim() + (ag ? ", verantwortlich: " + $("avname").value.trim() : ""),
+      kommentar: $("akom").value.trim(), antwortDatum: heuteIso() });
     schreiben(BEST_KEY, liste);
     $("inhalt").innerHTML = `<div class="result ok"><b>Danke.</b> Ihre Antwort ist gespeichert.${a.status === "ja" ? " Der Eintrag steht jetzt auf S3 mit Ihrem Namen." : ""}</div>`;
   });

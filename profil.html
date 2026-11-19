@@ -5,20 +5,23 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Profil · abgeklopft.de</title>
 <link rel="stylesheet" href="style.css">
-<link rel="alternate" type="application/json" href="alex.json" title="Nachweise maschinenlesbar">
+<link rel="alternate" type="application/json" href="alex.json" title="Nachweise maschinenlesbar" id="jsonlink">
 <link rel="help" type="text/plain" href="llms.txt" title="Anleitung für KI-Agenten">
 </head>
 <body>
 <div class="proto">Prototyp · Links funktionieren nur in diesem Browser</div>
 <main class="wrap">
-  <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="alex.json">abgeklopft.de/alex.json</a>. Eine Anleitung für KI-Agenten steht in <a href="llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
+  <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="alex.json">abgeklopft.de/alex.json</a> (Mensch) und <a href="belegleser.json">abgeklopft.de/belegleser.json</a> (KI-Agent). Eine Anleitung für KI-Agenten steht in <a href="llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
+  <nav class="profilwahl" id="wahl" aria-label="Beispielprofile"></nav>
   <div class="lt">
     <p class="meta" id="padr" style="margin:0 0 8px"></p>
     <div class="lt-avatar" id="av"></div>
     <h1 id="pn"></h1>
     <p class="zeile" id="pz"></p>
     <p class="meta" id="po"></p>
+    <p class="artzeile" id="part"></p>
   </div>
+  <div class="betreiber" id="betr" hidden></div>
   <div class="lt-banner" id="banner"></div>
   <div id="liste"></div>
   <div class="lt-banner">
@@ -26,28 +29,50 @@
     <div class="note" id="hinweis">Erfundenes Beispiel. Personen, Firmen und Hochschulen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.</div>
   </div>
 </main>
-<footer><div class="wrap" style="text-align:center">Geprüft mit <a href="index.html">abgeklopft.de</a> · <a href="verify.html">Wie lese ich die Stufen?</a> · <a href="alex.json">Für KI-Agenten (JSON)</a><span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
+<footer><div class="wrap" style="text-align:center">Geprüft mit <a href="index.html">abgeklopft.de</a> · <a href="verify.html">Wie lese ich die Stufen?</a> · <a href="alex.json" id="jsonfuss">Für KI-Agenten (JSON)</a><span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
 <script src="data.js"></script><script src="app.js"></script>
 <script>
 const $ = id => document.getElementById(id);
+const agent = istAgent();
+const slug = PROFIL.adresse.split("/").pop();
 $("av").textContent = PROFIL.kuerzel; $("pn").textContent = PROFIL.name;
 $("pz").textContent = PROFIL.zeile; $("po").textContent = PROFIL.ort;
 $("padr").textContent = PROFIL.adresse || "";
-if (!PROFIL.erfunden) $("hinweis").hidden = true;
-
+$("av").classList.toggle("agent", agent);
+$("part").innerHTML = agent
+  ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Kein Mensch. Vertragspartner ist der Betreiber.</span>`
+  : `<span class="tag art-mensch">Mensch</span>`;
+document.title = PROFIL.name + " · abgeklopft.de";
+$("jsonlink").href = $("jsonfuss").href = slug + ".json";
+if (agent) {
+  const b = PROFIL.betreiber, st = stufeVon(PORTFOLIO.find(p => p.weg === "betreiber") || { stufe: 1 });
+  $("betr").hidden = false;
+  $("betr").innerHTML = `<dl>
+    <dt>Betreiber</dt><dd>${esc(b.name)}, ${esc(b.sitz)} <span class="badge b${st}">S${st}</span></dd>
+    <dt>Verantwortlich</dt><dd>${esc(b.verantwortlich)}</dd>
+    <dt>Version</dt><dd>${esc(PROFIL.version)}</dd></dl>
+    <p class="meta" style="margin:6px 0 0">${esc(PROFIL.versionHinweis)}</p>`;
+}
+// Umschalter nur ohne persönlichen Link
 const linkId = new URLSearchParams(location.search).get("l");
+if (!linkId) $("wahl").innerHTML = Object.entries(PROFILE).map(([id, x]) =>
+  `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name)} · ${esc(ARTEN[x.profil.art].kurz)}</a>`).join("");
+if (!PROFIL.erfunden) $("hinweis").hidden = true;
+else if (agent) $("hinweis").textContent = "Erfundenes Beispiel. Agent, Betreiber, Firmen und Personen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.";
+
 let eintraege = PORTFOLIO, beimOeffnen = null;
 if (linkId) {
-  const link = lesen(LINK_KEY).find(x => x.id === linkId);
+  const link = lesen(LINK_KEY).find(x => x.id === linkId && (x.profil || "alex") === PROFIL_ID);
   if (!link) {
     $("banner").innerHTML = `<div class="result bad">Dieser Link ist unbekannt. Im Prototyp funktionieren Links nur in dem Browser, in dem sie erstellt wurden.</div>`;
     eintraege = [];
   } else if (link.widerrufen || link.gueltigBis < heuteIso()) {
-    $("banner").innerHTML = `<div class="result bad">Dieser Link ist ${link.widerrufen ? "widerrufen" : "abgelaufen"}. Bitte fragen Sie die Person nach einem neuen.</div>`;
+    $("banner").innerHTML = `<div class="result bad">Dieser Link ist ${link.widerrufen ? "widerrufen" : "abgelaufen"}. Bitte fragen Sie ${agent ? "den Betreiber" : "die Person"} nach einem neuen.</div>`;
     eintraege = [];
   } else {
     eintraege = PORTFOLIO.filter(p => link.auswahl.includes(p.id));
-    $("banner").innerHTML = `<div class="result ok">Persönlicher Link für <b>${esc(link.empfaenger)}</b> · gültig bis ${esc(link.gueltigBis)}. ${PROFIL.name} sieht, wann dieser Link geöffnet wurde.</div>`;
+    const fuer = link.empfaengerArt === "ki-agent" ? `den KI-Agenten <b>${esc(link.empfaenger)}</b>` : `<b>${esc(link.empfaenger)}</b>`;
+    $("banner").innerHTML = `<div class="result ok">Persönlicher Link für ${fuer} · gültig bis ${esc(link.gueltigBis)}. ${agent ? "Der Betreiber von " + esc(PROFIL.name) : esc(PROFIL.name)} sieht, wann dieser Link geöffnet wurde.</div>`;
     const oe = lesen(OEFF_KEY); oe.push({ link: linkId, zeit: new Date().toISOString(), eintrag: null }); schreiben(OEFF_KEY, oe);
     beimOeffnen = id => { const o = lesen(OEFF_KEY); o.push({ link: linkId, zeit: new Date().toISOString(), eintrag: id }); schreiben(OEFF_KEY, o); };
   }

@@ -14,14 +14,17 @@
 </div></header>
 <main class="wrap" style="padding-top:28px">
   <h1>Link teilen</h1>
-  <p style="color:var(--muted);max-width:44em">Erstellen Sie für jeden Arbeit- oder Auftraggeber einen eigenen Link. Sie wählen die Einträge und die Laufzeit. Danach sehen Sie, ob und wann er geöffnet wurde.</p>
+  <p style="color:var(--muted);max-width:44em">Erstellen Sie für jeden Arbeit- oder Auftraggeber einen eigenen Link. Sie wählen die Einträge und die Laufzeit. Danach sehen Sie, ob und wann er geöffnet wurde. Empfänger kann ein Mensch oder ein KI-Agent sein.</p>
+  <nav class="profilwahl" id="wahl" aria-label="Beispielprofile" style="justify-content:flex-start"></nav>
 
   <section style="border-top:0;padding-top:10px">
     <h2>1 · Persönlicher Link</h2>
     <div class="two">
       <form id="lf" autocomplete="off">
-        <label for="emp">Empfänger (Firma oder Person)</label>
+        <label for="emp">Empfänger (Firma, Person oder KI-Agent)</label>
         <input id="emp" required placeholder="z. B. Musterfirma GmbH, Bereich KI">
+        <label for="eart">Der Link geht an</label>
+        <select id="eart"><option value="mensch">einen Menschen (Seite im Browser)</option><option value="ki-agent">einen KI-Agenten (Seite und JSON)</option></select>
         <label for="tage">Gültig für Tage</label>
         <input id="tage" type="number" min="1" max="365" value="30">
         <div class="row"><button class="btn" type="submit">Link erstellen</button></div>
@@ -42,11 +45,11 @@
     <form id="bf" autocomplete="off" class="two">
       <div>
         <label for="bein">Eintrag</label><select id="bein"></select>
-        <label for="bname">Name der bestätigenden Person</label><input id="bname" required placeholder="z. B. Projektleiterin beim Kunden">
+        <label for="bname">Name der bestätigenden Person oder des Agenten</label><input id="bname" required placeholder="z. B. Projektleiterin beim Kunden">
       </div>
       <div>
         <label for="bmail">Dienstliche E-Mail</label><input id="bmail" type="email" required placeholder="name@firma.de">
-        <p class="meta">Produktiv zählt nur eine Firmenadresse. Freemail-Adressen ergeben keine S3.</p>
+        <p class="meta">Produktiv zählt nur eine Firmenadresse. Freemail-Adressen ergeben keine S3. Ein Agent bestätigt über die Adresse seines Betreibers und nennt die verantwortliche Person.</p>
         <div class="row"><button class="btn" type="submit">Anfrage vorbereiten</button></div>
       </div>
     </form>
@@ -58,6 +61,11 @@
 <script>
 const $ = id => document.getElementById(id);
 const basis = location.href.replace(/[^/]*$/, "");
+const pq = PROFIL_PARAM ? PROFIL_PARAM + "&" : "";
+const meins = x => (x.profil || "alex") === PROFIL_ID;
+$("wahl").innerHTML = '<span class="meta" style="align-self:center">Ansicht von:</span>' + Object.entries(PROFILE).map(([id, x]) =>
+  `<a href="teilen.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name)} · ${esc(ARTEN[x.profil.art].kurz)}</a>`).join("");
+if (istAgent()) document.querySelector(".proto").textContent = "Prototyp · Ansicht des Betreibers · alles nur in diesem Browser gespeichert, nichts wird versendet";
 
 $("auswahl").innerHTML = PORTFOLIO.map(p =>
   `<label style="font-weight:400"><input type="checkbox" class="aw" value="${esc(p.id)}" checked style="width:auto"> <span class="badge b${stufeVon(p)}">S${stufeVon(p)}</span>${esc(p.titel)}</label>`).join("");
@@ -70,30 +78,32 @@ $("lf").addEventListener("submit", e => {
   if (!auswahl.length) { $("lmeld").textContent = "Bitte mindestens einen Eintrag wählen."; return; }
   const bis = new Date(); bis.setDate(bis.getDate() + Number($("tage").value || 30));
   const l = lesen(LINK_KEY);
-  l.push({ id: neueId(), empfaenger: $("emp").value.trim(), auswahl, erstellt: heuteIso(), gueltigBis: bis.toISOString().slice(0, 10), widerrufen: false });
+  l.push({ id: neueId(), profil: PROFIL_ID, empfaenger: $("emp").value.trim(), empfaengerArt: $("eart").value, auswahl, erstellt: heuteIso(), gueltigBis: bis.toISOString().slice(0, 10), widerrufen: false });
   schreiben(LINK_KEY, l); $("lmeld").textContent = "Link erstellt, siehe unten."; $("emp").value = ""; linksZeigen();
 });
 
 function linksZeigen() {
-  const l = lesen(LINK_KEY).slice().reverse(), oe = lesen(OEFF_KEY);
+  const l = lesen(LINK_KEY).filter(meins).reverse(), oe = lesen(OEFF_KEY);
   $("links").innerHTML = l.length ? `<div class="tbl"><table><tr><th>Empfänger</th><th>Link</th><th>Gültig bis</th><th>Geöffnet</th><th>Angesehen</th><th></th></tr>` +
     l.map(x => {
       const o = oe.filter(y => y.link === x.id), auf = o.filter(y => !y.eintrag), an = [...new Set(o.filter(y => y.eintrag).map(y => y.eintrag))];
       const titel = an.map(id => (PORTFOLIO.find(p => p.id === id) || {}).titel).filter(Boolean);
       const status = x.widerrufen ? '<span class="exp">widerrufen</span>' : x.gueltigBis < heuteIso() ? '<span class="exp">abgelaufen</span>' : esc(x.gueltigBis);
-      return `<tr><td>${esc(x.empfaenger)}<br><span class="meta">${x.auswahl.length} Einträge</span></td>
-        <td><a href="profil.html?l=${esc(x.id)}" target="_blank" rel="noopener">öffnen</a> · <button class="btn ghost" type="button" data-kopie="${esc(x.id)}" style="padding:3px 10px">kopieren</button></td>
+      return `<tr><td>${x.empfaengerArt === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(x.empfaenger)}<br><span class="meta">${x.auswahl.length} Einträge</span></td>
+        <td><a href="profil.html?${pq}l=${esc(x.id)}" target="_blank" rel="noopener">öffnen</a> · <button class="btn ghost" type="button" data-kopie="${esc(x.id)}" style="padding:3px 10px">kopieren</button></td>
         <td>${status}</td>
         <td>${auf.length ? auf.length + "×, zuletzt " + esc(new Date(auf[auf.length - 1].zeit).toLocaleString("de-DE")) : "noch nicht"}</td>
         <td>${titel.length ? titel.map(esc).join("<br>") : "–"}</td>
         <td>${x.widerrufen ? "" : `<button class="btn ghost" type="button" data-weg="${esc(x.id)}" style="padding:3px 10px">widerrufen</button>`}</td></tr>`;
     }).join("") + `</table></div><p class="meta" id="kmeld"></p>`
     : `<p class="meta">Noch keine Links.</p>`;
+  if (l.some(x => x.empfaengerArt === "ki-agent")) $("links").insertAdjacentHTML("beforeend",
+    `<p class="meta">Ein Agent liest dieselbe Auswahl später auch als JSON (<code>…?l=&lt;kennung&gt;</code>). Im Prototyp liest er nur das ganze Beispielprofil als <a href="${esc(PROFIL.adresse.split("/").pop())}.json">JSON</a>.</p>`);
 }
 $("links").addEventListener("click", async e => {
   const k = e.target.closest("[data-kopie]"), w = e.target.closest("[data-weg]");
   if (k) {
-    try { await navigator.clipboard.writeText(basis + "profil.html?l=" + k.dataset.kopie); $("kmeld").textContent = "Link kopiert."; }
+    try { await navigator.clipboard.writeText(basis + "profil.html?" + pq + "l=" + k.dataset.kopie); $("kmeld").textContent = "Link kopiert."; }
     catch { $("kmeld").textContent = "Kopieren nicht möglich. Rechtsklick auf „öffnen“ und Adresse kopieren."; }
   }
   if (w) { const l = lesen(LINK_KEY), x = l.find(y => y.id === w.dataset.weg); if (x) { x.widerrufen = true; schreiben(LINK_KEY, l); linksZeigen(); } }
@@ -106,12 +116,12 @@ $("bf").addEventListener("submit", e => {
   schreiben(BEST_KEY, b); $("bname").value = ""; $("bmail").value = ""; anfragenZeigen();
 });
 function anfragenZeigen() {
-  const b = lesen(BEST_KEY).slice().reverse();
+  const b = lesen(BEST_KEY).filter(x => PORTFOLIO.some(p => p.id === x.eintrag)).reverse();
   const st = { offen: "wartet", ja: "bestätigt", teilweise: "teilweise bestätigt", nein: "abgelehnt" };
   $("anfragen").innerHTML = b.length ? `<div class="tbl"><table><tr><th>Eintrag</th><th>An</th><th>Status</th><th>Prüflink</th></tr>` +
     b.map(x => `<tr><td>${esc((PORTFOLIO.find(p => p.id === x.eintrag) || {}).titel || x.eintrag)}</td><td>${esc(x.name)}<br><span class="meta">${esc(x.mail)}</span></td>
       <td>${st[x.status]}${x.kommentar ? '<br><span class="meta">„' + esc(x.kommentar) + '“</span>' : ""}</td>
-      <td>${x.status === "offen" ? `<a href="bestaetigen.html?a=${esc(x.id)}" target="_blank" rel="noopener">Ansicht des Auftraggebers</a>` : "–"}</td></tr>`).join("") + `</table></div>
+      <td>${x.status === "offen" ? `<a href="bestaetigen.html?${pq}a=${esc(x.id)}" target="_blank" rel="noopener">Ansicht des Auftraggebers</a>` : "–"}</td></tr>`).join("") + `</table></div>
     <p class="meta">Im Prototyp öffnen Sie den Prüflink selbst. Produktiv geht er per E-Mail an die dienstliche Adresse.</p>`
     : `<p class="meta">Noch keine Anfragen.</p>`;
 }

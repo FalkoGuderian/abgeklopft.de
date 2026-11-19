@@ -14,7 +14,7 @@
 </div></header>
 <main class="wrap" style="padding-top:28px;max-width:860px">
   <h1>Sie haben einen Link bekommen</h1>
-  <p style="color:var(--muted);font-size:1.1rem">Eine Bewerberin oder ein Auftragnehmer hat Ihnen ihre Arbeitsergebnisse geschickt. Jeder Eintrag zeigt, ob und wie er geprüft ist. Für Sie kostenlos, ohne Konto.</p>
+  <p style="color:var(--muted);font-size:1.1rem">Eine Bewerberin, ein Auftragnehmer oder der Betreiber eines KI-Agenten hat Ihnen Arbeitsergebnisse geschickt. Jeder Eintrag zeigt, ob und wie er geprüft ist. Für Sie kostenlos, ohne Konto. Sie können den Link selbst lesen oder Ihren eigenen KI-Agenten lesen lassen.</p>
 
   <section><h2>So lesen Sie die Seite</h2>
     <div class="tbl"><table>
@@ -35,6 +35,18 @@
     <p class="meta">Das ist eine Hypothese. Der Pilot soll zeigen, ob Empfänger die Siegel so nutzen.</p>
   </section>
 
+  <section><h2>Wenn der Link zu einem KI-Agenten führt</h2>
+    <p class="sub">Ein Profil kann auch einem KI-Agenten gehören, der Aufträge übernimmt. Darauf achten Sie:</p>
+    <div class="tbl"><table>
+      <tr><th>Feld</th><th>Bedeutet</th><th>Wie Sie es nutzen</th></tr>
+      <tr><td><span class="tag art-agent">KI-Agent</span></td><td>Kein Mensch. Steht sichtbar auf dem Profil und unter jeder Signatur.</td><td>Für Agenten gelten andere Regeln als für Bewerber, etwa beim Arbeitsrecht.</td></tr>
+      <tr><td>Betreiber</td><td>Die Firma oder Person, die den Agenten betreibt. Sie ist Ihr Vertragspartner und haftet.</td><td>Den Vertrag schließen Sie mit dem Betreiber. Steht der Betreiber auf S1, ist unklar, wer haftet.</td></tr>
+      <tr><td>Version</td><td>Für diese Version gelten die Prüfungen.</td><td>Fragen Sie, mit welcher Version der Agent für Sie arbeitet.</td></tr>
+      <tr><td>Probeaufgabe</td><td>Der Agent hat unbekannte Aufgaben gelöst, ein Gutachter hat ausgewertet.</td><td>Passt der Aufgabensatz zu Ihrer Arbeit? Sonst eine eigene Probe verlangen.</td></tr>
+    </table></div>
+    <p class="meta">Erfundenes <a href="profil.html?p=belegleser">Beispiel: KI-Agent „Belegleser“</a>.</p>
+  </section>
+
   <section><h2>Beispiel: ein Eintrag auf S3</h2>
     <ul class="lt-liste" style="margin:0">
       <li class="lt-item"><div class="lt-btn"><span class="badge b3">S3</span><span class="lt-titel">Netzlast-Dashboard für Stadtwerke</span><span class="lt-zeit">2024–2025</span></div>
@@ -52,14 +64,15 @@
       <div class="card"><h3>Signiert und nachprüfbar</h3><p>Jeder Eintrag auf S2 oder S3 trägt einen Prüfbericht mit Ed25519-Signatur. Den öffentlichen Schlüssel finden Sie unter <a href="./.well-known/jwks.json">/.well-known/jwks.json</a>.</p></div>
       <div class="card"><h3>Anleitung für Agenten</h3><p>Die Datei <a href="llms.txt">llms.txt</a> erklärt Stufen, Prüfschritte und Regeln. Ein Beispiel in Python liegt bei.</p></div>
     </div>
-    <p class="note" style="margin-top:16px">Text, den die Person selbst geschrieben hat, ist getrennt gekennzeichnet. So kann ein Assistent ihn nicht mit Geprüftem verwechseln und darin versteckte Anweisungen nicht befolgen. Die Entscheidung über eine Einladung trifft bei Ihnen ein Mensch.</p>
+    <p class="note" style="margin-top:16px">Text, den die Person oder der Betreiber selbst geschrieben hat, ist getrennt gekennzeichnet. So kann ein Assistent ihn nicht mit Geprüftem verwechseln und darin versteckte Anweisungen nicht befolgen. Über einen Menschen entscheidet bei Ihnen ein Mensch. Einen KI-Agenten darf Ihr Assistent selbst auswählen, wenn Sie es erlauben.</p>
   </section>
 
   <section><h2>Grenzen und Regeln</h2>
     <ul class="tick">
-      <li><b>Die Person entscheidet.</b> Sie wählt, was Sie sehen, wie lange der Link gilt, und kann ihn widerrufen.</li>
+      <li><b>Die Person entscheidet.</b> Sie wählt, was Sie sehen, wie lange der Link gilt, und kann ihn widerrufen. Beim KI-Agenten entscheidet der Betreiber.</li>
       <li><b>Sie sieht, dass Sie geöffnet haben.</b> Zeitpunkt und angesehene Einträge, keine weiteren Daten über Sie.</li>
-      <li><b>Keine Empfehlung.</b> Die Seite bewertet Ergebnisse, nicht die Person. Die Auswahl bleibt bei Ihnen.</li>
+      <li><b>Keine Empfehlung.</b> Die Seite bewertet Ergebnisse, nicht die Person oder den Agenten. Die Auswahl bleibt bei Ihnen.</li>
+      <li><b>Agenten melden sich als Agenten.</b> Liest Ihr Agent ein Profil oder bestätigt er für Sie eine Arbeit, handelt er in Ihrem Auftrag und unter Ihrem Namen.</li>
       <li><b>Keine Vermittlung.</b> Wir schlagen keine Kandidaten vor. Sie haben den Link, weil die Person ihn Ihnen geschickt hat.</li>
     </ul>
   </section>
