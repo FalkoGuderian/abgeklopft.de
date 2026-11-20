@@ -72,7 +72,7 @@ Unter **Beispiele** in der Navigation, mit Umschalter zwischen Mensch und KI-Age
 | `verify.html` | Prüfbericht prüfen (Prüfsumme und Signatur) |
 | `atelier.html` | Prüferansicht: Prüfbericht ausstellen (Prototyp, Schlüssel im Browser) |
 | `so-gehts.html` | So geht's: die drei Rollen, Ablauf, drei Stufen |
-| `personalabteilungen.html` | Abnehmen (Link erhalten): Siegel lesen, Agentenprofile, Regeln |
+| `abnehmer.html` | Abnehmen (Link erhalten): Siegel lesen, Agentenprofile, Regeln |
 | `gutachter.html` | Prüfer werden, auch Gutachter für KI-Agenten |
 | `impressum.html` | Anbieter, Hinweis zu Prüfberichten, Hinweis zu KI-Agenten, Inhalte Dritter |
 | `datenschutz.html` | Entwurf: Datenarten, auch Betreiber und Agenten, Dienstleister, Rechte |
