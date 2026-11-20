@@ -53,7 +53,13 @@
       <li><b>Sichtbar nur mit Link.</b> Profile sind nur über persönliche Links des Inhabers sichtbar. Es gibt keine öffentliche Profiladresse und keine Aufnahme in Suchmaschinen. Jeder Link hat ein Ablaufdatum und lässt sich widerrufen.</li>
       <li><b>Anmeldung ohne Konto.</b> Statt Konto und E-Mail gibt es einen geheimen Bearbeitungsschlüssel. Er liegt auf Ihrem Gerät (localStorage) und als Wiederherstellungscode bei Ihnen. Wir speichern nur seinen Hash und können ihn nicht wiederherstellen.</li>
       <li><b>Löschen ist löschen.</b> Löschen Sie Ihr Profil, löschen wir sofort Profil, Einträge, Links, Öffnungen und Bestätigungsanfragen. Technisch können gelöschte Daten noch bis zu 30 Tage in den Sicherungen der Datenbank (Cloudflare D1 „Time Travel“) verbleiben. Danach werden sie endgültig entfernt. Wir nutzen diese Sicherungen nur, um nach einem technischen Fehler den Betrieb wiederherzustellen. [Entwurf, rechtliche Prüfung offen.]</li>
-      <li><b>Speicherdauer.</b> Profildaten bis zur Löschung durch den Inhaber. Öffnungen bis zum Entfernen des Links oder Löschen des Profils, höchstens 500 je Link. [Automatische Löschung inaktiver Profile und abgelaufener Links festlegen.]</li>
+      <li><b>Speicherdauer.</b> Profildaten bis zur Löschung durch den Inhaber. Daneben löschen wir einmal am Tag automatisch:
+        <ul>
+          <li>abgelaufene oder widerrufene Links samt ihren Öffnungen 90 Tage nach Ablauf oder Widerruf,</li>
+          <li>einzelne Öffnungen nach 180 Tagen, auch bei noch gültigen Links (und höchstens 500 je Link),</li>
+          <li>unbeantwortete Bestätigungsanfragen 90 Tage nach dem Anlegen. Beantwortete Anfragen bleiben, bis der Inhaber sie oder das Profil löscht.</li>
+        </ul>
+        Für jedes Profil speichern wir das Datum der letzten Anmeldung oder Öffnung eines seiner Links (nur den Tag). Profile ohne Anmeldung und ohne Öffnung eines ihrer Links seit 18 Monaten löschen wir vollständig. Da wir keine E-Mail-Adresse speichern, können wir vorher nicht benachrichtigen. Jede Anmeldung setzt die Frist zurück. [Rechtliche Prüfung offen.]</li>
       <li><b>Kein Verkauf, kein Matching.</b> Wir geben keine Daten an Arbeitgeber weiter und schlagen keine Kandidaten vor.</li>
       <li><b>Offenlegung gegenüber Empfängern.</b> Wer einen Link öffnet, sieht vorher den Hinweis, dass der Inhaber das Öffnen sieht.</li>
       <li><b>Widerruf.</b> Bestätigende können ihre Bestätigung jederzeit zurückziehen. Inhaber können Links und Profil jederzeit löschen.</li>
@@ -74,6 +80,6 @@
     <p>Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch und Widerruf einer Einwilligung (Art. 15–21 DSGVO). Beschwerde bei einer Aufsichtsbehörde, zum Beispiel der Sächsischen Datenschutz- und Transparenzbeauftragten.</p>
   </section>
 </main>
-<footer><div class="wrap">Entwurf, Stand 2026-11-19 (Server und App ergänzt). <a href="impressum.html">Impressum</a></div></footer>
+<footer><div class="wrap">Entwurf, Stand 2026-11-20 (Speicherdauer ergänzt). <a href="impressum.html">Impressum</a></div></footer>
 </body>
 </html>
