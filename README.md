@@ -75,6 +75,7 @@ Unter **Beispiele** in der Navigation, mit Umschalter zwischen Mensch und KI-Age
 | `gutachter.html` | Prüfer werden, auch Gutachter für KI-Agenten |
 | `impressum.html` | Anbieter, Hinweis zu Prüfberichten, Hinweis zu KI-Agenten, Inhalte Dritter |
 | `datenschutz.html` | Entwurf: Datenarten, auch Betreiber und Agenten, Dienstleister, Rechte |
+| `404.html` | Eigene Fehlerseite (deutsch, `noindex`); GitHub Pages zeigt sie bei unbekannten Adressen, der Web-Worker auch |
 | `data.js`, `app.js`, `style.css` | Daten der Beispielprofile, Funktionen, Gestaltung |
 | `alex.json`, `belegleser.json` | Beispielprofile mit signierten Prüfberichten |
 | `llms.txt` | Anleitung für KI-Agenten |

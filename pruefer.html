@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://abgeklopft-api.falko-guderian.workers.dev http://localhost:*; base-uri 'none'; object-src 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>Prüferbereich · abgeklopft.de</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .pb h2{margin:0 0 6px;font-size:1.2rem}
+  .pb section.card{margin:18px 0}
+  .pb .zeile{display:flex;gap:12px;flex-wrap:wrap}
+  .pb .zeile > div{flex:1 1 200px;min-width:0}
+  .pb .knoepfe{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .pb pre{background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;max-height:340px;font:.78rem/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
+  .pb .kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0;font-size:.92rem}
+  .pb .kv dt{color:var(--muted)} .pb .kv dd{margin:0;overflow-wrap:anywhere}
+  .pb label.check{font-weight:400;display:flex;gap:10px;align-items:flex-start;margin:10px 0}
+  .pb label.check input{width:auto;margin-top:4px;flex:none}
+  .pb table{width:100%;border-collapse:collapse;font-size:.82rem}
+  .pb th,.pb td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);overflow-wrap:anywhere;vertical-align:top}
+  .pb .tabelle{overflow-x:auto}
+  .pb [hidden]{display:none!important}
+  .pb .stufe{font:700 .8rem/1 var(--mono);padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--sunk)}
+</style>
+</head>
+<body class="pb">
+<div class="proto">Prüferbereich · nicht für Besucher · wird nicht veröffentlicht</div>
+<header class="top"><div class="wrap">
+  <span class="logo">abge<span>klopft</span><small class="claim">Prüferbereich</small></span>
+</div></header>
+<main class="wrap" style="padding-top:24px;padding-bottom:40px;max-width:760px">
+  <h1 style="margin-top:0">Prüferbereich</h1>
+  <p class="meta">Hier prüfen Sie Einträge und stellen sie auf „Geprüft“. Ihr Schlüssel bleibt nur im Arbeitsspeicher dieser Seite: Er wird nirgends gespeichert und verschwindet beim Neuladen oder Abmelden. Der Server setzt den Inhalt des Berichts selbst zusammen, hier wählen Sie nur aus.</p>
+  <div id="serverhinweis" class="note" hidden></div>
+
+  <!-- 1. Anmelden -->
+  <section class="card" id="s-anmelden">
+    <h2>1. Anmelden</h2>
+    <form id="f-anmelden" autocomplete="off">
+      <label for="schluessel">Prüfer-Schlüssel</label>
+      <input id="schluessel" type="password" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="64" required>
+      <div class="knoepfe"><button class="btn" type="submit" id="b-anmelden">Anmelden</button></div>
+    </form>
+    <div id="m-anmelden" role="status" aria-live="polite"></div>
+    <div id="angemeldet" hidden>
+      <dl class="kv"><dt>Prüfer</dt><dd id="a-name"></dd><dt>Signierschlüssel</dt><dd id="a-kid"></dd></dl>
+      <div class="knoepfe"><button class="btn ghost" type="button" id="b-abmelden">Abmelden</button></div>
+    </div>
+  </section>
+
+  <div id="hauptteil" hidden>
+    <!-- 2. Eintrag -->
+    <section class="card" id="s-eintrag">
+      <h2>2. Eintrag suchen</h2>
+      <form id="f-eintrag" autocomplete="off">
+        <div class="zeile">
+          <div><label for="adresse">Profiladresse</label><input id="adresse" placeholder="z. B. falkotest" maxlength="60" required autocapitalize="none" spellcheck="false"></div>
+          <div><label for="eid">Eintragskennung (8 Zeichen)</label><input id="eid" placeholder="z. B. S0H4GWAC" maxlength="8" minlength="8" required autocapitalize="characters" spellcheck="false"></div>
+        </div>
+        <div class="knoepfe"><button class="btn" type="submit">Eintrag laden</button></div>
+      </form>
+      <div id="m-eintrag" role="status" aria-live="polite"></div>
+      <div id="ansicht" hidden>
+        <h3 id="e-titel" style="margin:18px 0 4px"></h3>
+        <p class="meta" id="e-meta"></p>
+        <dl class="kv">
+          <dt>Profil</dt><dd id="e-profil"></dd>
+          <dt>Zeitraum</dt><dd id="e-zeitraum"></dd>
+          <dt>Beschreibung</dt><dd id="e-text" class="mehrzeilig"></dd>
+          <dt>Fähigkeiten</dt><dd id="e-faehig"></dd>
+          <dt>Belege</dt><dd id="e-belege"></dd>
+          <dt>Stufe heute</dt><dd id="e-stufe"></dd>
+        </dl>
+        <h3 style="margin:16px 0 4px">Bestätigungsantworten</h3>
+        <div id="e-anfragen"></div>
+        <div id="e-bericht" hidden>
+          <h3 style="margin:16px 0 4px">Vorhandener Prüfbericht</h3>
+          <dl class="kv"><dt>Kennung</dt><dd id="b-kennung"></dd><dt>Stufe</dt><dd id="b-stufe"></dd><dt>Prüfweg</dt><dd id="b-weg"></dd><dt>Ausgestellt</dt><dd id="b-ausgestellt"></dd><dt>Gültig bis</dt><dd id="b-bis"></dd><dt>Prüfsumme</dt><dd id="b-summe"></dd><dt>Vermerk</dt><dd id="b-vermerk"></dd></dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Auswahl und Vorschau -->
+    <section class="card" id="s-auswahl" hidden>
+      <h2>3. Prüfung wählen</h2>
+      <div class="zeile">
+        <div><label for="stufe">Stufe</label><select id="stufe"><option value="S2">S2 · Geprüft</option><option value="S3">S3 · Geprüft und von Dritten bestätigt</option></select></div>
+        <div><label for="weg">Prüfweg</label><select id="weg"></select></div>
+        <div><label for="tage">Laufzeit</label><select id="tage"></select></div>
+      </div>
+      <div id="bestaetigungen" hidden>
+        <label>Bestätigungen für diesen Bericht (nur „ja“ und „teilweise“)</label>
+        <div id="bestaetigungen-liste"></div>
+      </div>
+      <label for="vermerk">Vermerk (optional, höchstens 200 Zeichen, steht nicht unter der Signatur)</label>
+      <input id="vermerk" maxlength="200">
+      <div class="knoepfe"><button class="btn" type="button" id="b-vorschau">Vorschau erzeugen</button></div>
+      <div id="m-auswahl" role="status" aria-live="polite"></div>
+
+      <div id="vorschau" hidden>
+        <div class="result warn" id="v-status"><b>Noch nichts signiert.</b> Das ist nur die Vorschau. Gelesen und geprüft? Dann unten bestätigen.</div>
+        <dl class="kv"><dt>Kennung</dt><dd id="v-kennung"></dd><dt>Prüfsumme</dt><dd id="v-summe"></dd><dt>Signierschlüssel</dt><dd id="v-kid"></dd></dl>
+        <details open><summary>Inhalt des Berichts</summary><pre id="v-inhalt"></pre></details>
+        <div id="ersetzen-zeile" hidden><label class="check"><input type="checkbox" id="ersetzen"><span>Der Eintrag hat schon einen Prüfbericht. Ich will ihn durch diesen ersetzen.</span></label></div>
+        <label class="check"><input type="checkbox" id="bestaetigt"><span>Ich habe Inhalt, Belege und Stufe geprüft und signiere diesen Bericht.</span></label>
+        <div class="knoepfe">
+          <button class="btn" type="button" id="b-signieren" disabled>Signieren</button>
+          <button class="btn ghost" type="button" id="b-ablehnen">Ablehnen (nur Protokoll)</button>
+        </div>
+        <div id="m-signieren" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- 4. Widerrufen -->
+    <section class="card" id="s-widerruf" hidden>
+      <h2>4. Bericht widerrufen</h2>
+      <p class="meta">Der Eintrag fällt sofort auf S1 zurück. Die öffentliche Widerrufsliste (Format abgeklopft-widerruf/2) auf der Webseite ändert sich dadurch nicht von selbst: Kennung und Prüfsumme gehören danach in widerruf_eingabe.json, dann signiert widerruf_signieren.mjs die Liste neu (siehe Hinweis nach dem Widerruf).</p>
+      <label for="w-grund">Grund (kurz, höchstens 200 Zeichen, wird nicht gespeichert)</label>
+      <input id="w-grund" maxlength="200">
+      <label class="check"><input type="checkbox" id="w-bestaetigt"><span>Ich will den vorhandenen Prüfbericht widerrufen.</span></label>
+      <div class="knoepfe"><button class="btn gefahr" type="button" id="b-widerruf" disabled>Widerrufen</button></div>
+      <div id="m-widerruf" role="status" aria-live="polite"></div>
+    </section>
+
+    <!-- 5. Protokoll -->
+    <section class="card" id="s-protokoll">
+      <h2>Protokoll</h2>
+      <p class="meta">Jede Signatur, Ablehnung und jeder Widerruf steht in einer Kette mit Prüfsummen. Der Server rechnet sie bei jedem Abruf nach.</p>
+      <div class="knoepfe" style="margin-top:8px"><button class="btn ghost" type="button" id="b-protokoll">Protokoll anzeigen</button></div>
+      <div id="m-protokoll" role="status" aria-live="polite"></div>
+      <div class="tabelle"><table id="t-protokoll" hidden><thead><tr><th>Nr.</th><th>Zeit</th><th>Aktion</th><th>Kennung</th><th>Prüfsumme</th></tr></thead><tbody></tbody></table></div>
+    </section>
+  </div>
+</main>
+<footer><div class="wrap">Interne Seite, nicht für die Öffentlichkeit · <a href="index.html">Startseite</a></div></footer>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+// Alle Texte aus API-Antworten werden nur mit textContent gesetzt, nie mit innerHTML.
+const API = (() => {
+  if (location.protocol === "http:" && location.hostname === "localhost") {
+    const p = new URLSearchParams(location.search).get("api");
+    return "http://localhost:" + (/^\d{2,5}$/.test(p || "") ? p : "8787");
+  }
+  return "https://abgeklopft-api.falko-guderian.workers.dev";
+})();
+const LOKAL = API.startsWith("http://localhost");
+const WEGE = { inhaberschaft: "Inhaberschaft", aussteller: "Abgleich beim Aussteller", auftraggeber: "Bestätigung durch Auftraggeber", fachgespraech: "Fachgespräch", betreiber: "Betreiber geprüft", probeaufgabe: "Probeaufgabe" };
+const STATUS = { angefragt: "angefragt, noch keine Antwort", ja: "Ja", teilweise: "Teilweise", nein: "Nein" };
+
+let schluessel = "";            // nur im Arbeitsspeicher
+let geladen = null;             // Antwort der Eintragsansicht
+let vorschau = null;            // letzte Vorschau samt der Auswahl, mit der sie erzeugt wurde
+
+function el(tag, text, attrs) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+function meldung(id, art, text) {
+  const m = $(id); m.replaceChildren();
+  if (!text) return;
+  const d = el("div", text, { class: "result " + art }); m.appendChild(d);
+}
+async function api(methode, pfad, body) {
+  const kopf = { Authorization: "Bearer " + schluessel };
+  if (body !== undefined) kopf["Content-Type"] = "application/json";
+  let r;
+  try { r = await fetch(API + pfad, { method: methode, headers: kopf, body: body === undefined ? undefined : JSON.stringify(body), cache: "no-store", referrerPolicy: "no-referrer" }); }
+  catch { throw { status: 0, meldung: "Der Server ist nicht erreichbar." + (LOKAL ? " Läuft er auf " + API + "?" : "") }; }
+  let j = null; try { j = await r.json(); } catch { /* leer */ }
+  if (!r.ok) throw { status: r.status, code: j && j.fehler, meldung: (j && j.meldung) || "Fehler " + r.status };
+  return j;
+}
+const fehlerText = e => e.status === 429 ? "Zu viele Versuche. Bitte warten Sie eine Minute." : e.meldung || "Unbekannter Fehler.";
+const datum = z => z ? String(z).replace("T", " ").replace("Z", " UTC") : "–";
+const urlOk = u => { try { const x = new URL(u); return x.protocol === "https:" || x.protocol === "http:"; } catch { return false; } };
+
+if (LOKAL) { const h = $("serverhinweis"); h.hidden = false; h.textContent = "Lokaler Test: Diese Seite spricht mit " + API + " (nicht mit dem Live-Server)."; }
+
+// ---- 1. Anmelden ----
+function abmelden() {
+  schluessel = ""; geladen = null; vorschau = null;
+  $("schluessel").value = ""; $("angemeldet").hidden = true; $("hauptteil").hidden = true; $("f-anmelden").hidden = false;
+  $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true; $("t-protokoll").hidden = true;
+  for (const id of ["m-anmelden", "m-eintrag", "m-auswahl", "m-signieren", "m-widerruf", "m-protokoll"]) meldung(id);
+}
+$("f-anmelden").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const k = $("schluessel").value.trim().toUpperCase().replace(/[\s-]/g, "");
+  meldung("m-anmelden");
+  if (!/^[0-9A-Z]{20,64}$/.test(k)) { meldung("m-anmelden", "bad", "Das ist kein Prüfer-Schlüssel. Er besteht aus Großbuchstaben und Ziffern."); return; }
+  schluessel = k;
+  $("b-anmelden").disabled = true;
+  try {
+    const j = await api("GET", "/v1/pruefer/ich");
+    $("a-name").textContent = j.pruefer.name;
+    $("a-kid").textContent = j.signierschluessel ? j.signierschluessel.kid + " (" + (j.signierschluessel.modus === "pilot" ? "Pilot-Testschlüssel, Berichte tragen „beispiel“" : j.signierschluessel.modus) + ")" : "keiner eingerichtet, Signieren nicht möglich";
+    $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; $("hauptteil").hidden = false;
+    meldung("m-anmelden", "ok", "Angemeldet.");
+  } catch (e) { schluessel = ""; meldung("m-anmelden", "bad", e.status === 401 ? "Der Schlüssel stimmt nicht. Bitte prüfen Sie ihn und versuchen Sie es erneut." : fehlerText(e)); }
+  $("b-anmelden").disabled = false;
+});
+$("b-abmelden").addEventListener("click", abmelden);
+
+// ---- 2. Eintrag laden ----
+function stufeText(n) { return n === 3 ? "S3 · Geprüft und bestätigt" : n === 2 ? "S2 · Geprüft" : "S1 · Selbstangabe"; }
+function ansichtFuellen(j) {
+  const e = j.eintrag, p = j.profil;
+  $("e-titel").textContent = e.titel;
+  $("e-meta").textContent = e.kategorie + " · Eintrag " + $("eid").value.toUpperCase();
+  $("e-profil").textContent = p.name + " (" + (p.art === "ki-agent" ? "KI-Agent" : "Mensch") + ", abgeklopft.de/" + p.adresse + ")" + (p.art === "ki-agent" && p.betreiber ? ", Betreiber: " + p.betreiber.name : "");
+  $("e-zeitraum").textContent = e.zeitraum || "–";
+  $("e-text").textContent = e.text || "–";
+  $("e-faehig").textContent = (e.faehigkeiten || []).join(", ") || "–";
+  const bel = $("e-belege"); bel.replaceChildren();
+  if (!(e.belege || []).length) bel.textContent = "keine";
+  for (const u of e.belege || []) {
+    const z = el("div"); z.appendChild(el("span", u + " "));
+    if (urlOk(u)) { const a = el("a", "Öffnen", { href: u, target: "_blank", rel: "noopener noreferrer nofollow ugc" }); z.appendChild(a); }
+    bel.appendChild(z);
+  }
+  $("e-stufe").textContent = stufeText(e.stufe);
+  const af = $("e-anfragen"); af.replaceChildren();
+  if (!j.anfragen.length) af.appendChild(el("p", "Keine Bestätigungsanfragen.", { class: "meta" }));
+  for (const a of j.anfragen) {
+    const k = el("div", undefined, { class: "result", style: "margin-top:8px" });
+    k.appendChild(el("b", "An " + a.an + " (" + a.angefragt + "): " + (STATUS[a.status] || a.status)));
+    if (a.status !== "angefragt") {
+      k.appendChild(el("div", a.name + ", " + a.rolle + ", " + a.firma + " · als " + (a.von === "ki-agent" ? "KI-Agent" : "Mensch") + (a.verantwortlich ? ", verantwortlich: " + a.verantwortlich : "") + " · " + a.datum, { class: "meta" }));
+      if (a.kommentar) k.appendChild(el("div", "„" + a.kommentar + "“", { class: "mehrzeilig" }));
+    }
+    af.appendChild(k);
+  }
+  const b = j.bericht; $("e-bericht").hidden = !b;
+  if (b) {
+    const i = b.inhalt;
+    $("b-kennung").textContent = i.kennung; $("b-stufe").textContent = stufeText(i.stufe); $("b-weg").textContent = WEGE[i.pruefweg] || i.pruefweg;
+    $("b-ausgestellt").textContent = datum(i.ausgestellt); $("b-bis").textContent = i.gueltigBis || "–"; $("b-summe").textContent = b.pruefsumme; $("b-vermerk").textContent = b.vermerk_ohne_signatur || "–";
+  }
+  // Auswahl
+  const wg = $("weg"); wg.replaceChildren();
+  for (const k of j.auswahl.pruefwege) { const o = el("option", WEGE[k] || k, { value: k }); if (k === j.auswahl.vorschlag_pruefweg) o.selected = true; wg.appendChild(o); }
+  const tg = $("tage"); tg.replaceChildren();
+  for (const t of j.auswahl.gueltig_tage) { const o = el("option", t + " Tage" + (t === 365 ? " (1 Jahr)" : ""), { value: String(t) }); if (t === 365) o.selected = true; tg.appendChild(o); }
+  const bl = $("bestaetigungen-liste"); bl.replaceChildren();
+  const waehlbar = j.anfragen.filter(a => a.waehlbar);
+  if (!waehlbar.length) bl.appendChild(el("p", "Es gibt keine Antwort „ja“ oder „teilweise“. Ohne sie ist nur S2 möglich.", { class: "meta" }));
+  for (const a of waehlbar) {
+    const l = el("label", undefined, { class: "check" }), c = el("input", undefined, { type: "checkbox", value: a.ref, name: "best" });
+    l.appendChild(c); l.appendChild(el("span", a.name + " (" + a.firma + "): " + STATUS[a.status]));
+    bl.appendChild(l);
+  }
+  $("stufe").value = "S2"; $("vermerk").value = "";
+  stufeGewechselt();
+  vorschauZuruecksetzen();
+  $("s-auswahl").hidden = false; $("s-widerruf").hidden = !b;
+  $("w-bestaetigt").checked = false; $("b-widerruf").disabled = true; $("w-grund").value = "";
+  $("ersetzen-zeile").hidden = !b;
+  $("ansicht").hidden = false;
+}
+async function eintragLaden(still) {
+  const a = $("adresse").value.trim().toLowerCase(), id = $("eid").value.trim().toUpperCase();
+  if (!still) meldung("m-eintrag");
+  try {
+    geladen = await api("GET", "/v1/pruefer/eintraege/" + encodeURIComponent(a) + "/" + encodeURIComponent(id));
+    ansichtFuellen(geladen);
+  } catch (e) {
+    geladen = null; $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true;
+    if (e.status === 401) { abmelden(); meldung("m-anmelden", "bad", "Die Anmeldung ist nicht mehr gültig. Bitte melden Sie sich neu an."); return; }
+    meldung("m-eintrag", "bad", e.status === 404 ? "Diesen Eintrag gibt es nicht. Bitte prüfen Sie Adresse und Kennung." : fehlerText(e));
+  }
+}
+$("f-eintrag").addEventListener("submit", ev => { ev.preventDefault(); eintragLaden(false); });
+
+// ---- 3. Auswahl, Vorschau, Signieren, Ablehnen ----
+function auswahl() {
+  const s = $("stufe").value;
+  const o = { stufe: s, pruefweg: $("weg").value, gueltig_tage: Number($("tage").value) };
+  if (s === "S3") o.bestaetigungen = [...document.querySelectorAll('input[name="best"]:checked')].map(c => c.value);
+  const v = $("vermerk").value.trim(); if (v) o.vermerk = v;
+  return o;
+}
+function stufeGewechselt() { $("bestaetigungen").hidden = $("stufe").value !== "S3"; }
+function vorschauZuruecksetzen() {
+  vorschau = null; $("vorschau").hidden = true; $("bestaetigt").checked = false; $("ersetzen").checked = false; $("b-signieren").disabled = true; meldung("m-signieren"); meldung("m-auswahl");
+}
+for (const id of ["stufe", "weg", "tage", "vermerk"]) $(id).addEventListener("input", () => { if (id === "stufe") stufeGewechselt(); vorschauZuruecksetzen(); });
+$("bestaetigungen-liste").addEventListener("change", vorschauZuruecksetzen);
+$("bestaetigt").addEventListener("change", () => { $("b-signieren").disabled = !($("bestaetigt").checked && vorschau); });
+
+$("b-vorschau").addEventListener("click", async () => {
+  if (!geladen) return;
+  vorschauZuruecksetzen();
+  const o = auswahl();
+  try {
+    const v = await api("POST", "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + $("eid").value.toUpperCase() + "/vorschau", o);
+    vorschau = { v, o };
+    $("v-kennung").textContent = v.kennung; $("v-summe").textContent = v.pruefsumme; $("v-kid").textContent = v.kid;
+    $("v-inhalt").textContent = JSON.stringify(v.inhalt, null, 2);
+    $("vorschau").hidden = false;
+  } catch (e) { meldung("m-auswahl", "bad", fehlerText(e)); }
+});
+$("b-signieren").addEventListener("click", async () => {
+  if (!vorschau || !$("bestaetigt").checked) return;
+  $("b-signieren").disabled = true;
+  const body = { ...vorschau.o, bestaetigt: true, pruefsumme: vorschau.v.pruefsumme, ausgestellt_vorschau: vorschau.v.ausgestellt_vorschau };
+  if ($("ersetzen").checked) body.ersetzen = true;
+  try {
+    const r = await api("POST", "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + $("eid").value.toUpperCase() + "/signieren", body);
+    await eintragLaden(true);
+    meldung("m-auswahl", "ok", "Signiert: " + r.stufe + ", Kennung " + r.kennung + ", gültig bis " + r.gueltigBis + ". Protokoll-Nr. " + r.protokoll.lfd + ". Der Eintrag ist jetzt " + stufeText(r.stufe === "S3" ? 3 : 2) + ".");
+  } catch (e) {
+    $("b-signieren").disabled = !$("bestaetigt").checked;
+    meldung("m-signieren", "bad", e.code === "bereits_signiert" ? "Der Eintrag hat schon einen Bericht. Setzen Sie das Häkchen „ersetzen“, wenn Sie ihn überschreiben wollen." : fehlerText(e));
+  }
+});
+$("b-ablehnen").addEventListener("click", async () => {
+  if (!geladen) return;
+  try {
+    const r = await api("POST", "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + $("eid").value.toUpperCase() + "/ablehnen", auswahl());
+    meldung("m-auswahl", "ok", "Abgelehnt und im Protokoll vermerkt (Kennung " + r.kennung + ", Nr. " + r.protokoll.lfd + "). Der Eintrag bleibt unverändert.");
+  } catch (e) { meldung("m-signieren", "bad", fehlerText(e)); }
+});
+
+// ---- 4. Widerrufen ----
+$("w-bestaetigt").addEventListener("change", () => { $("b-widerruf").disabled = !$("w-bestaetigt").checked; });
+$("b-widerruf").addEventListener("click", async () => {
+  if (!geladen || !$("w-bestaetigt").checked) return;
+  $("b-widerruf").disabled = true;
+  const body = { bestaetigt: true }; const g = $("w-grund").value.trim(); if (g) body.grund = g;
+  try {
+    const r = await api("POST", "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + $("eid").value.toUpperCase() + "/widerrufen", body);
+    await eintragLaden(true);
+    const m = $("m-eintrag"); m.replaceChildren();
+    const d = el("div", undefined, { class: "result ok" });
+    d.appendChild(el("b", "Widerrufen. Der Eintrag ist wieder S1."));
+    d.appendChild(el("div", "Kennung " + r.kennung + " · Prüfsumme " + r.pruefsumme + " · Protokoll-Nr. " + r.protokoll.lfd));
+    d.appendChild(el("div", r.widerrufsliste.hinweis, { class: "meta" }));
+    m.appendChild(d);
+  } catch (e) { $("b-widerruf").disabled = !$("w-bestaetigt").checked; meldung("m-widerruf", "bad", e.code === "kein_bericht" ? "Dieser Eintrag hat keinen Prüfbericht mehr." : fehlerText(e)); }
+});
+
+// ---- Protokoll ----
+$("b-protokoll").addEventListener("click", async () => {
+  meldung("m-protokoll");
+  try {
+    let j = await api("GET", "/v1/pruefer/audit?ab=1");
+    if (j.letzter && j.letzter.lfd > j.anzahl) j = await api("GET", "/v1/pruefer/audit?ab=" + Math.max(1, j.letzter.lfd - 29));
+    meldung("m-protokoll", j.kette_ok ? "ok" : "bad", j.kette_ok ? "Kette in Ordnung (kette_ok). " + (j.letzter ? "Letzte Nr. " + j.letzter.lfd + "." : "Das Protokoll ist leer.") : "ACHTUNG: Die Kette ist nicht in Ordnung (kette_ok = false). Das Protokoll wurde verändert oder hat eine Lücke.");
+    const tb = $("t-protokoll").tBodies[0]; tb.replaceChildren();
+    for (const z of j.eintraege.slice().reverse()) {
+      const tr = el("tr");
+      for (const t of [String(z.lfd), datum(z.zeit), z.aktion, z.kennung || "–", z.pruefsumme ? z.pruefsumme.slice(0, 16) + "…" : "–"]) tr.appendChild(el("td", t));
+      tb.appendChild(tr);
+    }
+    $("t-protokoll").hidden = !j.eintraege.length;
+  } catch (e) { meldung("m-protokoll", "bad", fehlerText(e)); }
+});
+</script>
+</body>
+</html>

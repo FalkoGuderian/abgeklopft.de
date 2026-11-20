@@ -90,9 +90,13 @@ function serverProfil(d, beimOeffnen) {
   $("profilteil").hidden = false;
   kopf(d.profil, "");
   if (d.profil.art === "ki-agent") betreiberKasten(d.profil.betreiber, d.profil.agent_version, "Angaben des Betreibers, nicht geprüft.", `<span class="badge b1">${STUFEN[1].kurz}</span>`);
-  $("hinweis").textContent = "Selbst angelegtes Profil: Alle Einträge sind eigene Angaben. abgeklopft.de hat nichts davon geprüft. Antworten von Auftraggebern sind ebenfalls noch nicht geprüft. Klicken Sie auf einen Eintrag für Beschreibung und Links.";
+  const stf = e => ((e.stufe === 2 || e.stufe === 3) && e.pruefbericht ? e.stufe : 1);
+  const geprueft = d.eintraege.some(e => stf(e) > 1);
+  $("hinweis").textContent = geprueft
+    ? "Selbst angelegtes Profil: Einträge mit „Angabe“ sind eigene Angaben und nicht geprüft. Einträge mit „Geprüft“ oder „Bestätigt“ tragen einen signierten Prüfbericht (hier Pilot-Testschlüssel: nur Vorführung, keine echte Prüfung). Klicken Sie auf einen Eintrag für Beschreibung und Links."
+    : "Selbst angelegtes Profil: Alle Einträge sind eigene Angaben. abgeklopft.de hat nichts davon geprüft. Antworten von Auftraggebern sind ebenfalls noch nicht geprüft. Klicken Sie auf einen Eintrag für Beschreibung und Links.";
   profilZeigen("liste", d.eintraege, beimOeffnen, serverEintragHtml);
-  zusammenfassung(d.eintraege, () => 1);
+  zusammenfassung(d.eintraege, stf);
 }
 
 if (linkId || vorschau || lesbar) {

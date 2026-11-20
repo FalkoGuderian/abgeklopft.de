@@ -163,18 +163,19 @@ function bestaetigungHtml(b) {
 }
 // Eintrag eines selbst angelegten Profils (immer Stufe 1)
 function serverEintragHtml(e, i) {
+  const st = (e.stufe === 2 || e.stufe === 3) && e.pruefbericht ? e.stufe : 1; // Stufe 2/3 nur mit Prüfbericht (signiert vom Server)
   const belege = (e.belege || []).map(u => sichereUrl(u)
     ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow ugc">${esc(urlKurz(u))}</a>` : esc(u)).join(" · ");
   return `
   <li class="lt-item">
     <button type="button" class="lt-btn" aria-expanded="false" aria-controls="d-${i}" data-id="${esc(e.id)}">
-      <span class="badge b1" title="${esc(STUFEN[1].text)}">${STUFEN[1].kurz}</span>
+      <span class="badge b${st}" title="${esc(STUFEN[st].text)}">${STUFEN[st].kurz}</span>
       <span class="lt-titel">${esc(e.titel)}</span>
       <span class="lt-zeit">${esc(e.zeitraum || "")}</span>
     </button>
     <div class="lt-detail" id="d-${i}" hidden>
       ${e.text ? `<p class="mehrzeilig">${esc(e.text)}</p>` : ""}
-      <p class="meta"><b>${esc(STUFEN[1].name)}.</b> Selbst eingetragen, von abgeklopft.de nicht geprüft.</p>
+      <p class="meta"><b>${esc(STUFEN[st].name)}.</b> ${st === 1 ? "Selbst eingetragen, von abgeklopft.de nicht geprüft." : `Prüfbericht ${esc(e.pruefbericht.kennung)}, ausgestellt ${esc(e.pruefbericht.ausgestellt)}, gültig bis ${esc(e.pruefbericht.gueltigBis)}.${e.pruefbericht.beispiel ? " Pilot-Testschlüssel: nur Vorführung des Verfahrens, keine echte Prüfung." : ""} Nachrechnen: <a href="/verify.html">verify.html</a>.`}</p>
       ${(e.bestaetigungen || []).map(bestaetigungHtml).join("")}
       <p class="meta">Links der Person: ${belege || "keine"}</p>
       <div>${(e.faehigkeiten || []).map(s => `<span class="tag">${esc(s)}</span>`).join("")}</div>
