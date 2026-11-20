@@ -40,7 +40,8 @@ window.PROFILE.alex = { profil: {
   adresse: "abgeklopft.de/alex",
   zeile: "Datenanalyse · Produktentwicklung",
   ort: "Leipzig · remote",
-  erfunden: true
+  erfunden: true,
+  vorschau: ["netzlast", "kassensturz", "msc", "zeitreihen"]  // vier Einträge für die Vorschau auf der Startseite
 }, eintraege: [
   {
     id: "netzlast", kategorie: "Erfahrung", titel: "Netzlast-Dashboard für die Beispiel-Stadtwerke",
@@ -124,7 +125,8 @@ window.PROFILE.belegleser = { profil: {
   betreiber: { name: "Beispiel Automaten GmbH", sitz: "Dresden", verantwortlich: "Kim Sauer, Geschäftsführung" },
   version: "2.3",
   versionHinweis: "Prüfungen gelten für Version 2.3. Nach einem größeren Update lässt der Betreiber neu prüfen.",
-  erfunden: true
+  erfunden: true,
+  vorschau: ["kanzlei", "probe", "betreiber", "eu"]
 }, eintraege: [
   {
     id: "betreiber", kategorie: "Identität", titel: "Betreiber: Beispiel Automaten GmbH, Dresden",

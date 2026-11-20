@@ -172,7 +172,7 @@ textarea{min-height:110px;font-family:var(--mono);font-size:.82rem}
 .result.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 7%,var(--surface))}
 .result.warn{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 7%,var(--surface))}
 .note{background:color-mix(in srgb,var(--brand) 6%,var(--surface));border:1px solid color-mix(in srgb,var(--brand) 20%,var(--line));padding:12px 16px;border-radius:12px;font-size:.92rem;color:var(--ink)}
-.urlzeile{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.92rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:24px 0 0;color:var(--muted)}
+.urlzeile{display:inline-block;max-width:100%;overflow-wrap:anywhere;font-family:var(--mono);font-size:.92rem;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:24px 0 0;color:var(--muted)}
 .urlzeile b{color:var(--brand);font-weight:600}
 
 /* Profilseite nach Linktree-Art */
@@ -241,3 +241,22 @@ nav.profilwahl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin
 .btn.gefahr{background:var(--bad);border-color:var(--bad);color:var(--brand-ink)}
 .fehlerzeile[hidden]{display:none}
 #mname,.lt h1,.eintrag-zeile b,.lt-titel,.card h3,code{overflow-wrap:anywhere}
+
+/* Startseite: Karussell der Beispielprofile (karussell.js, 2026-11-19) */
+.karussell{padding-bottom:10px}
+.karussell .folien{display:grid}
+.karussell .folie{grid-area:1/1;display:block;color:inherit;text-decoration:none;border-radius:16px;opacity:0;visibility:hidden;transform:translateX(18px);transition:opacity .6s ease,transform .6s ease,visibility 0s linear .6s}
+.karussell .folie.an{opacity:1;visibility:visible;transform:none;transition:opacity .6s ease,transform .6s ease,visibility 0s}
+.karussell .folie:focus-visible{outline:2px solid var(--brand);outline-offset:4px}
+.karussell .folie .lt-btn{cursor:pointer}
+.karussell .folie:hover .lt-btn{border-color:var(--brand)}
+.folie-hinweis{display:block;text-align:right;font:.8rem var(--mono);color:var(--brand);margin:2px 2px 4px}
+.karussell .punkte{display:flex;justify-content:center;gap:10px;margin:6px 0 2px}
+.karussell .punkt{width:28px;height:28px;border-radius:50%;border:0;background:transparent;padding:0;cursor:pointer;display:grid;place-items:center}
+.karussell .punkt::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid var(--brand);background:transparent;transition:background .3s}
+.karussell .punkt[aria-current="true"]::before{background:var(--brand)}
+.karussell .punkt:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.karussell .lt .artzeile{margin:6px 0 0}
+.nur-vorlesen{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:-1px}
+@media (prefers-reduced-motion: reduce){.karussell .folie,.karussell .folie.an{transition:none;transform:none}}
+.mock .lt h2{font-size:1.35rem;letter-spacing:-.025em;margin:0}
