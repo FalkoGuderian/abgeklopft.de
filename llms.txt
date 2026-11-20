@@ -19,6 +19,7 @@ Stand: Prototyp in der Pilotphase. Es gibt zwei erfundene Beispiele: die Person 
 - [Beispielprofil KI-Agent als JSON](https://abgeklopft.de/belegleser.json): mit Betreiber und geprüfter Version
 - [Beispielprofile als Seite](https://abgeklopft.de/profil.html): dieselben Daten für Menschen (braucht JavaScript), Agent unter `profil.html?p=belegleser`
 - [Öffentlicher Prüfschlüssel](https://abgeklopft.de/.well-known/jwks.json): JWKS, Ed25519
+- [Widerrufsliste](https://abgeklopft.de/.well-known/widerruf.json): zurückgezogene Prüfberichte, signiert (siehe „Widerruf prüfen“)
 
 Die Beispiele liegen als feste Dateien vor (`abgeklopft.de/<name>.json`).
 
@@ -98,6 +99,16 @@ for e in profil["eintraege"]:
 ```
 
 Für Menschen gibt es dieselbe Prüfung unter https://abgeklopft.de/verify.html (JSON des Prüfberichts einfügen).
+
+## Widerruf prüfen
+
+Ein Prüfbericht kann nach dem Ausstellen zurückgezogen werden (auf Wunsch der Person, wegen eines Fehlers oder wegen eines Schlüsselproblems). Prüfen Sie nach den sechs Schritten oben zusätzlich die Widerrufsliste: `https://abgeklopft.de/.well-known/widerruf.json`.
+
+- Format `abgeklopft-widerruf/1`: `{format, aussteller, stand, eintraege: [{kennung, widerrufen_am, grund}], signatur}`. `grund` ist `auf_wunsch`, `fehler` oder `schluessel`. Namen stehen nie darin.
+- Die Signatur hat dieselbe Form wie bei den Prüfberichten: Es gibt keine Prüfsumme. Signiert wird die kanonische JSON-Form (Schlüssel sortiert) der Liste ohne das Feld `signatur`, Ed25519, Schlüssel muss in `/.well-known/jwks.json` stehen.
+- **Kennung steht in der Liste = widerrufen = nicht mehr darauf verlassen**, auch wenn die Signatur des Berichts echt ist.
+- **Liste nicht erreichbar oder Signatur der Liste ungültig = Status unbekannt.** Melden Sie das so („Widerrufsstatus nicht geprüft“) und behandeln Sie den Bericht nicht als „gültig und nicht widerrufen“.
+- Nennen Sie bei einem „nicht widerrufen“ den `stand` der Liste. Er sagt, wie aktuell die Auskunft ist. Kopien, die jemand schon gespeichert hat, kennen den Widerruf nicht.
 
 ## Als Agent selbst ein Profil bekommen
 

@@ -1,0 +1,19 @@
+{
+  "format": "abgeklopft-widerruf/1",
+  "aussteller": "abgeklopft.de",
+  "stand": "2026-11-20T07:40:55Z",
+  "eintraege": [],
+  "signatur": {
+    "alg": {
+      "name": "Ed25519"
+    },
+    "kid": "K-4F2F7C6D",
+    "pruefer": "abgeklopft.de Pilot-Testschlüssel",
+    "pub": {
+      "crv": "Ed25519",
+      "kty": "OKP",
+      "x": "Aj1jcTjMKZmkRJ9UfaWVNz7r-OQ-sDHHhn7RB1OJSWM"
+    },
+    "wert": "xWH8XwR2Osob8KbigqdiX5Vp9djWtgVnwWF/yDujggfGipDZrGuTOidoJzlI89sS8MpIdK9T0kPduO8jyJslDQ=="
+  }
+}

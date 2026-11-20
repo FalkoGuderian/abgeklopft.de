@@ -25,7 +25,7 @@
     <p class="sub">Fügen Sie das JSON einer Urkunde ein. Die Seite berechnet die Prüfsumme neu und sucht die Urkunde im Register.</p>
     <label for="json">Urkunde (JSON)</label>
     <textarea id="json" placeholder='{"inhalt":{…},"pruefsumme":"…"}'></textarea>
-    <div class="row"><button class="btn" id="pruef" type="button">Prüfen</button><button class="btn ghost" id="beispiel" type="button">Beispiel laden</button><button class="btn ghost" id="manip" type="button">Test: Inhalt verfälschen</button><button class="btn ghost" id="faelsch" type="button">Test: Fälschung mit neu berechneter Prüfsumme</button></div>
+    <div class="row"><button class="btn" id="pruef" type="button">Prüfen</button><button class="btn ghost" id="beispiel" type="button">Beispiel laden</button><button class="btn ghost" id="manip" type="button">Test: Inhalt verfälschen</button><button class="btn ghost" id="faelsch" type="button">Test: Fälschung mit neu berechneter Prüfsumme</button><button class="btn ghost" id="widtest" type="button">Test: widerrufener Bericht</button></div>
     <div id="erg"></div>
     <h3 style="margin-top:30px">Zugelassene Prüfer (Schlüssel)</h3>
     <div id="schl"></div>
@@ -40,7 +40,30 @@ const $ = id => document.getElementById(id);
 const PA_SVG = `<svg class="pa" viewBox="0 0 84 70" role="img" aria-label="Karte geprüft: Haken"><rect class="pa-karte" x="2" y="8" width="64" height="52" rx="7"/><g class="pa-zeilen"><line x1="12" y1="24" x2="42" y2="24"/><line x1="12" y1="34" x2="42" y2="34"/><line x1="12" y1="44" x2="54" y2="44"/></g><rect class="pa-schimmer" x="4" y="9" width="60" height="8" rx="3"/><g class="pa-siegel"><circle class="pa-ring" cx="62" cy="16" r="15"/><circle class="pa-ok" cx="62" cy="16" r="12"/><polyline class="pa-haken" points="55,16 60,21 69,10"/></g></svg>`;
 // Prüf-Animation nur beim echten, gültigen Ergebnis (grün); alle anderen Ergebnisse ohne Haken
 function meld(typ, html, haken) { $("erg").innerHTML = `<div class="result ${typ}">${haken ? `<div class="pa-erg">${PA_SVG}<div>${html}</div></div>` : html}</div>`; }
-async function pruefen() {
+// Widerrufsliste (abgeklopft-widerruf/1): signiert wie die Prüfberichte, gleicher Ursprung.
+const WIDERRUF_GRUND = { auf_wunsch: "auf Wunsch der Person", fehler: "wegen eines Fehlers im Bericht", schluessel: "Schlüssel nicht mehr vertrauenswürdig" };
+// Ergebnis: { art: "widerrufen", eintrag, stand } | { art: "frei", stand } | { art: "unbekannt" }
+async function widerrufStatus(kennung, testListe) {
+  try {
+    let liste = testListe;
+    if (!liste) {
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 8000);
+      try {
+        const r = await fetch(".well-known/widerruf.json", { cache: "no-store", signal: ctl.signal });
+        if (!r.ok) return { art: "unbekannt" };
+        liste = await r.json();
+      } finally { clearTimeout(t); }
+      const { signatur, ...rest } = liste || {};
+      const sg = await signaturPruefen(signatur, kanonisch(rest));
+      if (sg.status !== "vertraut") return { art: "unbekannt" };   // Signatur fehlt, ungültig oder fremder Schlüssel
+    }
+    if (!liste || liste.format !== "abgeklopft-widerruf/1" || liste.aussteller !== "abgeklopft.de" || !Array.isArray(liste.eintraege) || typeof liste.stand !== "string") return { art: "unbekannt" };
+    const stand = liste.stand.slice(0, 10);
+    const e = liste.eintraege.find(x => x && x.kennung === kennung);
+    return e ? { art: "widerrufen", eintrag: e, stand } : { art: "frei", stand };
+  } catch { return { art: "unbekannt" }; }
+}
+async function pruefen(testListe) {
   let u; try { u = JSON.parse($("json").value); } catch { return meld("bad", "Kein gültiges JSON."); }
   if (!u || !u.inhalt || !u.pruefsumme) return meld("bad", "Es fehlen „inhalt“ oder „pruefsumme“.");
   const { kennung, ...rest } = u.inhalt;
@@ -55,9 +78,17 @@ async function pruefen() {
   if (s.status === "keine") return meld("warn", `<b>Nicht signiert.</b> ${kopf} Der Inhalt passt zur Prüfsumme, aber eine Prüfsumme kann jeder selbst berechnen. Wer die Urkunde ausgestellt hat, ist offen.`);
   if (s.status === "falsch") return meld("bad", "<b>Signatur ungültig.</b> Der Inhalt wurde nach dem Signieren verändert, oder die Signatur gehört nicht dazu.");
   if (s.status === "fremd") return meld("warn", `<b>Gültig signiert, aber mit unbekanntem Schlüssel ${esc(s.kid)}.</b> ${kopf} Der Schlüssel steht nicht in der Liste der zugelassenen Prüfer. Jemand kann sich selbst einen Schlüssel erzeugt haben.`);
-  meld(abgelaufen ? "bad" : "ok", `<b>Echt: signiert von ${esc(s.name)} (Schlüssel ${esc(s.kid)}), Inhalt unverändert.</b> ${kopf}`, !abgelaufen);
+  const echt = `<b>Echt: signiert von ${esc(s.name)} (Schlüssel ${esc(s.kid)}), Inhalt unverändert.</b> ${kopf}`;
+  if (abgelaufen) return meld("bad", echt);
+  const k = "AK-" + neu.slice(0, 4).toUpperCase() + "-" + neu.slice(4, 8).toUpperCase();
+  const w = await widerrufStatus(k, testListe);
+  if (w.art === "widerrufen")
+    return meld("bad", `<b>Widerrufen am ${esc(w.eintrag.widerrufen_am)} (${esc(WIDERRUF_GRUND[w.eintrag.grund] || "Grund unbekannt")}).</b> Die Signatur ist echt, aber abgeklopft.de hat diesen Prüfbericht zurückgezogen. Nicht mehr verlassen. Kennung ${esc(k)}, Stand der Widerrufsliste ${esc(w.stand)}${testListe ? " (Testliste im Speicher, nicht die echte Datei)" : ""}.`);
+  if (w.art === "unbekannt")
+    return meld("warn", `${echt} <b>Der Widerrufsstatus konnte nicht geprüft werden.</b> Die Widerrufsliste war nicht erreichbar oder ihre Signatur ist ungültig. Ob der Bericht zurückgezogen wurde, ist unbekannt.`);
+  meld("ok", `${echt} <b>Nicht widerrufen (Stand ${esc(w.stand)}).</b>`, true);
 }
-$("pruef").onclick = pruefen;
+$("pruef").onclick = () => pruefen();
 $("manip").onclick = () => {
   try { const u = JSON.parse($("json").value); u.inhalt.anspruch += " (geändert)"; $("json").value = JSON.stringify(u, null, 2); pruefen(); }
   catch { meld("bad", "Erst eine Urkunde einfügen."); }
@@ -73,6 +104,14 @@ $("faelsch").onclick = async () => {
   u.pruefsumme = h;
   $("json").value = JSON.stringify(u, null, 2); pruefen();
 };
+// Test: derselbe Bericht, aber eine lokale Testliste im Speicher führt seine Kennung als widerrufen (die echte Datei bleibt unberührt)
+$("widtest").onclick = async () => {
+  if (!$("json").value.trim()) await beispielLaden(false);
+  let u; try { u = JSON.parse($("json").value); } catch { return meld("bad", "Erst eine Urkunde einfügen."); }
+  if (!u || !u.inhalt || !u.inhalt.kennung) return meld("bad", "Erst eine Urkunde mit Kennung einfügen.");
+  const t = heuteIso();
+  pruefen({ format: "abgeklopft-widerruf/1", aussteller: "abgeklopft.de", stand: t, eintraege: [{ kennung: u.inhalt.kennung, widerrufen_am: t, grund: "fehler" }] });
+};
 // Veröffentlichte Prüfschlüssel der Plattform laden (wie ein KI-Agent es auch tut)
 async function plattformSchluessel() {
   try {
@@ -81,12 +120,13 @@ async function plattformSchluessel() {
   } catch { window.VERTRAUT_EXTRA = []; }
   schlZeigen();
 }
-$("beispiel").onclick = async () => {
+async function beispielLaden(pruefe = true) {
   try {
     const p = await (await fetch("alex.json")).json();
-    $("json").value = JSON.stringify(p.eintraege.find(e => e.pruefbericht).pruefbericht, null, 2); pruefen();
+    $("json").value = JSON.stringify(p.eintraege.find(e => e.pruefbericht).pruefbericht, null, 2); if (pruefe) pruefen();
   } catch { meld("bad", "Das Beispiel ließ sich nicht laden. Es geht nur, wenn die Seite über das Netz geöffnet ist."); }
-};
+}
+$("beispiel").onclick = () => beispielLaden();
 plattformSchluessel();
 function schlZeigen() {
   const v = [...(window.VERTRAUT_EXTRA || []), ...lesen(VERTRAUT_KEY)];
