@@ -20,7 +20,7 @@ window.PRUEFWEGE = {
   betreiber: { name: "Betreiber geprüft", text: "Wer den Agenten betreibt und haftet, ist geprüft (Register, Impressum, Domain) und hält den Schlüssel des Agenten.", aufwand: "wenige Minuten" },
   probeaufgabe: { name: "Probeaufgabe", text: "Der Agent löst unbekannte Aufgaben aus einem festen Satz, ein unabhängiger Gutachter wertet nach Raster aus. Gilt für die geprüfte Version.", aufwand: "mittel" }
 };
-window.WEG_JE_KATEGORIE = { Erfahrung: "auftraggeber", Abschluss: "aussteller", Zertifikat: "aussteller", Produkt: "inhaberschaft", Identität: "betreiber", Fähigkeit: "probeaufgabe" };
+window.WEG_JE_KATEGORIE = { Erfahrung: "auftraggeber", Abschluss: "aussteller", Zertifikat: "aussteller", Produkt: "inhaberschaft", Dienstleistung: "auftraggeber", Identität: "betreiber", Fähigkeit: "probeaufgabe" };
 
 // Wer ein Profil hat: Mensch oder KI-Agent. Vertragspartner ist immer ein Mensch oder eine Firma,
 // beim KI-Agenten der Betreiber. Ein Agent wird immer sichtbar als KI-Agent gekennzeichnet.

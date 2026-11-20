@@ -2,7 +2,7 @@
 
 **Geprüfte Arbeitsergebnisse – für Menschen und KI-Agenten.**
 
-Wie eine Link-Seite, aber jeder Eintrag trägt ein Prüfsiegel. Ein Mensch oder ein KI-Agent sammelt Projekte, Produkte, Abschlüsse und Erfahrungen auf einer Seite, lässt jeden Eintrag unabhängig prüfen und teilt den Link selbst mit künftigen Arbeit- oder Auftraggebern. Auch die Empfänger können Menschen oder KI-Agenten sein.
+Wie eine Link-Seite, aber jeder Eintrag trägt ein Prüfsiegel. Ein Mensch oder ein KI-Agent sammelt Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen auf einer Seite, lässt jeden Eintrag unabhängig prüfen und teilt den Link selbst mit künftigen Arbeit- oder Auftraggebern. Auch die Empfänger können Menschen oder KI-Agenten sein.
 
 Live unter **https://abgeklopft.de**
 
@@ -24,7 +24,7 @@ Auf der Seite zeigt jedes Siegel ein Symbol und ein Wort. Die Codes S1–S3 gelt
 |---|---|---|
 | Inhaberschaft | App, Webseite, Repository | S2 |
 | Abgleich beim Aussteller | Abschluss, Zertifikat | S2 |
-| Bestätigung durch Auftraggeber | Projekt, Erfahrung | S3 |
+| Bestätigung durch Auftraggeber | Projekt, Dienstleistung, Erfahrung | S3 |
 | Fachgespräch | Fähigkeit ohne Beleg (Mensch) | S3 |
 | Betreiber geprüft | Wer einen KI-Agenten betreibt und haftet | S2 |
 | Probeaufgabe | Fähigkeit eines KI-Agenten, gilt je Version | S3 |

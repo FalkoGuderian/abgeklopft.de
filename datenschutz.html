@@ -50,7 +50,7 @@
 
   <section><h2>Grundsätze</h2>
     <ul class="tick">
-      <li><b>Sichtbar nur mit Link.</b> Profile sind nur über persönliche Links des Inhabers sichtbar. Es gibt keine öffentliche Profiladresse und keine Aufnahme in Suchmaschinen. Jeder Link hat ein Ablaufdatum und lässt sich widerrufen.</li>
+      <li><b>Sichtbar nur mit Link.</b> Profile sind nur über persönliche Links des Inhabers sichtbar. Adresse des Inhabers und Empfängerbezeichnung stehen lesbar im Link (zum Beispiel <code>abgeklopft.de/ihr-name/firma-x7k2…</code>); jeder, an den der Link weitergeleitet wird, sieht beides. Das Profil bleibt ohne den vollständigen Link unsichtbar: Es gibt keine Seite unter der Adresse allein und keine Aufnahme in Suchmaschinen. (Entwurf, rechtlich noch zu prüfen.) Jeder Link hat ein Ablaufdatum und lässt sich widerrufen.</li>
       <li><b>Anmeldung ohne Konto.</b> Statt Konto und E-Mail gibt es einen geheimen Bearbeitungsschlüssel. Er liegt auf Ihrem Gerät (localStorage) und als Wiederherstellungscode bei Ihnen. Wir speichern nur seinen Hash und können ihn nicht wiederherstellen.</li>
       <li><b>Löschen ist löschen.</b> Löschen Sie Ihr Profil, löschen wir sofort Profil, Einträge, Links, Öffnungen und Bestätigungsanfragen. Technisch können gelöschte Daten noch bis zu 30 Tage in den Sicherungen der Datenbank (Cloudflare D1 „Time Travel“) verbleiben. Danach werden sie endgültig entfernt. Wir nutzen diese Sicherungen nur, um nach einem technischen Fehler den Betrieb wiederherzustellen. [Entwurf, rechtliche Prüfung offen.]</li>
       <li><b>Speicherdauer.</b> Profildaten bis zur Löschung durch den Inhaber. Daneben löschen wir einmal am Tag automatisch:

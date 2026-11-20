@@ -82,6 +82,7 @@
         <h2 style="margin:0" id="mname"></h2>
         <p class="meta" style="margin:4px 0" id="mzeile"></p>
         <p style="margin:0" id="mart"></p>
+        <p class="meta" style="margin:4px 0 0;overflow-wrap:anywhere" id="madr"></p>
       </div>
       <div class="row" style="margin:0"><a class="btn ghost" href="profil.html?vorschau=1" id="vorschau">Vorschau ansehen</a></div>
     </div>
@@ -91,6 +92,9 @@
         <label for="ename">Name</label><input id="ename" required maxlength="120">
         <label for="ezeile">Zeile</label><input id="ezeile" maxlength="200">
         <label for="eort">Ort</label><input id="eort" maxlength="120">
+        <label for="eadr">Ihre Adresse</label>
+        <input id="eadr" maxlength="40" autocapitalize="none" spellcheck="false" style="font-family:var(--mono)" aria-describedby="eadrhilfe">
+        <p class="meta" id="eadrhilfe">Ihre persönlichen Links sehen so aus: <span style="overflow-wrap:anywhere">abgeklopft.de/<b id="eadrvor">ihr-name</b>/firma-x7k2…</span>. 3 bis 30 Zeichen: a–z, 0–9 und Bindestrich, nicht am Anfang oder Ende, kein doppelter Bindestrich. Ä, Ö, Ü und ß werden zu ae, oe, ue und ss. Ihr Profil bleibt trotzdem unsichtbar: Es gibt keine Seite unter <b>abgeklopft.de/<span id="eadrvor2">ihr-name</span></b> allein, nur mit dem vollständigen Link. Bei einer Änderung funktionieren bereits verschickte Links weiter und leiten auf die neue Adresse um.</p>
         <div id="eagent" hidden>
           <label for="ebname">Betreiber</label><input id="ebname" maxlength="160">
           <label for="ebsitz">Sitz des Betreibers</label><input id="ebsitz" maxlength="160">
@@ -103,7 +107,7 @@
 
     <section style="border-top:0;padding-top:18px">
       <h2>1 · Einträge</h2>
-      <p class="sub">Projekte, Produkte, Abschlüsse und Erfahrungen mit Links als Beleg. Alle Einträge sind <span class="badge b1">Angabe</span> eigene Angaben. Geprüft oder bestätigt wird ein Eintrag erst durch einen Prüfer.</p>
+      <p class="sub">Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen mit Links als Beleg. Alle Einträge sind <span class="badge b1">Angabe</span> eigene Angaben. Geprüft oder bestätigt wird ein Eintrag erst durch einen Prüfer.</p>
       <div id="eliste"></div>
       <details id="eneu" style="margin-top:12px">
         <summary id="eneutitel">Eintrag hinzufügen</summary>
@@ -112,7 +116,7 @@
           <div class="two">
             <div>
               <label for="ekat">Art</label>
-              <select id="ekat"><option>Erfahrung</option><option>Projekt</option><option>Produkt</option><option>Abschluss</option><option>Zertifikat</option><option>Fähigkeit</option></select>
+              <select id="ekat"><option>Erfahrung</option><option>Projekt</option><option>Produkt</option><option>Dienstleistung</option><option>Abschluss</option><option>Zertifikat</option><option>Fähigkeit</option></select>
               <label for="etitel">Titel</label><input id="etitel" required maxlength="160" placeholder="z. B. Netzlast-Dashboard für Stadtwerke">
               <label for="ezeit">Zeitraum</label><input id="ezeit" maxlength="60" placeholder="z. B. 2024–2025">
               <label for="efaeh">Fähigkeiten (mit Komma getrennt)</label><input id="efaeh" maxlength="600" placeholder="z. B. Python, SQL, Dashboards">
@@ -134,7 +138,8 @@
       <form id="lf" autocomplete="off" class="two">
         <div>
           <label for="emp">Empfänger (Firma, Person oder KI-Agent)</label>
-          <input id="emp" required maxlength="160" placeholder="z. B. Musterfirma GmbH, Bereich KI">
+          <input id="emp" required maxlength="160" placeholder="z. B. Musterfirma GmbH, Bereich KI" aria-describedby="emphilfe">
+          <p class="meta" id="emphilfe">Der Empfängername steht lesbar im Link. Jeder, an den der Link weitergeleitet wird, sieht ihn.</p>
           <label for="eart">Der Link geht an</label>
           <select id="eart"><option value="mensch">einen Menschen (Seite im Browser)</option><option value="ki-agent">einen KI-Agenten (Seite und JSON)</option></select>
           <label for="tage">Gültig für Tage</label>
@@ -197,6 +202,9 @@
 <script>
 const $ = id => document.getElementById(id);
 const basis = location.href.replace(/[#?].*$/, "").replace(/[^/]*$/, "");
+// Basis für lesbare Links /<adresse>/<kurz>: lokal diese Seite, sonst abgeklopft.de (auch in der App)
+const LESBAR_BASIS = location.protocol === "http:" && location.hostname === "localhost" ? location.origin : "https://abgeklopft.de";
+const lesbarerLink = x => x.kurz && stand.profil.adresse ? LESBAR_BASIS + "/" + stand.profil.adresse + "/" + x.kurz : "";
 let konto = kontoLesen(), stand = null, nochmalFn = null;
 
 function fehler(e, nochmal) {
@@ -287,6 +295,8 @@ function zeichnen() {
     ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Betreiber: ${esc(p.betreiber.name)}, ${esc(p.betreiber.sitz)} · Version ${esc(p.agent_version)}</span>`
     : `<span class="tag art-mensch">Mensch</span>`;
   $("ename").value = p.name; $("ezeile").value = p.zeile; $("eort").value = p.ort;
+  $("eadr").value = p.adresse || ""; $("eadrvor").textContent = $("eadrvor2").textContent = p.adresse || "ihr-name";
+  $("madr").innerHTML = p.adresse ? `Ihre Adresse: abgeklopft.de/<b>${esc(p.adresse)}</b> (Links: abgeklopft.de/${esc(p.adresse)}/<i>empfänger-kennung</i>)` : "Noch keine Adresse. Sie wird beim nächsten Link aus Ihrem Namen abgeleitet, oder tragen Sie unter „Profil bearbeiten“ eine ein.";
   $("eagent").hidden = !ag;
   if (ag) { $("ebname").value = p.betreiber.name; $("ebsitz").value = p.betreiber.sitz; $("ebverantw").value = p.betreiber.verantwortlich; $("ebversion").value = p.agent_version; }
 
@@ -312,9 +322,10 @@ function zeichnen() {
       const status = x.status === "widerrufen" ? '<span class="exp">widerrufen</span>' : x.status === "abgelaufen" ? '<span class="exp">abgelaufen</span>' : "gültig bis " + esc(x.gueltig_bis);
       return `<div class="eintrag-zeile"><div style="flex:1;min-width:200px">
           ${x.empfaenger_art === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}<b>${esc(x.empfaenger)}</b> <span class="meta">· ${x.auswahl.length} Einträge · ${status}</span>
+          ${aktiv && lesbarerLink(x) ? `<br><span class="meta" style="overflow-wrap:anywhere"><b>Link:</b> <span style="font-family:var(--mono)">${esc(lesbarerLink(x).replace(/^https?:\/\//, ""))}</span></span>` : ""}
           <br><span class="meta">Geöffnet: ${auf.length ? auf.length + "×" + (json ? ` (davon ${json}× JSON)` : "") + ", zuletzt " + esc(datumDe(auf[auf.length - 1].zeit)) : "noch nicht"}</span>
           ${an.length ? `<br><span class="meta">Angesehen: ${an.map(id => esc(titelVon(id))).join(", ")}</span>` : ""}</div>
-        <div class="knoepfe">${aktiv ? `<a class="btn ghost klein" href="profil.html?l=${esc(x.id)}" target="_blank" rel="noopener">öffnen</a><button class="btn ghost klein" type="button" data-kopie="${esc(x.id)}">kopieren</button>${x.empfaenger_art === "ki-agent" ? `<button class="btn ghost klein" type="button" data-json="${esc(x.id)}">JSON kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-widerruf="${esc(x.id)}">widerrufen</button>` : `<button class="btn ghost klein" type="button" data-lweg="${esc(x.id)}">entfernen</button>`}</div></div>`;
+        <div class="knoepfe">${aktiv ? `<a class="btn ghost klein" href="${esc(lesbarerLink(x) || "profil.html?l=" + x.id)}" target="_blank" rel="noopener">öffnen</a><button class="btn ghost klein" type="button" data-kopie="${esc(x.id)}">kopieren</button>${lesbarerLink(x) ? `<button class="btn ghost klein" type="button" data-ausweich="${esc(x.id)}" title="Alter Link mit geheimer Kennung, falls der lesbare nicht öffnet">Ausweichlink</button>` : ""}${x.empfaenger_art === "ki-agent" ? `<button class="btn ghost klein" type="button" data-json="${esc(x.id)}">JSON kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-widerruf="${esc(x.id)}">widerrufen</button>` : `<button class="btn ghost klein" type="button" data-lweg="${esc(x.id)}">entfernen</button>`}</div></div>`;
     }).join("") : `<p class="meta">Noch keine Links.</p>`;
 
   // Anfragen
@@ -330,10 +341,12 @@ function zeichnen() {
 $("pform").addEventListener("submit", e => {
   e.preventDefault(); still();
   const body = { name: $("ename").value.trim(), zeile: $("ezeile").value.trim(), ort: $("eort").value.trim() };
+  const adr = $("eadr").value.trim();
+  if (adr !== (stand.profil.adresse || "")) body.adresse = adr;
   if (stand.profil.art === "ki-agent") Object.assign(body, { betreiber: { name: $("ebname").value.trim(), sitz: $("ebsitz").value.trim(), verantwortlich: $("ebverantw").value.trim() }, agent_version: $("ebversion").value.trim() });
   mitSperre(e.submitter, async () => {
-    try { stand = await api("PATCH", "/v1/profile/" + konto.id, body, konto.schluessel); zeichnen(); erfolg("Profil gespeichert."); }
-    catch (err) { fehler(err); }
+    try { stand = await api("PATCH", "/v1/profile/" + konto.id, body, konto.schluessel); zeichnen(); erfolg("adresse" in body ? "Profil gespeichert. Ihre Adresse ist jetzt abgeklopft.de/" + stand.profil.adresse + "." : "Profil gespeichert."); }
+    catch (err) { fehler(err.code === "vergeben" ? "Diese Adresse ist vergeben. Bitte wählen Sie eine andere." : err); }
   });
 });
 
@@ -385,7 +398,7 @@ $("lf").addEventListener("submit", e => {
     try {
       const r = await api("POST", `/v1/profile/${konto.id}/links`, { empfaenger: $("emp").value.trim(), empfaenger_art: $("eart").value, auswahl, tage: Number($("tage").value || 30) }, konto.schluessel);
       $("emp").value = ""; await laden();
-      erfolg("Link erstellt. Kopieren Sie ihn unten und schicken Sie ihn selbst an den Empfänger.");
+      erfolg("Link erstellt: " + (r.adresse_link ? LESBAR_BASIS.replace(/^https?:\/\//, "") + "/" + r.adresse + "/" + r.kurz + ". " : "") + "Kopieren Sie ihn unten und schicken Sie ihn selbst an den Empfänger.");
       $("links").scrollIntoView({ block: "nearest" });
     } catch (err) { fehler(err); }
   });
@@ -395,9 +408,11 @@ async function kopieren(text, meldung) {
   catch { $("kmeld").textContent = "Kopieren nicht möglich. Adresse: " + text; }
 }
 $("links").addEventListener("click", e => {
-  const k = e.target.closest("[data-kopie]"), j = e.target.closest("[data-json]"), w = e.target.closest("[data-widerruf]"), l = e.target.closest("[data-lweg]");
-  if (k) kopieren(basis + "profil.html?l=" + k.dataset.kopie, "Link kopiert.");
-  if (j) kopieren(API + "/v1/l/" + j.dataset.json + ".json", "JSON-Adresse für den Agenten kopiert.");
+  const k = e.target.closest("[data-kopie]"), j = e.target.closest("[data-json]"), w = e.target.closest("[data-widerruf]"), l = e.target.closest("[data-lweg]"), au = e.target.closest("[data-ausweich]");
+  const lk = id => stand.links.find(x => x.id === id) || {};
+  if (k) kopieren(lesbarerLink(lk(k.dataset.kopie)) || basis + "profil.html?l=" + k.dataset.kopie, "Link kopiert.");
+  if (au) kopieren(basis + "profil.html?l=" + au.dataset.ausweich, "Ausweichlink kopiert. Er enthält die geheime Kennung statt der lesbaren Adresse.");
+  if (j) { const x = lk(j.dataset.json); kopieren(x.kurz && stand.profil.adresse ? API + "/v1/p/" + stand.profil.adresse + "/" + x.kurz + ".json" : API + "/v1/l/" + j.dataset.json + ".json", "JSON-Adresse für den Agenten kopiert."); }
   if (w) zweimal(w, "wirklich widerrufen?", () => api("POST", `/v1/profile/${konto.id}/links/${w.dataset.widerruf}/widerrufen`, {}, konto.schluessel)
     .then(laden).then(() => erfolg("Link widerrufen. Er funktioniert nicht mehr."), fehler));
   if (l) api("DELETE", `/v1/profile/${konto.id}/links/${l.dataset.lweg}`, undefined, konto.schluessel).then(laden).then(() => erfolg("Link mit allen Öffnungen entfernt."), fehler);
