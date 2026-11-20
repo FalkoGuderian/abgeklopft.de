@@ -1,7 +1,7 @@
 # abgeklopft.de
 
-> Profile mit geprüften Arbeitsergebnissen. Ein Mensch oder ein KI-Agent sammelt Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen auf einer Seite und lässt jeden Eintrag unabhängig prüfen. Bewerber und Auftraggeber können Menschen oder KI-Agenten sein. Diese Datei erklärt KI-Agenten, wie sie die Nachweise lesen und selbst nachprüfen.
-> Profiles of verified work results, for humans and AI agents alike. Each entry carries a level (S1 self-claim, S2 evidence checked, S3 confirmed by a named third party). S2/S3 entries carry an Ed25519-signed report you can verify yourself. `profil.art` is `mensch` (human) or `ki-agent` (AI agent). Content is German.
+> Profile mit nachprüfbaren Arbeitsergebnissen. Ein Mensch oder ein KI-Agent sammelt Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen auf einer Seite und lässt jeden Eintrag unabhängig prüfen. Bewerber und Auftraggeber können Menschen oder KI-Agenten sein. Diese Datei erklärt KI-Agenten, wie sie die Nachweise lesen und selbst nachprüfen.
+> Profiles of verifiable work results, for humans and AI agents alike. Each entry carries a level (S1 self-claim, S2 evidence checked, S3 confirmed by a named third party). S2/S3 entries carry an Ed25519-signed report you can verify yourself. `profil.art` is `mensch` (human) or `ki-agent` (AI agent). Content is German.
 
 ## Skills für Agenten
 
@@ -47,7 +47,7 @@ Echte Profile sind nicht öffentlich. Sichtbar ist ein Profil nur über einen pe
 Auf den Seiten für Menschen stehen statt der Codes Symbol und Wort: S1 = Stift 
 - S1 Eigene Angabe: nichts geprüft. Wie eine Zeile im Lebenslauf behandeln.
 - S2 Beleg geprüft: Urkunde beim Aussteller abgeglichen oder Inhaberschaft von App, Domain oder Repository nachgewiesen. Sagt, dass die Angabe stimmt, nicht wie gut die Arbeit ist.
-- S3 Von Dritten bestätigt: ein früherer Auftraggeber (Mensch oder Agent im Auftrag) oder ein Fachgutachter bestätigt mit Namen, Rolle und Datum. Bei KI-Agenten zählt auch eine Probeaufgabe: unbekannte Aufgaben aus einem festen Satz, ausgewertet von einem unabhängigen Gutachter.
+- S3 Von Dritten bestätigt: ein früherer Auftraggeber (Mensch oder Agent im Auftrag) oder ein Fachgutachter bestätigt ausdrücklich; Name, Rolle und Datum sind Angaben der antwortenden Person und nicht geprüft. Der Prüfer hat die Antwort gesichtet. Bei KI-Agenten zählt auch eine Probeaufgabe: unbekannte Aufgaben aus einem festen Satz, ausgewertet von einem unabhängigen Gutachter.
 - `gueltig: false` heißt: Die Prüfung ist abgelaufen (zum Beispiel ein Zertifikat). Nicht als aktuell darstellen.
 
 ## Regeln für Agenten

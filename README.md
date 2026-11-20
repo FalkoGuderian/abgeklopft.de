@@ -1,6 +1,6 @@
 # abgeklopft.de
 
-**Geprüfte Arbeitsergebnisse – für Menschen und KI-Agenten.**
+**Nachprüfbare Arbeitsergebnisse – für Menschen und KI-Agenten.**
 
 Wie eine Link-Seite, aber jeder Eintrag trägt ein Prüfsiegel. Ein Mensch oder ein KI-Agent sammelt Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen auf einer Seite, lässt jeden Eintrag unabhängig prüfen und teilt den Link selbst mit künftigen Arbeit- oder Auftraggebern. Auch die Empfänger können Menschen oder KI-Agenten sein.
 

@@ -15,6 +15,7 @@
   .pb .zeile > div{flex:1 1 200px;min-width:0}
   .pb .knoepfe{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
   .pb pre{background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;max-height:340px;font:.78rem/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
+  #bew-liste input[type=checkbox]{width:auto;flex:none}
   .pb .kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0;font-size:.92rem}
   .pb .kv dt{color:var(--muted)} .pb .kv dd{margin:0;overflow-wrap:anywhere}
   .pb label.check{font-weight:400;display:flex;gap:10px;align-items:flex-start;margin:10px 0}
@@ -134,6 +135,25 @@
       <div id="m-protokoll" role="status" aria-live="polite"></div>
       <div class="tabelle"><table id="t-protokoll" hidden><thead><tr><th>Nr.</th><th>Zeit</th><th>Aktion</th><th>Kennung</th><th>Prüfsumme</th></tr></thead><tbody></tbody></table></div>
     </section>
+    <!-- Verwaltung (nur Administratoren) -->
+    <section class="card" id="s-verwaltung" hidden>
+      <h2>Verwaltung</h2>
+      <h3 style="margin:10px 0 4px">Bewerbungen</h3>
+      <div class="knoepfe" style="margin-top:6px"><button class="btn ghost" type="button" id="b-bew-neu">Aktualisieren</button></div>
+      <div id="m-bew" role="status" aria-live="polite"></div>
+      <div id="bew-liste"></div>
+      <div id="neuer-schluessel" hidden class="result warn">
+        <b>Neuer Prüfer-Schlüssel für <span id="ns-name"></span></b>
+        <p class="meta" style="margin:6px 0">Der Schlüssel wird nur jetzt angezeigt. Bitte persönlich übergeben. Er ist nirgends gespeichert.</p>
+        <div id="ns-wert" style="font:700 1.25rem/1.4 var(--mono);letter-spacing:.06em;overflow-wrap:anywhere;margin:8px 0"></div>
+        <div class="knoepfe" style="margin-top:8px"><button class="btn" type="button" id="b-ns-kopieren">Kopieren</button><button class="btn ghost" type="button" id="b-ns-weg">Ausblenden</button></div>
+        <div id="m-ns" role="status" aria-live="polite"></div>
+      </div>
+      <h3 style="margin:22px 0 4px">Prüfer</h3>
+      <div id="m-prl" role="status" aria-live="polite"></div>
+      <div id="t-pruefer" hidden></div>
+    </section>
+
   </div>
 </main>
 <footer><div class="wrap">Interne Seite, nicht für die Öffentlichkeit · <a href="index.html">Startseite</a></div></footer>
@@ -154,7 +174,8 @@ const STATUS = { angefragt: "angefragt, noch keine Antwort", ja: "Ja", teilweise
 
 let schluessel = "";            // nur im Arbeitsspeicher
 let geladen = null;             // Antwort der Eintragsansicht
-let vorschau = null;            // letzte Vorschau samt der Auswahl, mit der sie erzeugt wurde
+let vorschau = null;
+let meineId = "";            // letzte Vorschau samt der Auswahl, mit der sie erzeugt wurde
 
 function el(tag, text, attrs) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
 function meldung(id, art, text) {
@@ -180,8 +201,9 @@ if (LOKAL) { const h = $("serverhinweis"); h.hidden = false; h.textContent = "Lo
 
 // ---- 1. Anmelden ----
 function abmelden() {
-  schluessel = ""; geladen = null; vorschau = null;
+  schluessel = ""; geladen = null; vorschau = null; meineId = "";
   $("schluessel").value = ""; $("angemeldet").hidden = true; $("hauptteil").hidden = true; $("f-anmelden").hidden = false;
+  verwaltungLeeren();
   $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true; $("t-protokoll").hidden = true;
   for (const id of ["m-anmelden", "m-eintrag", "m-auswahl", "m-signieren", "m-widerruf", "m-protokoll"]) meldung(id);
 }
@@ -194,10 +216,11 @@ $("f-anmelden").addEventListener("submit", async ev => {
   $("b-anmelden").disabled = true;
   try {
     const j = await api("GET", "/v1/pruefer/ich");
-    $("a-name").textContent = j.pruefer.name;
+    meineId = j.pruefer.id; $("a-name").textContent = j.pruefer.name;
     $("a-kid").textContent = j.signierschluessel ? j.signierschluessel.kid + " (" + (j.signierschluessel.modus === "pilot" ? "Pilot-Testschlüssel, Berichte tragen „beispiel“" : j.signierschluessel.modus) + ")" : "keiner eingerichtet, Signieren nicht möglich";
     $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; $("hauptteil").hidden = false;
     meldung("m-anmelden", "ok", "Angemeldet.");
+    if (j.admin === true) { $("s-verwaltung").hidden = false; verwaltungLaden(); }
   } catch (e) { schluessel = ""; meldung("m-anmelden", "bad", e.status === 401 ? "Der Schlüssel stimmt nicht. Bitte prüfen Sie ihn und versuchen Sie es erneut." : fehlerText(e)); }
   $("b-anmelden").disabled = false;
 });
@@ -356,6 +379,76 @@ $("b-protokoll").addEventListener("click", async () => {
     }
     $("t-protokoll").hidden = !j.eintraege.length;
   } catch (e) { meldung("m-protokoll", "bad", fehlerText(e)); }
+});
+
+// ---- Verwaltung (nur Administratoren; Texte nur per textContent, Schlüssel nur im Arbeitsspeicher) ----
+function verwaltungLeeren() {
+  $("s-verwaltung").hidden = true; $("bew-liste").replaceChildren(); $("t-pruefer").hidden = true; $("t-pruefer").replaceChildren();
+  $("neuer-schluessel").hidden = true; $("ns-wert").textContent = ""; $("ns-name").textContent = "";
+  for (const id of ["m-bew", "m-prl", "m-ns"]) meldung(id);
+}
+function neuerSchluesselWeg() { $("neuer-schluessel").hidden = true; $("ns-wert").textContent = ""; $("ns-name").textContent = ""; meldung("m-ns"); }
+function bewKarte(b) {
+  const k = el("div", undefined, { class: "result" });
+  k.appendChild(el("b", b.name));
+  k.appendChild(el("div", b.email + " · " + b.fachgebiet, { class: "meta" }));
+  k.appendChild(el("div", "Eingegangen " + datum(b.erstellt) + " · " + (b.status === "offen" ? "offen" : b.status === "freigegeben" ? "freigegeben " + datum(b.entschieden) : "abgelehnt " + datum(b.entschieden)), { class: "meta" }));
+  const v = el("div", b.vita); v.style.cssText = "white-space:pre-wrap;margin:8px 0;overflow-wrap:anywhere"; k.appendChild(v);
+  const z = el("div", undefined, { class: "knoepfe" }); z.style.marginTop = "8px";
+  if (b.status === "offen") {
+    const l = el("label", undefined, { class: "check" }), ok = el("input", undefined, { type: "checkbox" });
+    l.appendChild(ok); l.appendChild(el("span", "Ich nehme diese Person als Prüfer an."));
+    k.appendChild(l);
+    const an = el("button", "Annehmen", { class: "btn", type: "button" }); an.disabled = true;
+    ok.addEventListener("change", () => { an.disabled = !ok.checked; });
+    an.addEventListener("click", async () => {
+      an.disabled = true;
+      try {
+        const j = await api("POST", "/v1/pruefer/admin/bewerbungen/" + b.id + "/freischalten", { bestaetigt: true });
+        $("ns-name").textContent = j.pruefer.name; $("ns-wert").textContent = j.schluessel; meldung("m-ns"); $("neuer-schluessel").hidden = false;
+        $("neuer-schluessel").scrollIntoView({ block: "center" });
+        verwaltungLaden(true);
+      } catch (e) { meldung("m-bew", "bad", fehlerText(e)); an.disabled = !ok.checked; }
+    });
+    z.appendChild(an);
+    const ab = el("button", "Ablehnen", { class: "btn ghost", type: "button" });
+    ab.addEventListener("click", async () => { try { await api("POST", "/v1/pruefer/admin/bewerbungen/" + b.id + "/ablehnen", {}); verwaltungLaden(true); } catch (e) { meldung("m-bew", "bad", fehlerText(e)); } });
+    z.appendChild(ab);
+  }
+  const lo = el("button", "Löschen", { class: "btn ghost", type: "button" });
+  lo.addEventListener("click", async () => { try { await api("POST", "/v1/pruefer/admin/bewerbungen/" + b.id + "/loeschen", {}); verwaltungLaden(true); } catch (e) { meldung("m-bew", "bad", fehlerText(e)); } });
+  z.appendChild(lo); k.appendChild(z);
+  return k;
+}
+async function verwaltungLaden(still) {
+  if (!still) { meldung("m-bew"); meldung("m-prl"); }
+  try {
+    const j = await api("GET", "/v1/pruefer/admin/bewerbungen"), l = $("bew-liste"); l.replaceChildren();
+    if (!j.bewerbungen.length) l.appendChild(el("p", "Keine Bewerbungen.", { class: "meta" }));
+    for (const b of j.bewerbungen) l.appendChild(bewKarte(b));
+  } catch (e) { meldung("m-bew", "bad", fehlerText(e)); }
+  try {
+    const j = await api("GET", "/v1/pruefer/admin/pruefer"), tb = $("t-pruefer"); tb.replaceChildren();
+    for (const p of j.pruefer) {
+      const k = el("div", undefined, { class: "result" }); k.style.cssText = "display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap";
+      const t = el("div"); t.style.cssText = "min-width:0;overflow-wrap:anywhere";
+      t.appendChild(el("b", p.name + (p.admin ? " (Administrator)" : "")));
+      t.appendChild(el("div", "angelegt " + String(p.angelegt).slice(0, 10) + " · " + (p.aktiv ? "aktiv" : "gesperrt"), { class: "meta" }));
+      k.appendChild(t);
+      if (p.aktiv && p.id !== meineId) {
+        const sp = el("button", "Sperren", { class: "btn ghost", type: "button" });
+        sp.addEventListener("click", async () => { try { await api("POST", "/v1/pruefer/admin/pruefer/" + p.id + "/sperren", {}); verwaltungLaden(true); } catch (e) { meldung("m-prl", "bad", fehlerText(e)); } });
+        k.appendChild(sp);
+      }
+      tb.appendChild(k);
+    }
+    $("t-pruefer").hidden = false;
+  } catch (e) { meldung("m-prl", "bad", fehlerText(e)); }
+}
+$("b-bew-neu").addEventListener("click", () => verwaltungLaden());
+$("b-ns-weg").addEventListener("click", neuerSchluesselWeg);
+$("b-ns-kopieren").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText($("ns-wert").textContent); meldung("m-ns", "ok", "Kopiert."); } catch { meldung("m-ns", "bad", "Kopieren nicht möglich. Bitte markieren Sie den Schlüssel und kopieren Sie ihn von Hand."); }
 });
 </script>
 </body>

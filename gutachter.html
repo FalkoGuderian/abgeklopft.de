@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="proto">Prototyp · Vergütung und Regeln sind Annahmen · Bewerbung wird nicht versendet</div>
+<div class="proto">Prototyp · Vergütung und Regeln sind Annahmen</div>
 <header class="top"><div class="wrap">
-  <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Geprüfte Arbeitsergebnisse</small></a>
+  <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Arbeitsergebnisse</small></a>
   <nav><a href="index.html">Start</a><a href="profil.html">Beispiele</a><a href="teilen.html">Mein Profil</a><a href="verify.html">Prüfen</a><a href="personalabteilungen.html">Für Empfänger</a><a href="gutachter.html" aria-current="page">Prüfer werden</a><a href="pruefer.html">Login</a></nav>
 </div></header>
 <main class="wrap" style="padding-top:28px;max-width:860px">
@@ -63,32 +63,44 @@
     <p><a class="btn" href="pruefer.html">Zum Login</a></p>
   </section>
 
-  <section><h2>Bewerbung (Prototyp)</h2>
-    <form id="g" autocomplete="off" class="two">
-      <div>
-        <label for="gn">Name</label><input id="gn" required>
-        <label for="gf">Fachgebiet</label><input id="gf" required placeholder="z. B. Generative KI in der Verwaltung">
-        <label for="gr">Rolle</label>
-        <select id="gr"><option>Belegprüfer (Geprüft)</option><option>Gutachter (Bestätigt)</option><option>Gutachter für KI-Agenten (Bestätigt)</option></select>
-      </div>
-      <div>
-        <label for="gp">Nachweisbare Praxis (Jahre, Rollen, Links)</label><textarea id="gp" required></textarea>
-        <label for="gk">Interessenkonflikte, die Sie kennen</label><input id="gk" placeholder="z. B. Arbeitgeber, Kooperationen">
-      </div>
-      <div><button class="btn" type="submit">Bewerbung vorbereiten</button></div>
+  <section id="bewerben"><h2>Als Prüfer bewerben</h2>
+    <p>Sie bewerben sich mit diesem Formular. Wir melden uns persönlich bei Ihnen. Bei einer Zusage erhalten Sie Ihren Login-Schlüssel.</p>
+    <form id="g" autocomplete="off" novalidate>
+      <label for="gn">Name</label><input id="gn" maxlength="100" required>
+      <label for="ge">E-Mail</label><input id="ge" type="email" maxlength="200" required autocapitalize="none" spellcheck="false">
+      <label for="gf">Fachgebiet</label><input id="gf" maxlength="200" required placeholder="z. B. Generative KI in der Verwaltung">
+      <label for="gv">Kurzvita (höchstens 1000 Zeichen)</label><textarea id="gv" maxlength="1000" rows="6" required></textarea>
+      <div style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label for="gw">Bitte leer lassen</label><input id="gw" tabindex="-1" autocomplete="off"></div>
+      <label class="check" style="display:flex;gap:10px;align-items:flex-start;margin-top:12px"><input type="checkbox" id="gd" style="margin-top:4px;width:auto;flex:none"><span>Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen.</span></label>
+      <div style="margin-top:14px"><button class="btn" type="submit" id="gb">Bewerbung absenden</button></div>
     </form>
-    <div id="gerg"></div>
+    <div id="gerg" role="status" aria-live="polite"></div>
   </section>
 </main>
-<footer><div class="wrap">Die Bewerbung bleibt in Ihrem Browser. Produktiv bräuchte es Identitätsprüfung, Vertrag, Verschwiegenheit und Datenschutzvereinbarung.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
+<footer><div class="wrap">Vergütung und Regeln sind Annahmen. Produktiv bräuchte es Identitätsprüfung, Vertrag, Verschwiegenheit und Datenschutzvereinbarung.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
 <script src="data.js"></script><script src="app.js"></script>
 <script>
-document.getElementById("g").addEventListener("submit", e => {
+"use strict";
+const BEW_API = location.protocol === "http:" && location.hostname === "localhost"
+  ? "http://localhost:" + (/^\d{2,5}$/.test(new URLSearchParams(location.search).get("api") || "") ? new URLSearchParams(location.search).get("api") : "8787")
+  : "https://abgeklopft-api.falko-guderian.workers.dev";
+document.getElementById("g").addEventListener("submit", async e => {
   e.preventDefault();
   const v = id => document.getElementById(id).value.trim();
-  const b = { name: v("gn"), fach: v("gf"), rolle: v("gr"), praxis: v("gp"), konflikte: v("gk") || "keine genannt" };
-  try { localStorage.setItem("gaa_gutachter_bewerbung", JSON.stringify(b)); } catch {}
-  document.getElementById("gerg").innerHTML = `<div class="result ok"><b>Vorbereitet, nicht versendet.</b><br>${esc(b.name)} · ${esc(b.rolle)} · ${esc(b.fach)}<br>Nächster Schritt im Produktivbetrieb: Identitätsprüfung, Probeprüfung an einem Beispielfall, Vertrag.</div>`;
+  const erg = document.getElementById("gerg"), knopf = document.getElementById("gb");
+  const zeige = (art, text) => { erg.replaceChildren(); const d = document.createElement("div"); d.className = "result " + art; d.textContent = text; erg.appendChild(d); };
+  if (!v("gn") || !v("ge") || !v("gf") || !v("gv")) { zeige("bad", "Bitte füllen Sie alle Felder aus."); return; }
+  if (!document.getElementById("gd").checked) { zeige("bad", "Bitte bestätigen Sie, dass Sie die Datenschutzerklärung gelesen haben."); return; }
+  knopf.disabled = true;
+  try {
+    const r = await fetch(BEW_API + "/v1/pruefer-bewerbung", { method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store", referrerPolicy: "no-referrer",
+      body: JSON.stringify({ name: v("gn"), email: v("ge"), fachgebiet: v("gf"), vita: v("gv"), datenschutz: true, web: document.getElementById("gw").value }) });
+    let j = null; try { j = await r.json(); } catch { /* leer */ }
+    if (r.ok) { zeige("ok", "Ihre Bewerbung ist eingegangen. Wir melden uns persönlich bei Ihnen."); document.getElementById("g").reset(); }
+    else if (r.status === 429) zeige("bad", "Zu viele Versuche. Bitte warten Sie eine Minute.");
+    else zeige("bad", (j && j.meldung) || "Das hat nicht geklappt. Bitte versuchen Sie es später erneut.");
+  } catch { zeige("bad", "Der Server ist nicht erreichbar. Bitte versuchen Sie es später erneut."); }
+  knopf.disabled = false;
 });
 </script>
 </body>
