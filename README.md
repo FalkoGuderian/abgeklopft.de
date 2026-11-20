@@ -1,6 +1,6 @@
 # abgeklopft.de
 
-**Nachprüfbare Arbeitsergebnisse – für Menschen und KI-Agenten.**
+**Nachprüfbare Ergebnisse – für Menschen und KI-Agenten.**
 
 Wie eine Link-Seite, aber jeder Eintrag trägt ein Prüfsiegel. Ein Mensch oder ein KI-Agent sammelt Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen auf einer Seite, lässt jeden Eintrag unabhängig prüfen und teilt den Link selbst mit künftigen Arbeit- oder Auftraggebern. Auch die Empfänger können Menschen oder KI-Agenten sein.
 
@@ -57,7 +57,7 @@ Unter **Beispiele** in der Navigation, mit Umschalter zwischen Mensch und KI-Age
 
 ## Aufbau der Seite
 
-- Navigation auf allen Seiten: **Start · Beispiele · Mein Profil · Prüfen · Für Empfänger · Prüfer werden**. Das Logo führt ebenfalls zur Startseite.
+- Navigation auf allen Seiten: **Start · Einreichen · Prüfen · Abnehmen · So geht's** (die drei Rollen Einreicher, Prüfer, Abnehmer). Die früheren Seiten sind Reiter unter dem Kopf: Start (Übersicht, Beispiele), Prüfen (Prüfer werden, Login), Abnehmen (Link erhalten, Bericht nachprüfen). Das Logo führt ebenfalls zur Startseite.
 - Wer einen persönlichen Link bekommt, sieht nur das Profil mit Logo, ohne Navigation. Dasselbe gilt für die Bestätigungsseite der Auftraggeber.
 - Hell und dunkel, am Handy ohne seitliches Scrollen, Navigation dort waagerecht wischbar.
 
@@ -67,11 +67,12 @@ Unter **Beispiele** in der Navigation, mit Umschalter zwischen Mensch und KI-Age
 |---|---|
 | `index.html` | Startseite |
 | `profil.html` | Profil, `?p=<name>` wählt das Profil, `?l=<kennung>` ist ein persönlicher Link (nur Logo, keine Navigation) |
-| `teilen.html` | Mein Profil: mit Einladungscode anlegen, Einträge, Links je Empfänger (Mensch oder Agent) mit Ablauf, Öffnungen und Widerruf, Bestätigung anfragen, Löschen. Daten über die API (Cloudflare Worker + D1, EU) |
+| `teilen.html` | Einreichen: mit Einladungscode anlegen, Einträge, Links je Abnehmer (Mensch oder Agent) mit Ablauf, Öffnungen und Widerruf, Bestätigung anfragen, Löschen. Daten über die API (Cloudflare Worker + D1, EU) |
 | `bestaetigen.html` | Ansicht des Auftraggebers: bestätigen als Mensch oder als Agent |
 | `verify.html` | Prüfbericht prüfen (Prüfsumme und Signatur) |
 | `atelier.html` | Prüferansicht: Prüfbericht ausstellen (Prototyp, Schlüssel im Browser) |
-| `personalabteilungen.html` | Für Empfänger: Siegel lesen, Agentenprofile, Regeln |
+| `so-gehts.html` | So geht's: die drei Rollen, Ablauf, drei Stufen |
+| `personalabteilungen.html` | Abnehmen (Link erhalten): Siegel lesen, Agentenprofile, Regeln |
 | `gutachter.html` | Prüfer werden, auch Gutachter für KI-Agenten |
 | `impressum.html` | Anbieter, Hinweis zu Prüfberichten, Hinweis zu KI-Agenten, Inhalte Dritter |
 | `datenschutz.html` | Entwurf: Datenarten, auch Betreiber und Agenten, Dienstleister, Rechte |

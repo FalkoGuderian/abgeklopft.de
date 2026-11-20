@@ -117,5 +117,6 @@ Ein Profil für einen KI-Agenten beantragt sein Betreiber, nicht der Agent. Im P
 
 ## Optional
 
-- [Für Empfänger](https://abgeklopft.de/personalabteilungen.html): wie Arbeit- und Auftraggeber die Seite lesen
+- [So geht's](https://abgeklopft.de/so-gehts.html): die Rollen Einreicher (Profilinhaber), Prüfer und Abnehmer (Empfänger der Nachweise) im Überblick
+- [Abnehmen](https://abgeklopft.de/personalabteilungen.html): wie Arbeit- und Auftraggeber die Seite lesen
 - [Impressum](https://abgeklopft.de/impressum.html)

@@ -80,13 +80,13 @@ function eintragHtml(p, i) {
   return `
   <li class="lt-item">
     <button type="button" class="lt-btn" aria-expanded="false" aria-controls="d-${i}" data-id="${esc(p.id)}">
-      <span class="badge b${st}" title="${esc(STUFEN[st].text)}">${STUFEN[st].kurz}</span>
+      <span class="badge b${st}" title="${esc(STUFEN[st].text)}">${STUFEN[st].siegel}</span>
       <span class="lt-titel">${esc(p.titel)}</span>
       <span class="lt-zeit">${esc(p.zeitraum)}</span>
     </button>
     <div class="lt-detail" id="d-${i}" hidden>
       <p>${esc(p.text)}</p>
-      <p class="meta"><b>${esc(STUFEN[st].name)}.</b> ${esc(STUFEN[st].text)}${p.abgelaufen ? ' <span class="exp">Gültigkeit abgelaufen.</span>' : ""}</p>
+      <p class="meta"><b>${esc(STUFEN[st].titel)}.</b> ${esc(STUFEN[st].text)}${p.abgelaufen ? ' <span class="exp">Gültigkeit abgelaufen.</span>' : ""}</p>
       ${p.geprueft && st === 2 ? `<p class="meta">Geprüft am ${esc(p.geprueft.datum)}: ${esc(p.geprueft.text)}</p>` : ""}
       ${p.offen && st === 1 ? `<p class="meta">Offen: ${esc(p.offen)}</p>` : ""}
       ${best.map(b => `<p class="meta" title="Name und Rolle sind Angaben der antwortenden Person.">Bestätigt von ${b.agent ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(b.antwortName)} (${esc(b.antwortRolle)}) am ${esc(b.antwortDatum)}${b.kommentar ? ": „" + esc(b.kommentar) + "“" : ""}</p>`).join("")}
@@ -169,13 +169,13 @@ function serverEintragHtml(e, i) {
   return `
   <li class="lt-item">
     <button type="button" class="lt-btn" aria-expanded="false" aria-controls="d-${i}" data-id="${esc(e.id)}">
-      <span class="badge b${st}" title="${esc(STUFEN[st].text)}">${STUFEN[st].kurz}</span>
+      <span class="badge b${st}" title="${esc(STUFEN[st].text)}">${STUFEN[st].siegel}</span>
       <span class="lt-titel">${esc(e.titel)}</span>
       <span class="lt-zeit">${esc(e.zeitraum || "")}</span>
     </button>
     <div class="lt-detail" id="d-${i}" hidden>
       ${e.text ? `<p class="mehrzeilig">${esc(e.text)}</p>` : ""}
-      <p class="meta"><b>${esc(STUFEN[st].name)}.</b> ${st === 1 ? "Selbst eingetragen, von abgeklopft.de nicht geprüft." : `Prüfbericht ${esc(e.pruefbericht.kennung)}, ausgestellt ${esc(e.pruefbericht.ausgestellt)}, gültig bis ${esc(e.pruefbericht.gueltigBis)}.${e.pruefbericht.beispiel ? " Pilot-Testschlüssel: nur Vorführung des Verfahrens, keine echte Prüfung." : ""} Nachrechnen: <a href="/verify.html">verify.html</a>.`}</p>
+      <p class="meta"><b>${esc(STUFEN[st].titel)}.</b> ${st === 1 ? "Selbst eingetragen, von abgeklopft.de nicht geprüft." : `Prüfbericht ${esc(e.pruefbericht.kennung)}, ausgestellt ${esc(e.pruefbericht.ausgestellt)}, gültig bis ${esc(e.pruefbericht.gueltigBis)}.${e.pruefbericht.beispiel ? " Pilot-Testschlüssel: nur Vorführung des Verfahrens, keine echte Prüfung." : ""} Nachrechnen: <a href="/verify.html">verify.html</a>.`}</p>
       ${(e.bestaetigungen || []).map(bestaetigungHtml).join("")}
       <p class="meta">Links der Person: ${belege || "keine"}</p>
       <div>${(e.faehigkeiten || []).map(s => `<span class="tag">${esc(s)}</span>`).join("")}</div>

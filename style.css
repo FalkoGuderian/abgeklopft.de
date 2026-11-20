@@ -63,9 +63,21 @@ nav a{text-decoration:none;color:var(--muted);font-size:.92rem;font-weight:500;p
 nav a:hover{color:var(--ink);background:var(--sunk)}
 nav a[aria-current]{color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,transparent)}
 @media(max-width:760px){
-  nav{flex-wrap:nowrap;overflow-x:auto;width:calc(100% + 40px);margin:0 -20px;padding:0 14px;scrollbar-width:none}
-  nav::-webkit-scrollbar{display:none}
+  nav:not(.reiter){flex-wrap:wrap}
+  nav:not(.reiter){gap:0}
+  nav:not(.reiter) a{padding:6px 7px;font-size:.86rem}
+  nav.reiter{gap:2px 16px}
 }
+
+
+/* Reiterleiste unter dem Kopf: Unterseiten eines Hauptpunkts. Nur Siegelblau als Akzent, bricht am Handy um. */
+nav.reiter{display:flex;flex-wrap:wrap;gap:4px 22px;margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0;border-bottom:1px solid var(--line);width:auto;overflow:visible}
+nav.reiter a{padding:11px 2px 9px;border-radius:0;background:none;color:var(--muted);font-size:.9rem;border-bottom:2px solid transparent;margin-bottom:-1px}
+nav.reiter a:hover{background:none;color:var(--ink)}
+nav.reiter a[aria-current]{background:none;color:var(--brand);border-bottom-color:var(--brand)}
+.rollen{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.rollen .card h3{margin-top:0}
+.rollen .card .row{margin-top:14px}
 
 /* Einstieg */
 .hero{padding:72px 0 64px;gap:48px!important}

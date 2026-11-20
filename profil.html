@@ -24,9 +24,10 @@
 <body>
 <div class="proto" id="proto">Beispiele · Personen, Agenten und Firmen sind erfunden</div>
 <header class="top"><div class="wrap">
-  <a class="logo" href="/index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Arbeitsergebnisse</small></a>
-  <nav id="hauptnav"><a href="/index.html">Start</a><a href="/profil.html" aria-current="page">Beispiele</a><a href="/teilen.html">Mein Profil</a><a href="/verify.html">Prüfen</a><a href="/personalabteilungen.html">Für Empfänger</a><a href="/gutachter.html">Prüfer werden</a><a href="/pruefer.html">Login</a></nav>
+  <a class="logo" href="/index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
+  <nav id="hauptnav" aria-label="Hauptmenü"><a href="/index.html" aria-current="page">Start</a><a href="/teilen.html">Einreichen</a><a href="/gutachter.html">Prüfen</a><a href="/personalabteilungen.html">Abnehmen</a><a href="/so-gehts.html">So geht's</a></nav>
 </div></header>
+<nav class="reiter wrap" id="reiterleiste" aria-label="Bereiche von Start"><a href="/index.html">Übersicht</a><a href="/profil.html" aria-current="page">Beispiele</a></nav>
 <main class="wrap">
   <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="/alex.json">abgeklopft.de/alex.json</a> (Mensch) und <a href="/belegleser.json">abgeklopft.de/belegleser.json</a> (KI-Agent). Persönliche Links <code>profil.html?l=&lt;kennung&gt;</code> gibt es als JSON unter <code>https://abgeklopft-api.falko-guderian.workers.dev/v1/l/&lt;kennung&gt;.json</code>. Eine Anleitung für KI-Agenten steht in <a href="/llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
   <nav class="profilwahl" id="wahl" aria-label="Beispielprofile"></nav>
@@ -83,17 +84,17 @@ function betreiberKasten(b, version, hinweis, siegel) {
 }
 function zusammenfassung(liste, stufe) {
   const n = s => liste.filter(p => stufe(p) === s).length;
-  $("zusammen").textContent = liste.length ? `${liste.length} Einträge: ${n(3)} von Dritten bestätigt, ${n(2)} Beleg geprüft, ${n(1)} eigene Angabe.` : "";
+  $("zusammen").textContent = liste.length ? `${liste.length} Einträge: ${n(3)} abgenommen, ${n(2)} geprüft, ${n(1)} nur eingereicht.` : "";
 }
 // Selbst angelegtes Profil vom Server zeigen
 function serverProfil(d, beimOeffnen) {
   $("profilteil").hidden = false;
   kopf(d.profil, "");
-  if (d.profil.art === "ki-agent") betreiberKasten(d.profil.betreiber, d.profil.agent_version, "Angaben des Betreibers, nicht geprüft.", `<span class="badge b1">${STUFEN[1].kurz}</span>`);
+  if (d.profil.art === "ki-agent") betreiberKasten(d.profil.betreiber, d.profil.agent_version, "Angaben des Betreibers, nicht geprüft.", `<span class="badge b1">${STUFEN[1].siegel}</span>`);
   const stf = e => ((e.stufe === 2 || e.stufe === 3) && e.pruefbericht ? e.stufe : 1);
   const geprueft = d.eintraege.some(e => stf(e) > 1);
   $("hinweis").textContent = geprueft
-    ? "Selbst angelegtes Profil: Einträge mit „Angabe“ sind eigene Angaben und nicht geprüft. Einträge mit „Geprüft“ oder „Bestätigt“ tragen einen signierten Prüfbericht (hier Pilot-Testschlüssel: nur Vorführung, keine echte Prüfung). Klicken Sie auf einen Eintrag für Beschreibung und Links."
+    ? "Selbst angelegtes Profil: Einträge mit „Eingereicht“ sind eigene Angaben und nicht geprüft. Einträge mit „Geprüft“ oder „Abgenommen“ tragen einen signierten Prüfbericht (hier Pilot-Testschlüssel: nur Vorführung, keine echte Prüfung). Klicken Sie auf einen Eintrag für Beschreibung und Links."
     : "Selbst angelegtes Profil: Alle Einträge sind eigene Angaben. abgeklopft.de hat nichts davon geprüft. Antworten von Auftraggebern sind ebenfalls noch nicht geprüft. Klicken Sie auf einen Eintrag für Beschreibung und Links.";
   profilZeigen("liste", d.eintraege, beimOeffnen, serverEintragHtml);
   zusammenfassung(d.eintraege, stf);
@@ -101,18 +102,18 @@ function serverProfil(d, beimOeffnen) {
 
 if (linkId || vorschau || lesbar) {
   // Persönlicher Link oder Vorschau: nur das Logo, keine Navigation, keine Beispiele
-  $("hauptnav").style.display = "none";
+  $("hauptnav").style.display = "none"; $("reiterleiste").style.display = "none";
   $("profilteil").hidden = true;
-  $("proto").textContent = vorschau ? "Vorschau · so sieht ein Empfänger Ihr Profil" : "Persönlicher Link · abgeklopft.de";
+  $("proto").textContent = vorschau ? "Vorschau · so sieht ein Abnehmer Ihr Profil" : "Persönlicher Link · abgeklopft.de";
 }
 
 if (vorschau) {
   const k = kontoLesen();
-  if (!k) $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">Auf diesem Gerät ist kein Profil geöffnet. <a href="/teilen.html">Zu Mein Profil</a></div>`;
+  if (!k) $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">Auf diesem Gerät ist kein Profil geöffnet. <a href="/teilen.html">Zum Einreichen</a></div>`;
   else api("GET", "/v1/profile/" + k.id, undefined, k.schluessel).then(d => {
-    $("vorab").innerHTML = `<div class="note" style="margin-top:20px">Vorschau mit allen Einträgen. Ein Empfänger sieht nur die Einträge, die Sie für seinen Link wählen. Diese Vorschau zählt nicht als Öffnung. <a href="/teilen.html">Zurück zu Mein Profil</a></div>`;
+    $("vorab").innerHTML = `<div class="note" style="margin-top:20px">Vorschau mit allen Einträgen. Ein Abnehmer sieht nur die Einträge, die Sie für seinen Link wählen. Diese Vorschau zählt nicht als Öffnung. <a href="/teilen.html">Zurück zu Mein Profil</a></div>`;
     serverProfil(d, null);
-  }, e => { $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">${esc(e.message)} <a href="/teilen.html">Zu Mein Profil</a></div>`; });
+  }, e => { $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">${esc(e.message)} <a href="/teilen.html">Zum Einreichen</a></div>`; });
 } else if (linkId || lesbar) {
   const jsonUrl = API + linkPfad + ".json";
   $("jsonlink").href = $("jsonfuss").href = jsonUrl;
@@ -152,7 +153,7 @@ if (vorschau) {
   $("jsonlink").href = $("jsonfuss").href = slug + ".json";
   if (agent) {
     const st = stufeVon(PORTFOLIO.find(p => p.weg === "betreiber") || { stufe: 1 });
-    betreiberKasten(PROFIL.betreiber, PROFIL.version, PROFIL.versionHinweis, `<span class="badge b${st}">${STUFEN[st].kurz}</span>`);
+    betreiberKasten(PROFIL.betreiber, PROFIL.version, PROFIL.versionHinweis, `<span class="badge b${st}">${STUFEN[st].siegel}</span>`);
   }
   $("wahl").innerHTML = Object.entries(PROFILE).map(([id, x]) =>
     `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name)} · ${esc(ARTEN[x.profil.art].kurz)}</a>`).join("");

@@ -33,7 +33,7 @@
         '<p class="artzeile">' + art + "</p>" +
       "</div>" +
       '<ul class="lt-liste" style="margin-top:14px">' + liste.map(function (e) {
-        return '<li class="lt-item"><div class="lt-btn"><span class="badge b' + e.stufe + '">' + esc(window.STUFEN[e.stufe].kurz) + '</span><span class="lt-titel">' + esc(e.titel) + "</span></div></li>";
+        return '<li class="lt-item"><div class="lt-btn"><span class="badge b' + e.stufe + '">' + esc(window.STUFEN[e.stufe].siegel) + '</span><span class="lt-titel">' + esc(e.titel) + "</span></div></li>";
       }).join("") + "</ul>" +
       '<span class="folie-hinweis">Beispiel ansehen →</span>' +
     "</a>";
