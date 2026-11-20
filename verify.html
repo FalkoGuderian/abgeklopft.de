@@ -37,7 +37,9 @@
 <script src="data.js"></script><script src="app.js"></script>
 <script>
 const $ = id => document.getElementById(id);
-function meld(typ, html) { $("erg").innerHTML = `<div class="result ${typ}">${html}</div>`; }
+const PA_SVG = `<svg class="pa" viewBox="0 0 84 70" role="img" aria-label="Karte geprüft: Haken"><rect class="pa-karte" x="2" y="8" width="64" height="52" rx="7"/><g class="pa-zeilen"><line x1="12" y1="24" x2="42" y2="24"/><line x1="12" y1="34" x2="42" y2="34"/><line x1="12" y1="44" x2="54" y2="44"/></g><rect class="pa-schimmer" x="4" y="9" width="60" height="8" rx="3"/><g class="pa-siegel"><circle class="pa-ring" cx="62" cy="16" r="15"/><circle class="pa-ok" cx="62" cy="16" r="12"/><polyline class="pa-haken" points="55,16 60,21 69,10"/></g></svg>`;
+// Prüf-Animation nur beim echten, gültigen Ergebnis (grün); alle anderen Ergebnisse ohne Haken
+function meld(typ, html, haken) { $("erg").innerHTML = `<div class="result ${typ}">${haken ? `<div class="pa-erg">${PA_SVG}<div>${html}</div></div>` : html}</div>`; }
 async function pruefen() {
   let u; try { u = JSON.parse($("json").value); } catch { return meld("bad", "Kein gültiges JSON."); }
   if (!u || !u.inhalt || !u.pruefsumme) return meld("bad", "Es fehlen „inhalt“ oder „pruefsumme“.");
@@ -53,7 +55,7 @@ async function pruefen() {
   if (s.status === "keine") return meld("warn", `<b>Nicht signiert.</b> ${kopf} Der Inhalt passt zur Prüfsumme, aber eine Prüfsumme kann jeder selbst berechnen. Wer die Urkunde ausgestellt hat, ist offen.`);
   if (s.status === "falsch") return meld("bad", "<b>Signatur ungültig.</b> Der Inhalt wurde nach dem Signieren verändert, oder die Signatur gehört nicht dazu.");
   if (s.status === "fremd") return meld("warn", `<b>Gültig signiert, aber mit unbekanntem Schlüssel ${esc(s.kid)}.</b> ${kopf} Der Schlüssel steht nicht in der Liste der zugelassenen Prüfer. Jemand kann sich selbst einen Schlüssel erzeugt haben.`);
-  meld(abgelaufen ? "bad" : "ok", `<b>Echt: signiert von ${esc(s.name)} (Schlüssel ${esc(s.kid)}), Inhalt unverändert.</b> ${kopf}`);
+  meld(abgelaufen ? "bad" : "ok", `<b>Echt: signiert von ${esc(s.name)} (Schlüssel ${esc(s.kid)}), Inhalt unverändert.</b> ${kopf}`, !abgelaufen);
 }
 $("pruef").onclick = pruefen;
 $("manip").onclick = () => {

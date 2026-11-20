@@ -260,3 +260,31 @@ nav.profilwahl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin
 .nur-vorlesen{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:-1px}
 @media (prefers-reduced-motion: reduce){.karussell .folie,.karussell .folie.an{transition:none;transform:none}}
 .mock .lt h2{font-size:1.35rem;letter-spacing:-.025em;margin:0}
+
+/* Prüf-Animation: Karte wird geprüft, dann erscheint der Haken (einmal, ca. 2,2 s, danach Ruhe).
+   Der Grundzustand ist der Endzustand; die Animationen starten per "backwards" davor. */
+.pa{display:block;width:84px;height:70px;flex:none;overflow:visible}
+.pa-karte{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.pa-zeilen line{stroke:var(--brand);stroke-width:4;stroke-linecap:round;opacity:.9}
+.pa-schimmer{fill:var(--brand);opacity:0}
+.pa-ring{fill:var(--surface)}
+.pa-ok{fill:var(--brand)}
+.pa-haken{fill:none;stroke:var(--brand-ink);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:0}
+.pa-zeilen line{animation:pa-zeile .5s ease-out backwards}
+.pa-zeilen line:nth-child(2){animation-delay:.25s}
+.pa-zeilen line:nth-child(3){animation-delay:.5s}
+.pa-schimmer{animation:pa-scan 1.3s ease-in-out .1s 1 backwards}
+.pa-siegel{transform-box:fill-box;transform-origin:center;animation:pa-pop .45s cubic-bezier(.2,.9,.3,1.3) 1.25s backwards}
+.pa-haken{animation:pa-zeichnen .45s ease-out 1.55s backwards}
+@keyframes pa-zeile{from{opacity:.15}}
+@keyframes pa-scan{0%{opacity:0;transform:translateY(0)}15%{opacity:.28}85%{opacity:.28}100%{opacity:0;transform:translateY(46px)}}
+@keyframes pa-pop{from{opacity:0;transform:scale(.3)}}
+@keyframes pa-zeichnen{from{stroke-dashoffset:30}}
+.pa-eyebrow{display:flex;align-items:center;gap:14px;margin:0 0 18px}
+.pa-eyebrow .eyebrow{margin:0}
+.pa-erg{display:flex;align-items:center;gap:16px}
+.pa-erg>div{min-width:0}
+@media (max-width:420px){.pa{width:64px;height:54px}.pa-eyebrow{gap:10px}}
+@media (prefers-reduced-motion:reduce){
+  .pa-zeilen line,.pa-schimmer,.pa-siegel,.pa-haken{animation:none}
+}
