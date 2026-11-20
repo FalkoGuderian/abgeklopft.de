@@ -39,54 +39,247 @@
 const $ = id => document.getElementById(id);
 const PA_SVG = `<svg class="pa" viewBox="0 0 84 70" role="img" aria-label="Karte geprüft: Haken"><rect class="pa-karte" x="2" y="8" width="64" height="52" rx="7"/><g class="pa-zeilen"><line x1="12" y1="24" x2="42" y2="24"/><line x1="12" y1="34" x2="42" y2="34"/><line x1="12" y1="44" x2="54" y2="44"/></g><rect class="pa-schimmer" x="4" y="9" width="60" height="8" rx="3"/><g class="pa-siegel"><circle class="pa-ring" cx="62" cy="16" r="15"/><circle class="pa-ok" cx="62" cy="16" r="12"/><polyline class="pa-haken" points="55,16 60,21 69,10"/></g></svg>`;
 // Prüf-Animation nur beim echten, gültigen Ergebnis (grün); alle anderen Ergebnisse ohne Haken
-function meld(typ, html, haken) { $("erg").innerHTML = `<div class="result ${typ}">${haken ? `<div class="pa-erg">${PA_SVG}<div>${html}</div></div>` : html}</div>`; }
-// Widerrufsliste (abgeklopft-widerruf/1): signiert wie die Prüfberichte, gleicher Ursprung.
+// ===== Prüfregeln nach server/spezifikation_signatur.md (5.2/5.3). Gleiche Ergebnisse und Statusnamen wie scripts/pruefen.mjs der Skills. =====
+// Vertrauensanker: SHA-256-Fingerabdrücke (64 Hex, über kanonisch({crv,kty,x})) anerkannter Wurzeln. Leer, solange es keine echte Wurzel gibt.
+const WURZEL_ANKER = [];
+const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/, HEX64 = /^[0-9a-f]{64}$/, KENNUNG = /^AK-[0-9A-F]{4}-[0-9A-F]{4}$/, DATUM = /^\d{4}-\d{2}-\d{2}$/;
+const GRUENDE = ["auf_wunsch", "fehler", "schluessel"], TAG = 86400000;
+const RANG = ["format_nicht_zulaessig", "veraendert", "signatur_ungueltig", "nicht_signiert", "unbekannter_schluessel", "schluessel_gesperrt", "widerrufen", "schluessel_nicht_gueltig", "profil_weicht_ab"];
 const WIDERRUF_GRUND = { auf_wunsch: "auf Wunsch der Person", fehler: "wegen eines Fehlers im Bericht", schluessel: "Schlüssel nicht mehr vertrauenswürdig" };
-// Ergebnis: { art: "widerrufen", eintrag, stand } | { art: "frei", stand } | { art: "unbekannt" }
-async function widerrufStatus(kennung, testListe) {
-  try {
-    let liste = testListe;
-    if (!liste) {
-      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 8000);
-      try {
-        const r = await fetch(".well-known/widerruf.json", { cache: "no-store", signal: ctl.signal });
-        if (!r.ok) return { art: "unbekannt" };
-        liste = await r.json();
-      } finally { clearTimeout(t); }
-      const { signatur, ...rest } = liste || {};
-      const sg = await signaturPruefen(signatur, kanonisch(rest));
-      if (sg.status !== "vertraut") return { art: "unbekannt" };   // Signatur fehlt, ungültig oder fremder Schlüssel
-    }
-    if (!liste || liste.format !== "abgeklopft-widerruf/1" || liste.aussteller !== "abgeklopft.de" || !Array.isArray(liste.eintraege) || typeof liste.stand !== "string") return { art: "unbekannt" };
-    const stand = liste.stand.slice(0, 10);
-    const e = liste.eintraege.find(x => x && x.kennung === kennung);
-    return e ? { art: "widerrufen", eintrag: e, stand } : { art: "frei", stand };
-  } catch { return { art: "unbekannt" }; }
+const jetztMs = () => Math.floor(Date.now() / 1000) * 1000;
+function zeit(t) {   // streng JJJJ-MM-TTThh:mm:ssZ, sonst null; Millisekunden
+  if (typeof t !== "string" || !ISO_UTC.test(t)) return null;
+  const m = Date.parse(t);
+  return Number.isNaN(m) || new Date(m).toISOString().slice(0, 19) + "Z" !== t ? null : m;
 }
+const fingerabdruck = x => sha256(kanonisch({ crv: "Ed25519", kty: "OKP", x }));
+async function edPruefen(x, wert, text) {
+  try {
+    if (typeof wert !== "string" || !/^[A-Za-z0-9+/]+={0,2}$/.test(wert)) return false;
+    const k = await crypto.subtle.importKey("jwk", { kty: "OKP", crv: "Ed25519", x }, { name: "Ed25519" }, false, ["verify"]);
+    return await crypto.subtle.verify({ name: "Ed25519" }, k, unb64(wert), new TextEncoder().encode(text));
+  } catch { return false; }
+}
+const gleichMenge = (o, felder) => { const a = Object.keys(o).sort().join("|"); return a === [...felder].sort().join("|"); };
+function formatnummer(f) { const m = /^abgeklopft-nachweise\/(\d+)\.(\d+)$/.exec(String(f ?? "")); return m ? [Number(m[1]), Number(m[2])] : null; }
+
+// Schlüssel aus jwks.json: Typ, Zeitraum und Fingerabdruck geprüft; Wurzeln nur mit Vertrauensanker; kid muss zu x passen (nur 32 Bit)
+async function schluesselLaden(jwks) {
+  const ctx = { keys: {}, gesperrt: {}, wurzeln: {}, jetzt: jetztMs(), liste: undefined };
+  if (!jwks) return ctx;
+  for (const [liste, ziel] of [[jwks.keys, "keys"], [jwks.gesperrt, "gesperrt"]]) {
+    for (const k of Array.isArray(liste) ? liste : []) {
+      if (!k || k.crv !== "Ed25519" || k.kty !== "OKP" || typeof k.x !== "string") continue;
+      const typ = k.typ ?? "pilot";
+      if (!["pilot", "signierung", "wurzel"].includes(typ)) continue;
+      const fp = await fingerabdruck(k.x);
+      if (k.kid !== (typ === "wurzel" ? "W-" : "K-") + fp.slice(0, 8).toUpperCase()) continue;
+      const e = { ...k, typ, _von: zeit(k.gilt_von), _bis: zeit(k.gilt_bis) };
+      if (typ === "wurzel") { if (WURZEL_ANKER.includes(fp) && ziel === "keys") ctx.wurzeln[k.kid] = e; }
+      else if (ziel === "keys") ctx.keys[k.kid] = e; else ctx.gesperrt[k.kid] = e;
+    }
+  }
+  return ctx;
+}
+
+// Widerrufsliste laden und prüfen (/1 und /2). Jeder Fehler heißt nur: nicht prüfbar. Gibt {ok, grund, liste, stand}.
+async function widerrufDaten(ctx) {
+  if (ctx.liste) return ctx.liste;
+  const nein = grund => (ctx.liste = { ok: false, grund, liste: null });
+  let liste;
+  try {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 8000);
+    try {
+      const r = await fetch(".well-known/widerruf.json", { cache: "no-store", signal: ctl.signal });
+      if (!r.ok) return nein("Liste nicht erreichbar");
+      liste = await r.json();
+    } finally { clearTimeout(t); }
+  } catch { return nein("Liste nicht erreichbar"); }
+  if (!liste || typeof liste !== "object" || !["abgeklopft-widerruf/1", "abgeklopft-widerruf/2"].includes(liste.format)) return nein("unbekanntes Format");
+  const v2 = liste.format.endsWith("/2"), sg = liste.signatur || {}, kid = sg.kid;
+  let sk;
+  if (Object.keys(ctx.wurzeln).length) {
+    if (!v2) return nein("Liste /1, aber es gibt eine Wurzel: nur /2 von der Wurzel zulässig");
+    sk = ctx.wurzeln[kid];
+    if (!sk) return nein("Liste nicht von der Wurzel signiert");
+    if (!(sk._von !== null && sk._bis !== null && sk._von <= ctx.jetzt && ctx.jetzt < sk._bis)) return nein("Wurzel gilt zum Prüfzeitpunkt nicht");
+  } else {
+    sk = ctx.keys[kid];
+    if (!sk || sk.typ !== "pilot") return nein("Liste nicht vom Pilotschlüssel signiert");
+  }
+  if (sg.pub?.x !== sk.x) return nein("Schlüssel in der Liste weicht von jwks.json ab");
+  const { signatur, ...rest } = liste;
+  if (!(await edPruefen(sk.x, sg.wert, kanonisch(rest)))) return nein("Signatur der Liste ungültig");
+  if (v2) {
+    const stand = zeit(liste.stand), gb = zeit(liste.gueltig_bis);
+    if (stand === null || gb === null || gb > stand + 31 * TAG) return nein("stand/gueltig_bis fehlen oder sind unzulässig");
+    if (gb < ctx.jetzt) return nein(`Liste veraltet (gueltig_bis ${liste.gueltig_bis})`);
+  }
+  if (!Array.isArray(liste.eintraege)) return nein("eintraege fehlt");
+  for (const x of liste.eintraege) {
+    if (!x || typeof x !== "object" || Array.isArray(x)) return nein("Eintrag ist kein Objekt");
+    let ok;
+    if (!v2) ok = gleichMenge(x, ["kennung", "widerrufen_am", "grund"]) && KENNUNG.test(String(x.kennung)) && DATUM.test(String(x.widerrufen_am)) && GRUENDE.includes(x.grund);
+    else if (x.typ === "bericht") ok = gleichMenge(x, ["typ", "kennung", "pruefsumme", "widerrufen_am", "grund"]) && KENNUNG.test(String(x.kennung)) && HEX64.test(String(x.pruefsumme)) && DATUM.test(String(x.widerrufen_am)) && GRUENDE.includes(x.grund);
+    else if (x.typ === "schluessel") ok = gleichMenge(x, ["typ", "kid", "gesperrt_ab", "widerrufen_am", "grund", "gueltige_pruefsummen"]) && zeit(x.gesperrt_ab) !== null && DATUM.test(String(x.widerrufen_am)) && x.grund === "schluessel" && Array.isArray(x.gueltige_pruefsummen) && x.gueltige_pruefsummen.every(h => HEX64.test(String(h))) && typeof x.kid === "string";
+    else ok = false;
+    if (!ok) return nein("Eintrag unzulässig (unbekannter Typ, fehlende oder zusätzliche Felder)");
+  }
+  return (ctx.liste = { ok: true, grund: "", liste, stand: String(liste.stand).slice(0, 10) });
+}
+
+// Zertifikatskette eines Signierschlüssels: null (ok) oder ["format" | "unbekannt", Text]
+async function zertifikatPruefen(k, ctx) {
+  const z = k.zertifikat;
+  if (!z || typeof z !== "object" || typeof z.wurzel_kid !== "string" || typeof z.wert !== "string") return ["unbekannt", "Zertifikat fehlt"];
+  if (!gleichMenge(z, ["wurzel_kid", "wert"])) return ["format", "zusätzliche Felder im Zertifikat"];
+  const w = ctx.wurzeln[z.wurzel_kid];
+  if (!w) return ["unbekannt", "Wurzel nicht anerkannt (kein Vertrauensanker)"];
+  const von = k._von, bis = k._bis;
+  if (von === null || bis === null || bis <= von) return ["unbekannt", "Zeitraum des Schlüssels fehlt oder ist unlesbar"];
+  if (bis - von > 104 * TAG) return ["unbekannt", "Zertifikat länger als 90 Tage plus 14 Tage Überlappung"];
+  if (!(w._von !== null && w._bis !== null && w._von <= von && bis <= w._bis)) return ["unbekannt", "Zertifikat reicht über die Gültigkeit der Wurzel hinaus"];
+  const obj = { aussteller: "abgeklopft.de", crv: k.crv, format: "abgeklopft-zertifikat/1", gilt_bis: k.gilt_bis, gilt_von: k.gilt_von, kid: k.kid, kty: k.kty, wurzel_kid: z.wurzel_kid, x: k.x };
+  if (!(await edPruefen(w.x, z.wert, kanonisch(obj)))) return ["unbekannt", "Zertifikat ungültig (Signatur der Wurzel stimmt nicht)"];
+  return null;
+}
+
+// Prüft einen Prüfbericht nach 5.2. kx = { ctx, profil, eintrag, testListe }. Gibt { status, f (Fehlertexte), ... }.
+async function bewerte(u, kx) {
+  const ctx = kx.ctx, f = [], befunde = [];
+  const fehler = (st, t) => { f.push(t); befunde.push(st); };
+  const { kennung, ...inhalt } = u.inhalt || {};
+  const text = kanonisch(inhalt), summe = await sha256(text);
+  const version = inhalt.version, ausgestellt = inhalt.ausgestellt;
+  const profil = kx.profil, e = kx.eintrag;
+  // 1. Format
+  if (![1, 2].includes(version) && version !== undefined) fehler("format_nicht_zulaessig", `Berichtsversion ${JSON.stringify(version)} unbekannt`);
+  if (version === 2) {
+    if (zeit(ausgestellt) === null) fehler("format_nicht_zulaessig", "Version 2 braucht ausgestellt als JJJJ-MM-TTThh:mm:ssZ (UTC)");
+    if (profil) { const nr = formatnummer(profil.format); if (!nr || nr[0] < 0 || (nr[0] === 0 && nr[1] < 4)) fehler("format_nicht_zulaessig", `Format ${JSON.stringify(profil.format)} passt nicht zu Berichten der Version 2 (mindestens 0.4)`); }
+  }
+  // 2. Prüfsumme und Kennung
+  if (summe !== u.pruefsumme) fehler("veraendert", "Prüfsumme stimmt nicht: Inhalt verändert");
+  const erw = "AK-" + summe.slice(0, 4).toUpperCase() + "-" + summe.slice(4, 8).toUpperCase();
+  if (kennung && kennung !== erw) fehler("veraendert", `Kennung ${kennung} passt nicht (erwartet ${erw})`);
+  // 3. Schlüssel (jwks.json; ersatzweise ein Schlüssel aus diesem Browser, nur Prototyp)
+  const s = u.signatur || {}, kid = s.kid;
+  let k = ctx.keys[kid] || ctx.gesperrt[kid], lokal = false;
+  if (!k && s.pub) { const l = lesen(VERTRAUT_KEY).find(x => x.kid === kid && kanonisch(x.pub) === kanonisch(s.pub)); if (l) { lokal = true; k = { typ: "lokal", name: l.name, kid }; } }
+  let schlOk = false, sigOk = false;
+  if (!u.signatur) fehler("nicht_signiert", "Der Bericht ist nicht signiert");
+  else {
+    if (!lokal && s.alg?.name !== "Ed25519") fehler("unbekannter_schluessel", "Verfahren ist nicht Ed25519");
+    if (!k) fehler("unbekannter_schluessel", `Schlüssel ${kid} steht nicht in der Liste der zugelassenen Prüfer (oder kid passt nicht zu x)`);
+    else if (!lokal && k.x !== s.pub?.x) fehler("unbekannter_schluessel", "Schlüssel im Bericht weicht von der veröffentlichten Liste ab");
+    else if (!lokal && "K-" + (await fingerabdruck(s.pub.x)).slice(0, 8).toUpperCase() !== kid) fehler("unbekannter_schluessel", "kid im Bericht passt nicht zum Schlüssel");
+    else schlOk = true;
+  }
+  const pilot = !!k && k.typ === "pilot";
+  if (k && schlOk && !lokal) {
+    if (version === 1 && !pilot) fehler("format_nicht_zulaessig", "Version 1 ist nur mit dem Pilotschlüssel zulässig");
+    if (pilot && !inhalt.beispiel) fehler("format_nicht_zulaessig", "Bericht des Pilotschlüssels ohne „beispiel“: nur erfundene Beispiele sind zulässig");
+    // 4. Zertifikatskette
+    if (k.typ === "signierung") { const zr = await zertifikatPruefen(k, ctx); if (zr) fehler(zr[0] === "format" ? "format_nicht_zulaessig" : "unbekannter_schluessel", zr[1]); }
+  }
+  // 5. Signatur (nur wenn der Schlüssel im Bericht zur Liste passt; sonst gilt „unbekannter Schlüssel“)
+  if (schlOk) sigOk = lokal ? (await signaturPruefen(s, text)).status === "vertraut" : await edPruefen(k.x, s.wert, text);
+  if (schlOk && !sigOk) fehler("signatur_ungueltig", "Signatur ungültig");
+  // 6. Zeit (Version 2)
+  const ausMs = version === 2 ? zeit(ausgestellt) : (typeof ausgestellt === "string" && DATUM.test(ausgestellt) ? Date.parse(ausgestellt + "T00:00:00Z") : null);
+  if (version === 2 && ausMs !== null) {
+    if (ausMs > ctx.jetzt + 5 * 60000) fehler("schluessel_nicht_gueltig", "ausgestellt liegt in der Zukunft (Zeitangabe unplausibel)");
+    if (k && k.typ === "signierung" && !(k._von !== null && k._bis !== null && k._von <= ausMs && ausMs < k._bis)) fehler("schluessel_nicht_gueltig", `Der Schlüssel war zum Ausstellungszeitpunkt ${ausgestellt} nicht gültig`);
+  }
+  // 7. Sperre, 8. Widerruf (Testliste im Speicher nur auf Knopfdruck, nie als echte Liste)
+  const w = kx.testListe ? { ok: true, liste: kx.testListe, stand: String(kx.testListe.stand).slice(0, 10), test: true } : await widerrufDaten(ctx);
+  const gesperrtKey = !!k && kid in ctx.gesperrt && !(kid in ctx.keys);
+  let widerrufUnpruefbar = false, sperrDatum = null, widerrufEintrag = null;
+  if (w.ok) {
+    const sperre = w.liste.eintraege.filter(x => x.typ === "schluessel" && x.kid === kid).pop();
+    if (sperre) {
+      sperrDatum = sperre.gesperrt_ab;
+      const ga = zeit(sperre.gesperrt_ab);
+      if (!(sperre.gueltige_pruefsummen.includes(summe) && ausMs !== null && ga !== null && ausMs < ga)) fehler("schluessel_gesperrt", `Der Schlüssel ${kid} wurde ab ${sperre.gesperrt_ab} gesperrt; dieser Bericht steht nicht in der signierten Liste der gültigen Berichte`);
+    } else if (gesperrtKey) fehler("schluessel_gesperrt", `Der Schlüssel ${kid} ist gesperrt (jwks.json, ohne signierte Liste der gültigen Berichte)`);
+    for (const x of w.liste.eintraege) {
+      const treffer = x.typ === "bericht" ? x.pruefsumme === summe : (!("typ" in x) ? x.kennung === (kennung || erw) : false);
+      if (treffer) { widerrufEintrag = x; fehler("widerrufen", `Widerrufen am ${x.widerrufen_am} (${x.grund})`); }
+    }
+  } else if (gesperrtKey) fehler("schluessel_gesperrt", `Der Schlüssel ${kid} ist gesperrt (jwks.json)`);
+  else widerrufUnpruefbar = !lokal;   // Schlüssel aus diesem Browser hängen nicht von der Widerrufsliste ab
+  // 9. gueltigBis und Abgleich mit dem Profil
+  const gb = inhalt.gueltigBis, gbOk = typeof gb === "string" && DATUM.test(gb);
+  if (!gbOk) fehler("format_nicht_zulaessig", "gueltigBis fehlt oder unlesbar");
+  const gueltig = gbOk && gb >= heuteIso();
+  if (profil && e) {
+    if (e.gueltig === true && !gueltig) fehler("profil_weicht_ab", "Profil sagt gültig, Prüfbericht ist abgelaufen");
+    const adr = (profil.profil?.adresse || "").replace(/^https?:\/\//, "");
+    const vgl = [["Stufe", e.stufe, "S" + inhalt.stufe], ["Eintrag", e.id, inhalt.eintrag], ["Mensch/KI-Agent", profil.profil?.art, inhalt.subjekt],
+      ["Prüfweg", e.pruefung?.pruefweg, inhalt.pruefweg], ...(adr ? [["Profiladresse", adr, inhalt.profil]] : []),
+      ...(profil.profil?.art === "ki-agent" ? [["agent_version", profil.profil.agent_version, inhalt.agent_version]] : [])];
+    for (const [n, a, sg] of vgl) if (a !== sg) fehler("profil_weicht_ab", `${n}: Profil sagt ${JSON.stringify(a)}, signiert ist ${JSON.stringify(sg)}`);
+  }
+  const status = befunde.length ? RANG.find(r => befunde.includes(r)) : widerrufUnpruefbar ? "widerrufsstatus_nicht_pruefbar" : !gueltig ? "abgelaufen" : lokal ? "lokal_vertraut" : pilot ? "beispiel_pilot" : "echt";
+  return { status, lokal, f, k, kid, kennung: kennung || erw, w, sperrDatum, widerrufEintrag, inhalt, gueltig, widerrufGrund: w.grund };
+}
+
+// Anzeige nach Tabelle 5.3 (Texte wörtlich). Haken nur bei „echt“ und „beispiel_pilot“.
+function anzeige(r, kx) {
+  const i = r.inhalt, k = r.k || {};
+  const abgelaufen = !r.gueltig;
+  const kopf = `Stufe „${esc((STUFEN[i.stufe] || { kurz: i.stufe }).kurz)}“, ausgestellt ${esc(i.ausgestellt)}, ` +
+    (abgelaufen ? `<b>abgelaufen seit ${esc(i.gueltigBis)}</b>.` : `gültig bis ${esc(i.gueltigBis)}.`);
+  const echt = `<b>Echt: signiert von ${esc(k.name)} (Schlüssel ${esc(r.kid)}), Inhalt unverändert.</b> ${kopf}`;
+  const nichtWid = r.w && r.w.ok ? ` <b>Nicht widerrufen (Stand ${esc(r.w.stand)}).</b>` : "";
+  const details = r.f.length ? ` <span class="meta">Details: ${esc(r.f.join(" · "))}</span>` : "";
+  switch (r.status) {
+    case "echt": return { typ: "ok", haken: true, html: echt + nichtWid };
+    case "beispiel_pilot": return { typ: "ok", haken: true, html: `<b>Echt signiert mit dem Pilot-Testschlüssel. Nur Beispiel, keine echte Prüfung.</b> ${kopf}${nichtWid}` };
+    case "lokal_vertraut": return { typ: "warn", html: `<b>Signiert mit einem Schlüssel, dem nur dieser Browser vertraut (Atelier-Test). Nicht von abgeklopft.de geprüft.</b> ${kopf}` };
+    case "veraendert": return { typ: "bad", html: `<b>Inhalt wurde verändert.</b> Prüfsumme oder Kennung passen nicht zum Inhalt.${details}` };
+    case "signatur_ungueltig": return { typ: "bad", html: `<b>Signatur ungültig.</b> Der Inhalt wurde nach dem Signieren verändert, oder die Signatur gehört nicht dazu.${details}` };
+    case "nicht_signiert": return { typ: "warn", html: `<b>Nicht signiert.</b> ${kopf} Der Inhalt passt zur Prüfsumme, aber eine Prüfsumme kann jeder selbst berechnen. Wer die Urkunde ausgestellt hat, ist offen.` };
+    case "unbekannter_schluessel": return { typ: "warn", html: `<b>Gültig signiert, aber mit unbekanntem Schlüssel ${esc(r.kid)}.</b> ${kopf} Er steht nicht in der Liste der zugelassenen Prüfer. Jemand kann sich selbst einen Schlüssel erzeugt haben.${details}` };
+    case "schluessel_nicht_gueltig": return { typ: "bad", html: `<b>Der Schlüssel war zum Ausstellungszeitpunkt nicht gültig.</b>${details}` };
+    case "schluessel_gesperrt": return { typ: "bad", html: `<b>Der Schlüssel ${esc(r.kid)} wurde gesperrt. Dieser Bericht gilt nicht.</b>${r.sperrDatum ? ` Gesperrt ab ${esc(r.sperrDatum)}.` : ""}${details}` };
+    case "widerrufen": {
+      const x = r.widerrufEintrag || {};
+      return { typ: "bad", html: `<b>Widerrufen am ${esc(x.widerrufen_am)} (${esc(WIDERRUF_GRUND[x.grund] || "Grund unbekannt")}).</b> Die Signatur ist echt, aber abgeklopft.de hat diesen Prüfbericht zurückgezogen. Nicht mehr verlassen. Kennung ${esc(r.kennung)}, Stand der Widerrufsliste ${esc(r.w.stand)}${r.w.test ? " (Testliste im Speicher, nicht die echte Datei)" : ""}.` };
+    }
+    case "widerrufsstatus_nicht_pruefbar": return { typ: "warn", html: `<b>Widerrufsstatus konnte nicht geprüft werden.</b> Der Bericht ist echt signiert von ${esc(k.name)} (Schlüssel ${esc(r.kid)}) und unverändert, kann aber zurückgezogen worden sein. ${kopf} Grund: Die Widerrufsliste war nicht erreichbar, nicht gültig signiert oder veraltet (${esc(r.widerrufGrund)}).` };
+    case "abgelaufen": return { typ: "bad", html: echt + nichtWid };
+    case "format_nicht_zulaessig": return { typ: "bad", html: `<b>Format nicht zulässig.</b>${details}` };
+    case "profil_weicht_ab": return { typ: "bad", html: `<b>Profil und Prüfbericht passen nicht zusammen.</b>${details}` };
+  }
+  return { typ: "bad", html: "Unbekanntes Ergebnis." };
+}
+
+// Ergebnisse anzeigen; jedes trägt data-status (maschinenlesbar, gleiche Namen wie die Skripte mit --json)
+function zeige(liste) {
+  $("erg").innerHTML = liste.map(r => `<div class="result ${r.typ}" data-status="${esc(r.status)}"${r.id ? ` data-eintrag="${esc(r.id)}"` : ""}${r.test ? ' data-testliste="1"' : ""}>` +
+    `${r.haken ? `<div class="pa-erg">${PA_SVG}<div>${r.html}</div></div>` : r.html}</div>`).join("");
+}
+function meld(typ, html, haken, status = "format_nicht_zulaessig") { zeige([{ typ, html, haken, status }]); }
+
 async function pruefen(testListe) {
   let u; try { u = JSON.parse($("json").value); } catch { return meld("bad", "Kein gültiges JSON."); }
-  if (!u || !u.inhalt || !u.pruefsumme) return meld("bad", "Es fehlen „inhalt“ oder „pruefsumme“.");
-  const { kennung, ...rest } = u.inhalt;
-  const neu = await sha256(kanonisch(rest));
-  if (neu !== u.pruefsumme) return meld("bad", "Prüfsumme stimmt nicht. Der Inhalt wurde verändert oder gehört nicht zu dieser Summe.");
-  if (kennung && kennung !== "AK-" + neu.slice(0, 4).toUpperCase() + "-" + neu.slice(4, 8).toUpperCase())
-    return meld("bad", "Kennung passt nicht zur Prüfsumme.");
-  const abgelaufen = u.inhalt.gueltigBis < heuteIso();
-  const kopf = `Stufe „${esc((STUFEN[u.inhalt.stufe] || { kurz: u.inhalt.stufe }).kurz)}“, ausgestellt ${esc(u.inhalt.ausgestellt)}, ` +
-    (abgelaufen ? `<b>abgelaufen seit ${esc(u.inhalt.gueltigBis)}</b>.` : `gültig bis ${esc(u.inhalt.gueltigBis)}.`);
-  const s = await signaturPruefen(u.signatur, kanonisch(rest));
-  if (s.status === "keine") return meld("warn", `<b>Nicht signiert.</b> ${kopf} Der Inhalt passt zur Prüfsumme, aber eine Prüfsumme kann jeder selbst berechnen. Wer die Urkunde ausgestellt hat, ist offen.`);
-  if (s.status === "falsch") return meld("bad", "<b>Signatur ungültig.</b> Der Inhalt wurde nach dem Signieren verändert, oder die Signatur gehört nicht dazu.");
-  if (s.status === "fremd") return meld("warn", `<b>Gültig signiert, aber mit unbekanntem Schlüssel ${esc(s.kid)}.</b> ${kopf} Der Schlüssel steht nicht in der Liste der zugelassenen Prüfer. Jemand kann sich selbst einen Schlüssel erzeugt haben.`);
-  const echt = `<b>Echt: signiert von ${esc(s.name)} (Schlüssel ${esc(s.kid)}), Inhalt unverändert.</b> ${kopf}`;
-  if (abgelaufen) return meld("bad", echt);
-  const k = "AK-" + neu.slice(0, 4).toUpperCase() + "-" + neu.slice(4, 8).toUpperCase();
-  const w = await widerrufStatus(k, testListe);
-  if (w.art === "widerrufen")
-    return meld("bad", `<b>Widerrufen am ${esc(w.eintrag.widerrufen_am)} (${esc(WIDERRUF_GRUND[w.eintrag.grund] || "Grund unbekannt")}).</b> Die Signatur ist echt, aber abgeklopft.de hat diesen Prüfbericht zurückgezogen. Nicht mehr verlassen. Kennung ${esc(k)}, Stand der Widerrufsliste ${esc(w.stand)}${testListe ? " (Testliste im Speicher, nicht die echte Datei)" : ""}.`);
-  if (w.art === "unbekannt")
-    return meld("warn", `${echt} <b>Der Widerrufsstatus konnte nicht geprüft werden.</b> Die Widerrufsliste war nicht erreichbar oder ihre Signatur ist ungültig. Ob der Bericht zurückgezogen wurde, ist unbekannt.`);
-  meld("ok", `${echt} <b>Nicht widerrufen (Stand ${esc(w.stand)}).</b>`, true);
+  await JWKS_BEREIT;
+  const ctx = await schluesselLaden(window.JWKS);
+  const eintraege = [];   // { u, profil, eintrag }
+  if (u && Array.isArray(u.eintraege) && u.profil) {   // ganzes Profil eingefügt: jeder S2/S3-Eintrag wird geprüft
+    for (const e of u.eintraege) if (e && e.stufe !== "S1") eintraege.push({ u: e.pruefbericht, profil: u, eintrag: e });
+    if (!eintraege.length) return meld("warn", "<b>Keine Prüfberichte.</b> Dieses Profil enthält nur Eigene Angaben (S1). Sie sind nicht geprüft.", false, "s1");
+  } else eintraege.push({ u, profil: null, eintrag: null });
+  const aus = [];
+  for (const x of eintraege) {
+    const id = x.eintrag ? x.eintrag.id : undefined;
+    if (!x.u || !x.u.inhalt || !x.u.pruefsumme) { aus.push({ typ: "bad", html: "Es fehlen „inhalt“ oder „pruefsumme“.", status: "format_nicht_zulaessig", id }); continue; }
+    if (!window.JWKS && !lesen(VERTRAUT_KEY).some(k => k.kid === (x.u.signatur || {}).kid)) { aus.push({ typ: "bad", html: "<b>Die Liste der zugelassenen Prüfer ließ sich nicht laden.</b> Ohne sie kann der Bericht nicht geprüft werden. Die Seite funktioniert nur über das Netz.", status: "nicht_ladbar", id }); continue; }
+    const r = await bewerte(x.u, { ctx, profil: x.profil, eintrag: x.eintrag, testListe });
+    aus.push({ ...anzeige(r, x), status: r.status, id, test: !!(r.w && r.w.test) });
+  }
+  zeige(aus);
 }
 $("pruef").onclick = () => pruefen();
 $("manip").onclick = () => {
@@ -115,9 +308,12 @@ $("widtest").onclick = async () => {
 // Veröffentlichte Prüfschlüssel der Plattform laden (wie ein KI-Agent es auch tut)
 async function plattformSchluessel() {
   try {
-    const j = await (await fetch(".well-known/jwks.json")).json();
-    window.VERTRAUT_EXTRA = j.keys.map(k => ({ kid: k.kid, name: k.name, alg: { name: "Ed25519" }, pub: { crv: k.crv, kty: k.kty, x: k.x } }));
-  } catch { window.VERTRAUT_EXTRA = []; }
+    const r = await fetch(".well-known/jwks.json", { cache: "no-store" });
+    if (!r.ok) throw new Error("jwks nicht erreichbar");
+    const j = await r.json();
+    window.JWKS = j;   // komplette Liste (Typ, Zeitraum, Zertifikat, gesperrte Schlüssel) für die Prüfregeln
+    window.VERTRAUT_EXTRA = j.keys.map(k => ({ kid: k.kid, name: k.name, typ: k.typ || "pilot", alg: { name: "Ed25519" }, pub: { crv: k.crv, kty: k.kty, x: k.x } }));
+  } catch { window.JWKS = null; window.VERTRAUT_EXTRA = []; }
   schlZeigen();
 }
 async function beispielLaden(pruefe = true) {
@@ -127,11 +323,11 @@ async function beispielLaden(pruefe = true) {
   } catch { meld("bad", "Das Beispiel ließ sich nicht laden. Es geht nur, wenn die Seite über das Netz geöffnet ist."); }
 }
 $("beispiel").onclick = () => beispielLaden();
-plattformSchluessel();
+const JWKS_BEREIT = plattformSchluessel();   // Prüfen wartet darauf (window.JWKS)
 function schlZeigen() {
   const v = [...(window.VERTRAUT_EXTRA || []), ...lesen(VERTRAUT_KEY)];
-  $("schl").innerHTML = v.length ? `<div class="tbl"><table><tr><th>Schlüssel</th><th>Prüfer</th><th>Verfahren</th></tr>` +
-    v.map(k => `<tr><td>${esc(k.kid)}</td><td>${esc(k.name)}</td><td>${esc(k.alg.name)}</td></tr>`).join("") + `</table></div>
+  $("schl").innerHTML = v.length ? `<div class="tbl"><table><tr><th>Schlüssel</th><th>Prüfer</th><th>Art</th><th>Verfahren</th></tr>` +
+    v.map(k => `<tr><td>${esc(k.kid)}</td><td>${esc(k.name)}</td><td>${esc(k.typ || "lokal")}</td><td>${esc(k.alg.name)}</td></tr>`).join("") + `</table></div>
     <p class="meta">Produktiv veröffentlicht die Plattform diese Liste. Im Prototyp entsteht ein Schlüssel beim ersten Ausstellen in diesem Browser.</p>`
     : `<p class="meta">Noch kein Schlüssel. Er entsteht beim ersten Ausstellen in der <a href="atelier.html">Prüferansicht</a>.</p>`;
 }
