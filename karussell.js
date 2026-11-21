@@ -27,11 +27,10 @@
     // kein role="group" am Link: das nähme ihm die Link-Rolle für Screenreader
     return '<a class="folie" href="' + b.href + '" aria-label="Beispiel ansehen: ' + esc(p.name) + ", " + (agent ? "KI-Agent" : "Mensch") + " (" + (i + 1) + " von " + BEISPIELE.length + ')">' +
       '<div class="lt">' +
-        "<h2>" + esc(kurz) + "</h2>" +
+        "<h2>Nachweise für " + esc(kurz) + "</h2>" +
         '<p class="zeile">' + esc(p.zeile) + "</p>" +
         '<p class="artzeile">' + art + "</p>" +
       "</div>" +
-      '<h3 class="lt-kopf">Nachweise für ' + esc(kurz) + "</h3>" +
       '<ul class="lt-liste">' + liste.map(function (e) {
         return '<li class="lt-item"><div class="lt-btn"><span class="badge b' + e.stufe + '">' + esc(window.STUFEN[e.stufe].siegel) + '</span><span class="lt-titel">' + esc(e.titel) + "</span></div></li>";
       }).join("") + "</ul>" +
