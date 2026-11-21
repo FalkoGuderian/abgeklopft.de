@@ -43,6 +43,7 @@
     </div>
     <div class="betreiber" id="betr" hidden></div>
     <div class="lt-banner" id="banner"></div>
+    <p class="meta lt-hinweis">Eintrag anklicken für Prüfweg, Prüfvermerk und Bestätigungen</p>
     <div id="liste"></div>
     <div class="lt-banner">
       <p class="meta" id="zusammen"></p>
@@ -162,7 +163,7 @@ if (vorschau) {
     betreiberKasten(PROFIL.betreiber, PROFIL.version, PROFIL.versionHinweis, `<span class="badge b${st}">${STUFEN[st].siegel}</span>`);
   }
   $("wahl").innerHTML = Object.entries(PROFILE).map(([id, x]) =>
-    `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name.replace(/ Beispiel$/, "").replace(/^Belegleser$/, "Belegassistent"))}${x.profil.art === "ki-agent" ? " · " + esc(ARTEN[x.profil.art].kurz) : ""}</a>`).join("");
+    `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name.replace(/ Beispiel$/, "").replace(/^Belegleser$/, "Belegassistent"))}${x.profil.art === "ki-agent" ? ' <span class="tag art-agent">KI-Agent</span>' : ""}</a>`).join("");
   if (!PROFIL.erfunden) $("hinweis").hidden = true;
   else if (agent) $("hinweis").textContent = "Fiktives Beispiel. Agent, Betreiber, Firmen und Personen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.";
   profilZeigen("liste", PORTFOLIO, null);

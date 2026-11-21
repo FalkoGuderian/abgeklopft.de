@@ -330,3 +330,12 @@ nav.profilwahl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin
 .mock{position:relative;overflow:hidden}
 .mock .band{position:absolute;top:40px;right:-56px;width:210px;transform:rotate(45deg);background:var(--brand);color:var(--brand-ink);text-align:center;font:650 .6rem/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:7px 0;box-shadow:0 2px 8px -2px rgb(13 22 38/.35);pointer-events:none}
 .mock .lt-kopf{margin:16px 2px 8px;font:650 .72rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left}
+/* Beispielprofil: Karte schmal wie auf der Startseite statt über die ganze Seitenbreite */
+#profilteil.mock{max-width:640px;margin:18px auto 24px}
+#profilteil.mock .lt{max-width:none;padding-bottom:0}
+@media (max-width:520px){.mock .band{top:30px;right:-44px;width:170px;font-size:.5rem;padding:5px 0}#profilteil.mock{margin-left:-6px;margin-right:-6px}}
+/* Einträge im Profil sind aufklappbar: Zeiger, Pfeil, Hinweiszeile */
+.lt-hinweis{text-align:center;margin:6px 0 10px}
+#profilteil button.lt-btn{cursor:pointer}
+#profilteil button.lt-btn::after{content:"";flex:none;width:.5em;height:.5em;border-right:2px solid var(--brand);border-bottom:2px solid var(--brand);transform:rotate(45deg);margin:-.25em .15em 0 .35em;transition:transform .15s}
+#profilteil button.lt-btn[aria-expanded="true"]::after{transform:rotate(-135deg);margin-top:.25em}
