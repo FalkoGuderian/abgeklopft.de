@@ -22,7 +22,7 @@
 </script>
 </head>
 <body>
-<div class="proto" id="proto">Beispiele · Personen, Agenten und Firmen sind erfunden</div>
+<div class="proto" id="proto">Beispiele · Personen, Agenten und Firmen sind fiktiv</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="/index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav id="hauptnav" aria-label="Hauptmenü"><a href="/index.html" aria-current="page">Start</a><a href="/teilen.html">Einreichen</a><a href="/gutachter.html">Prüfen</a><a href="/abnehmer.html">Abnehmen</a><a href="/so-gehts.html">So geht's</a></nav>
@@ -63,15 +63,21 @@ const lesbar = !linkId && !vorschau && !!pm;
 const linkPfad = lesbar ? "/v1/p/" + pm[1] + "/" + pm[2] : linkId ? "/v1/l/" + encodeURIComponent(linkId) : "";
 
 // Kopf eines Profils füllen (Beispiel oder Server)
-function kopf(p, adresse) {
+function kopf(p, adresse, beispiel) {
   const ag = p.art === "ki-agent";
-  $("av").textContent = p.kuerzel || kuerzelVon(p.name); $("pn").textContent = p.name;
+  // Beispiele: gleiche Darstellung wie die Karten auf der Startseite (Band, kein Profilkreis, kein Etikett „Person“)
+  const kurz = p.name.replace(/ Beispiel$/, "").replace(/^Belegleser$/, "Belegassistent");
+  $("av").style.display = beispiel ? "none" : "";
+  $("profilteil").classList.toggle("mock", !!beispiel);
+  if (!$("profilteil").querySelector(".band")) { const b = document.createElement("span"); b.className = "band"; b.setAttribute("aria-hidden", "true"); b.textContent = "Fiktives Beispiel"; b.hidden = true; $("profilteil").prepend(b); }
+  $("profilteil").querySelector(".band").hidden = !beispiel;
+  $("av").textContent = p.kuerzel || kuerzelVon(p.name); $("pn").textContent = beispiel ? "Nachweise für " + kurz : p.name;
   $("pz").textContent = p.zeile || ""; $("po").textContent = p.ort || "";
-  $("padr").textContent = adresse || "";
+  $("padr").textContent = beispiel ? "" : (adresse || ""); $("padr").hidden = !!beispiel;
   $("av").classList.toggle("agent", ag);
   $("part").innerHTML = ag
     ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Keine Person. Vertragspartner ist der Betreiber.</span>`
-    : `<span class="tag art-mensch">Person</span>`;
+    : (beispiel ? "" : `<span class="tag art-mensch">Person</span>`);
   document.title = p.name + " · abgeklopft.de";
 }
 function betreiberKasten(b, version, hinweis, siegel) {
@@ -149,14 +155,14 @@ if (vorschau) {
   // Statische Beispielprofile, ohne Server
   const agent = istAgent();
   const slug = PROFIL.adresse.split("/").pop();
-  kopf(PROFIL, PROFIL.adresse);
+  kopf(PROFIL, PROFIL.adresse, true);
   $("jsonlink").href = $("jsonfuss").href = slug + ".json";
   if (agent) {
     const st = stufeVon(PORTFOLIO.find(p => p.weg === "betreiber") || { stufe: 1 });
     betreiberKasten(PROFIL.betreiber, PROFIL.version, PROFIL.versionHinweis, `<span class="badge b${st}">${STUFEN[st].siegel}</span>`);
   }
   $("wahl").innerHTML = Object.entries(PROFILE).map(([id, x]) =>
-    `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name)} · ${esc(ARTEN[x.profil.art].kurz)}</a>`).join("");
+    `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name.replace(/ Beispiel$/, "").replace(/^Belegleser$/, "Belegassistent"))}${x.profil.art === "ki-agent" ? " · " + esc(ARTEN[x.profil.art].kurz) : ""}</a>`).join("");
   if (!PROFIL.erfunden) $("hinweis").hidden = true;
   else if (agent) $("hinweis").textContent = "Fiktives Beispiel. Agent, Betreiber, Firmen und Personen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.";
   profilZeigen("liste", PORTFOLIO, null);
