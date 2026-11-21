@@ -22,7 +22,7 @@
 
   <!-- A: noch kein Profil auf diesem Gerät -->
   <div id="ohne" hidden>
-    <p style="color:var(--muted);max-width:44em">Legen Sie Ihr Profil an, tragen Sie Ihre Arbeitsergebnisse ein und schicken Sie jedem Arbeit- oder Auftraggeber einen eigenen Link. Ohne Link sieht niemand Ihr Profil. Sie brauchen kein Konto und keine E-Mail-Adresse.</p>
+    <p style="color:var(--muted);max-width:44em">Legen Sie Ihr Profil an, tragen Sie Ihre Arbeitsergebnisse ein und schicken Sie jedem Abnehmer einen eigenen Link. Ohne Link sieht niemand Ihr Profil. Sie brauchen kein Konto und keine E-Mail-Adresse.</p>
     <div class="two">
       <form id="anlegen" autocomplete="off" class="card">
         <h2 style="margin-top:0">Profil anlegen</h2>
@@ -151,7 +151,7 @@
 
     <section>
       <h2>3 · Persönliche Links</h2>
-      <p class="sub">Ein eigener Link je Arbeit- oder Auftraggeber. Sie wählen die Einträge und die Laufzeit. Sie sehen, wann der Link geöffnet wurde. Der Abnehmer erfährt das vor dem Öffnen. Dass ein Link nicht geöffnet wird, sagt nichts über das Ergebnis.</p>
+      <p class="sub">Ein eigener Link je Abnehmer. Sie wählen die Einträge und die Laufzeit. Sie sehen, wann der Link geöffnet wurde. Der Abnehmer erfährt das vor dem Öffnen. Dass ein Link nicht geöffnet wird, sagt nichts über das Ergebnis.</p>
       <form id="lf" autocomplete="off" class="two">
         <div>
           <label for="emp">Abnehmer (Firma, Person oder KI-Agent)</label>
@@ -247,7 +247,7 @@ $("part").addEventListener("change", () => {
   $("agentfelder").hidden = !ag;
   for (const id of ["bname", "bsitz", "bverantw", "bversion"]) $(id).required = ag;
   $("pnamel").textContent = ag ? "Name des Agenten" : "Ihr Name";
-  $("pname").placeholder = ag ? "z. B. Belegleser" : "z. B. Alex Beispiel";
+  $("pname").placeholder = ag ? "z. B. Belegassistent" : "z. B. Alex Beispiel";
 });
 $("anlegen").addEventListener("submit", e => {
   e.preventDefault(); still();

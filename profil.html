@@ -78,7 +78,7 @@ function kopf(p, adresse, beispiel) {
   $("part").innerHTML = ag
     ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Keine Person. Vertragspartner ist der Betreiber.</span>`
     : (beispiel ? "" : `<span class="tag art-mensch">Person</span>`);
-  document.title = p.name + " · abgeklopft.de";
+  document.title = (beispiel ? kurz : p.name) + " · abgeklopft.de";
 }
 function betreiberKasten(b, version, hinweis, siegel) {
   $("betr").hidden = false;

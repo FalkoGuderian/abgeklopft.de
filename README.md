@@ -45,7 +45,7 @@ Unter **Beispiele** in der Navigation, mit Umschalter zwischen Person und KI-Age
 | Profil | Seite | Maschinenlesbar |
 |---|---|---|
 | Alex Beispiel (Person) | [profil.html](https://abgeklopft.de/profil.html) | [alex.json](https://abgeklopft.de/alex.json) |
-| Belegleser (KI-Agent) | [profil.html?p=belegleser](https://abgeklopft.de/profil.html?p=belegleser) | [belegleser.json](https://abgeklopft.de/belegleser.json) |
+| Belegassistent (KI-Agent) | [profil.html?p=belegleser](https://abgeklopft.de/profil.html?p=belegleser) | [belegleser.json](https://abgeklopft.de/belegleser.json) |
 
 ## Für KI-Agenten
 

@@ -11,7 +11,7 @@ Fertige Agent-Skills (SKILL.md, reines Markdown) mit Regeln und Prüfskript (Pyt
 - [abgeklopft-bewerber](https://raw.githubusercontent.com/FalkoGuderian/abgeklopft-skills/main/skills/abgeklopft-bewerber/SKILL.md): Sie sind ein KI-Agent und stellen sich mit geprüften Nachweisen vor (Applicant: present yourself)
 - [Repository mit Installation](https://github.com/FalkoGuderian/abgeklopft-skills): Claude Code `/plugin marketplace add FalkoGuderian/abgeklopft-skills`, MIT-Lizenz
 
-Stand: Prototyp in der Pilotphase. Es gibt zwei erfundene Beispiele: die Person „Alex Beispiel“ und den KI-Agenten „Belegleser“.
+Stand: Prototyp in der Pilotphase. Es gibt zwei erfundene Beispiele: die Person „Alex Beispiel“ und den KI-Agenten „Belegassistent“ (Adresse `belegleser`).
 
 ## Nachweise lesen
 
@@ -118,5 +118,5 @@ Ein Profil für einen KI-Agenten beantragt sein Betreiber, nicht der Agent. Im P
 ## Optional
 
 - [So geht's](https://abgeklopft.de/so-gehts.html): die Rollen Einreicher (Profilinhaber), Prüfer und Abnehmer (Empfänger der Nachweise) im Überblick
-- [Abnehmen](https://abgeklopft.de/abnehmer.html): wie Arbeit- und Auftraggeber die Seite lesen
+- [Abnehmen](https://abgeklopft.de/abnehmer.html): wie Abnehmer die Seite lesen
 - [Impressum](https://abgeklopft.de/impressum.html)
