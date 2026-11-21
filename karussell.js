@@ -27,7 +27,6 @@
     return '<a class="folie" href="' + b.href + '" aria-label="Beispiel ansehen: ' + esc(p.name) + ", " + (agent ? "KI-Agent" : "Mensch") + " (" + (i + 1) + " von " + BEISPIELE.length + ')">' +
       '<div class="lt">' +
         '<div class="lt-avatar' + (agent ? " agent" : "") + '">' + esc(p.kuerzel) + "</div>" +
-        '<p class="meta" style="margin:0 0 6px">Erfundenes Beispiel</p>' +
         "<h2>" + esc(p.name) + "</h2>" +
         '<p class="zeile">' + esc(p.zeile) + "</p>" +
         '<p class="artzeile">' + art + "</p>" +
@@ -44,7 +43,7 @@
   box.setAttribute("aria-roledescription", "Karussell");
   box.setAttribute("aria-label", "Beispielprofile");
   box.removeAttribute("aria-hidden");
-  box.innerHTML = '<div class="folien">' + BEISPIELE.map(folieHtml).join("") + "</div>" +
+  box.innerHTML = '<span class="band" aria-hidden="true">Erfundenes Beispiel</span><p class="nur-vorlesen">Erfundenes Beispiel</p><div class="folien">' + BEISPIELE.map(folieHtml).join("") + "</div>" +
     '<div class="punkte">' + BEISPIELE.map(function (b, i) {
       return '<button type="button" class="punkt" data-i="' + i + '" aria-label="' + b.punkt + '"></button>';
     }).join("") + "</div>" +

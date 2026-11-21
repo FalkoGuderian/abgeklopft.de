@@ -302,3 +302,7 @@ nav.profilwahl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin
 @media (prefers-reduced-motion:reduce){
   .pa-zeilen line,.pa-schimmer,.pa-siegel,.pa-haken{animation:none}
 }
+
+/* Band „Erfundenes Beispiel“ schräg über der oberen rechten Ecke der Vorschaukachel */
+.mock{position:relative;overflow:hidden}
+.mock .band{position:absolute;top:40px;right:-56px;width:210px;transform:rotate(45deg);background:var(--brand);color:var(--brand-ink);text-align:center;font:650 .6rem/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:7px 0;box-shadow:0 2px 8px -2px rgb(13 22 38/.35);pointer-events:none}
