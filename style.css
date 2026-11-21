@@ -109,7 +109,7 @@ section .sub{color:var(--muted);font-size:1.05rem;margin:0 0 28px;max-width:42em
 /* Stufen-Siegel: S1 gestrichelt (ungeprüft), S2 getönt (Beleg), S3 gefüllt mit Haken (bestätigt) */
 /* Siegel: Symbol + Wort. Angabe = Stift (selbst geschrieben), Geprüft = Lupe, Bestätigt = Siegel mit Haken.
    Die Form bleibt zusätzlich unterscheidbar: gestrichelt, getönt, gefüllt. */
-.badge{display:inline-flex;align-items:center;gap:5px;font:650 .76rem/1 var(--text);letter-spacing:.005em;padding:5px 9px 5px 7px;border-radius:7px;margin-right:6px;white-space:nowrap;position:relative;flex:none;min-width:7.4em;justify-content:flex-start}
+.badge{display:inline-flex;align-items:center;gap:5px;font:650 .76rem/1 var(--text);letter-spacing:.005em;padding:5px 9px 5px 7px;border-radius:7px;margin-right:6px;white-space:nowrap;position:relative;flex:none;box-sizing:border-box;width:9.4em;justify-content:center}
 .badge::before{content:"";flex:none;width:1.2em;height:1.2em;background:currentColor;-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
 .b1{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19.5 8.5a2.1 2.1 0 0 0-4-4L4 16z'/%3E%3Cpath d='M13.5 6.5l4 4'/%3E%3C/svg%3E")}
 .b2{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E")}

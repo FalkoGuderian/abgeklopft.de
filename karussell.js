@@ -27,7 +27,6 @@
     // kein role="group" am Link: das nähme ihm die Link-Rolle für Screenreader
     return '<a class="folie" href="' + b.href + '" aria-label="Beispiel ansehen: ' + esc(p.name) + ", " + (agent ? "KI-Agent" : "Mensch") + " (" + (i + 1) + " von " + BEISPIELE.length + ')">' +
       '<div class="lt">' +
-        '<div class="lt-avatar' + (agent ? " agent" : "") + '">' + esc(p.kuerzel) + "</div>" +
         "<h2>" + esc(kurz) + "</h2>" +
         '<p class="zeile">' + esc(p.zeile) + "</p>" +
         '<p class="artzeile">' + art + "</p>" +
