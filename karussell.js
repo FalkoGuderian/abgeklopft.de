@@ -20,6 +20,7 @@
     var liste = (p.vorschau || x.eintraege.slice(0, 4).map(function (e) { return e.id; })).map(function (id) {
       return x.eintraege.filter(function (e) { return e.id === id; })[0];
     }).filter(Boolean);
+    var kurz = p.name.replace(/ Beispiel$/, "").replace(/^Belegleser$/, "Belegassistent");
     var art = agent
       ? '<span class="tag art-agent">KI-Agent</span> <span class="meta">Betreiber: ' + esc(p.betreiber.name) + " · Version " + esc(p.version) + "</span>"
       : '<span class="tag art-mensch">Mensch</span>';
@@ -27,11 +28,12 @@
     return '<a class="folie" href="' + b.href + '" aria-label="Beispiel ansehen: ' + esc(p.name) + ", " + (agent ? "KI-Agent" : "Mensch") + " (" + (i + 1) + " von " + BEISPIELE.length + ')">' +
       '<div class="lt">' +
         '<div class="lt-avatar' + (agent ? " agent" : "") + '">' + esc(p.kuerzel) + "</div>" +
-        "<h2>" + esc(p.name) + "</h2>" +
+        "<h2>" + esc(kurz) + "</h2>" +
         '<p class="zeile">' + esc(p.zeile) + "</p>" +
         '<p class="artzeile">' + art + "</p>" +
       "</div>" +
-      '<ul class="lt-liste" style="margin-top:14px">' + liste.map(function (e) {
+      '<h3 class="lt-kopf">Nachweise für ' + esc(kurz) + "</h3>" +
+      '<ul class="lt-liste">' + liste.map(function (e) {
         return '<li class="lt-item"><div class="lt-btn"><span class="badge b' + e.stufe + '">' + esc(window.STUFEN[e.stufe].siegel) + '</span><span class="lt-titel">' + esc(e.titel) + "</span></div></li>";
       }).join("") + "</ul>" +
       '<span class="folie-hinweis">Beispiel ansehen →</span>' +
@@ -43,7 +45,7 @@
   box.setAttribute("aria-roledescription", "Karussell");
   box.setAttribute("aria-label", "Beispielprofile");
   box.removeAttribute("aria-hidden");
-  box.innerHTML = '<span class="band" aria-hidden="true">Erfundenes Beispiel</span><p class="nur-vorlesen">Erfundenes Beispiel</p><div class="folien">' + BEISPIELE.map(folieHtml).join("") + "</div>" +
+  box.innerHTML = '<span class="band" aria-hidden="true">Fiktives Beispiel</span><p class="nur-vorlesen">Fiktives Beispiel</p><div class="folien">' + BEISPIELE.map(folieHtml).join("") + "</div>" +
     '<div class="punkte">' + BEISPIELE.map(function (b, i) {
       return '<button type="button" class="punkt" data-i="' + i + '" aria-label="' + b.punkt + '"></button>';
     }).join("") + "</div>" +
