@@ -14,6 +14,7 @@
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav aria-label="Hauptmenü"><a href="index.html">Start</a><a href="teilen.html" aria-current="page">Einreichen</a><a href="gutachter.html">Prüfen</a><a href="abnehmer.html">Abnehmen</a><a href="so-gehts.html">So geht's</a></nav>
 </div></header>
+<div class="wrap abmeldeleiste" id="abmeldeleiste" style="display:none" title="Der Schlüssel wird von diesem Gerät entfernt. Ihr Profil bleibt bestehen. Zurück kommen Sie nur mit dem Wiederherstellungscode."><button class="btn ghost klein" type="button" id="abmelden">Abmelden</button></div>
 <main class="wrap" style="padding-top:28px">
   <h1>Einreichen: Mein Profil</h1>
   <div class="result bad fehlerzeile" id="fehler" role="alert" hidden><span id="fehlertext"></span> <button class="btn ghost klein" type="button" id="nochmal" hidden>Erneut versuchen</button></div>
@@ -193,11 +194,6 @@
       <h2>5 · Dieses Gerät und Löschen</h2>
       <div class="two">
         <div class="card">
-          <h3>Auf diesem Gerät abmelden</h3>
-          <p class="meta">Der Schlüssel wird von diesem Gerät entfernt. Ihr Profil bleibt bestehen. Zurück kommen Sie nur mit dem Wiederherstellungscode.</p>
-          <div class="row"><button class="btn ghost" type="button" id="abmelden">Abmelden</button></div>
-        </div>
-        <div class="card">
           <h3>Profil löschen</h3>
           <p class="meta">Löscht Profil, Einträge, Links, Öffnungen und Anfragen endgültig. Alle Ihre Links funktionieren danach nicht mehr.</p>
           <label for="loeschwort">Zum Bestätigen LÖSCHEN eingeben</label>
@@ -239,7 +235,7 @@ async function mitSperre(knopf, fn) {
   const alt = knopf && knopf.disabled; if (knopf) knopf.disabled = true;
   try { return await fn(); } finally { if (knopf) knopf.disabled = alt; }
 }
-function zeige(was) { for (const id of ["ohne", "code", "mit"]) $(id).hidden = id !== was; }
+function zeige(was) { for (const id of ["ohne", "code", "mit"]) $(id).hidden = id !== was; $("abmeldeleiste").style.display = was === "mit" ? "" : "none"; }
 
 // ---------- A: anlegen / öffnen ----------
 $("part").addEventListener("change", () => {

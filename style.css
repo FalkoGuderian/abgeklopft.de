@@ -339,3 +339,6 @@ nav.profilwahl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin
 #profilteil button.lt-btn{cursor:pointer}
 #profilteil button.lt-btn::after{content:"";flex:none;width:.5em;height:.5em;border-right:2px solid var(--brand);border-bottom:2px solid var(--brand);transform:rotate(45deg);margin:-.25em .15em 0 .35em;transition:transform .15s}
 #profilteil button.lt-btn[aria-expanded="true"]::after{transform:rotate(-135deg);margin-top:.25em}
+
+/* Abmelden-Knopf oben, zentral unter dem Hauptmenü (teilen.html, pruefer.html); Sichtbarkeit per style.display */
+.abmeldeleiste{text-align:center;padding-top:14px}

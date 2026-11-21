@@ -45,6 +45,7 @@
   <a class="logo" href="/index.html">abge<span>klopft</span><small class="claim">Prüferbereich</small></a>
   <nav aria-label="Hauptmenü"><a href="/index.html">Start</a><a href="/teilen.html">Einreichen</a><a href="/gutachter.html" aria-current="page">Prüfen</a><a href="/abnehmer.html">Abnehmen</a><a href="/so-gehts.html">So geht's</a></nav>
 </div></header>
+<div class="wrap abmeldeleiste" id="abmeldeleiste" style="display:none"><button class="btn ghost klein" type="button" id="b-abmelden">Abmelden</button></div>
 <nav class="reiter wrap" aria-label="Bereiche von Prüfen"><a href="/gutachter.html">Prüfer werden</a><a href="/pruefer.html" aria-current="page">Login</a></nav>
 <main class="wrap" style="padding-top:24px;padding-bottom:40px;max-width:760px">
   <h1 style="margin-top:0">Prüferbereich</h1>
@@ -62,7 +63,6 @@
     <div id="m-anmelden" role="status" aria-live="polite"></div>
     <div id="angemeldet" hidden>
       <dl class="kv"><dt>Prüfer</dt><dd id="a-name"></dd><dt>Signierschlüssel</dt><dd id="a-kid"></dd></dl>
-      <div class="knoepfe"><button class="btn ghost" type="button" id="b-abmelden">Abmelden</button></div>
     </div>
   </section>
 
@@ -278,7 +278,7 @@ function abmelden() {
   $("t-frei").hidden = true; $("t-verw").hidden = true; $("l-warte").replaceChildren(); $("l-meine").replaceChildren(); $("w-kapazitaet").textContent = "";
   $("a-leiste").hidden = true; $("f-frei").hidden = true; $("a-fragebox").hidden = true; $("a-frage").value = "";
   zeige("t-warte");
-  $("schluessel").value = ""; $("angemeldet").hidden = true; $("hauptteil").hidden = true; $("f-anmelden").hidden = false;
+  $("schluessel").value = ""; $("angemeldet").hidden = true; $("abmeldeleiste").style.display = "none"; $("hauptteil").hidden = true; $("f-anmelden").hidden = false;
   verwaltungLeeren();
   $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true; $("t-protokoll").hidden = true;
   for (const id of ["m-anmelden", "m-eintrag", "m-auswahl", "m-signieren", "m-widerruf", "m-protokoll", "m-warte", "m-meine", "m-auftrag"]) meldung(id);
@@ -294,7 +294,7 @@ $("f-anmelden").addEventListener("submit", async ev => {
     const j = await api("GET", "/v1/pruefer/ich");
     meineId = j.pruefer.id; $("a-name").textContent = j.pruefer.name;
     $("a-kid").textContent = j.signierschluessel ? j.signierschluessel.kid + " (" + (j.signierschluessel.modus === "pilot" ? "Pilot-Testschlüssel, Berichte tragen „beispiel“" : j.signierschluessel.modus) + ")" : "keiner eingerichtet, Signieren nicht möglich";
-    $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; $("hauptteil").hidden = false;
+    $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; $("abmeldeleiste").style.display = ""; $("hauptteil").hidden = false;
     meldung("m-anmelden", "ok", "Angemeldet.");
     $("t-frei").hidden = j.admin !== true; $("t-verw").hidden = j.admin !== true;
     zeige("t-warte"); warteLaden();
