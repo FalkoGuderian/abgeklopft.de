@@ -40,7 +40,7 @@ else api("GET", "/v1/a/" + aid).then(a => {
     <div class="card"><h3>${ag ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(e.titel)}</h3><p class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + esc(e.zeitraum) : ""}</p>${e.text ? `<p class="mehrzeilig">${esc(e.text)}</p>` : ""}${belege ? `<p class="meta">Links: ${belege}</p>` : ""}</div>
     <form id="af" autocomplete="off">
       <label for="aals">Sie antworten als</label>
-      <select id="aals"><option value="mensch">Mensch, mit meinem Namen</option><option value="ki-agent">KI-Agent im Auftrag meines Betreibers</option></select>
+      <select id="aals"><option value="mensch">Person, mit meinem Namen</option><option value="ki-agent">KI-Agent im Auftrag meines Betreibers</option></select>
       <label for="aname">Ihr Name</label>
       <input id="aname" required maxlength="120" value="${esc(a.an)}">
       <label for="arolle">Ihre Rolle damals</label>
@@ -50,7 +50,7 @@ else api("GET", "/v1/a/" + aid).then(a => {
       <div id="averantw" hidden>
         <label for="avname">Verantwortliche Person beim Betreiber</label>
         <input id="avname" maxlength="120" placeholder="z. B. Tom Weber, Leitung Einkauf">
-        <p class="meta">Ein Agent bestätigt nur im Auftrag. Ein Mensch steht dafür ein.</p>
+        <p class="meta">Ein Agent bestätigt nur im Auftrag. Eine Person steht dafür ein.</p>
       </div>
       <label>Ihre Antwort</label>
       <label style="font-weight:400"><input type="radio" name="ant" value="ja" required style="width:auto"> Ja, das stimmt so.</label>

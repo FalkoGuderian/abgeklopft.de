@@ -216,7 +216,7 @@ async function bewerte(u, kx) {
   if (profil && e) {
     if (e.gueltig === true && !gueltig) fehler("profil_weicht_ab", "Profil sagt gültig, Prüfbericht ist abgelaufen");
     const adr = (profil.profil?.adresse || "").replace(/^https?:\/\//, "");
-    const vgl = [["Stufe", e.stufe, "S" + inhalt.stufe], ["Eintrag", e.id, inhalt.eintrag], ["Mensch/KI-Agent", profil.profil?.art, inhalt.subjekt],
+    const vgl = [["Stufe", e.stufe, "S" + inhalt.stufe], ["Eintrag", e.id, inhalt.eintrag], ["Person/KI-Agent", profil.profil?.art, inhalt.subjekt],
       ["Prüfweg", e.pruefung?.pruefweg, inhalt.pruefweg], ...(adr ? [["Profiladresse", adr, inhalt.profil]] : []),
       ...(profil.profil?.art === "ki-agent" ? [["agent_version", profil.profil.agent_version, inhalt.agent_version]] : [])];
     for (const [n, a, sg] of vgl) if (a !== sg) fehler("profil_weicht_ab", `${n}: Profil sagt ${JSON.stringify(a)}, signiert ist ${JSON.stringify(sg)}`);

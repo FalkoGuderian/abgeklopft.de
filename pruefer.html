@@ -24,6 +24,18 @@
   .pb th,.pb td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);overflow-wrap:anywhere;vertical-align:top}
   .pb .tabelle{overflow-x:auto}
   .pb [hidden]{display:none!important}
+  .pb .reiter-leiste{display:flex;gap:4px 6px;flex-wrap:wrap;margin:22px 0 4px;border-bottom:1px solid var(--line)}
+  .pb .reiter-leiste button{background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:10px 12px 9px;font:600 .92rem/1.2 var(--text);color:var(--muted);cursor:pointer;border-radius:0}
+  .pb .reiter-leiste button:hover{color:var(--ink)}
+  .pb .reiter-leiste button[aria-selected=true]{color:var(--brand);border-bottom-color:var(--brand)}
+  .pb .auftrag{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;margin:12px 0}
+  .pb .auftrag h3{margin:0 0 2px;font-size:1.02rem;overflow-wrap:anywhere}
+  .pb .auftrag .meta{margin:2px 0}
+  .pb .zustand{display:inline-block;font:650 .76rem/1 var(--text);padding:5px 9px;border-radius:7px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);margin-right:6px}
+  .pb .zustand.faellig{border-color:var(--bad);color:var(--bad)}
+  .pb .kontext{border-left:4px solid var(--brand);background:var(--sunk);border-radius:8px;padding:12px 14px;margin:0 0 14px}
+  .pb .kontext.frei{border-left-color:var(--signal)}
+  .pb textarea{width:100%;min-height:90px;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);box-sizing:border-box}
   .pb .stufe{font:700 .8rem/1 var(--mono);padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--sunk)}
 </style>
 </head>
@@ -36,12 +48,12 @@
 <nav class="reiter wrap" aria-label="Bereiche von Prüfen"><a href="/gutachter.html">Prüfer werden</a><a href="/pruefer.html" aria-current="page">Login</a></nav>
 <main class="wrap" style="padding-top:24px;padding-bottom:40px;max-width:760px">
   <h1 style="margin-top:0">Prüferbereich</h1>
-  <p class="meta">Hier prüfen Sie Einträge und stellen sie auf „Geprüft“. Ihr Schlüssel bleibt nur im Arbeitsspeicher dieser Seite: Er wird nirgends gespeichert und verschwindet beim Neuladen oder Abmelden. Der Server setzt den Inhalt des Berichts selbst zusammen, hier wählen Sie nur aus.</p>
+  <p class="meta">Hier holen Sie sich Prüfaufträge aus der Warteschlange, prüfen die Einträge und stellen sie auf „Geprüft“. Ihr Schlüssel bleibt nur im Arbeitsspeicher dieser Seite: Er wird nirgends gespeichert und verschwindet beim Neuladen oder Abmelden. Der Server setzt den Inhalt des Berichts selbst zusammen, hier wählen Sie nur aus.</p>
   <div id="serverhinweis" class="note" hidden></div>
 
   <!-- 1. Anmelden -->
   <section class="card" id="s-anmelden">
-    <h2>1. Anmelden</h2>
+    <h2>Anmelden</h2>
     <form id="f-anmelden" autocomplete="off">
       <label for="schluessel">Prüfer-Schlüssel</label>
       <input id="schluessel" type="password" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="64" required>
@@ -55,16 +67,62 @@
   </section>
 
   <div id="hauptteil" hidden>
-    <!-- 2. Eintrag -->
+    <div class="reiter-leiste" role="tablist" aria-label="Bereiche des Prüferbereichs" id="reiter">
+      <button type="button" role="tab" id="t-warte" aria-selected="true" aria-controls="p-warte">Warteschlange</button>
+      <button type="button" role="tab" id="t-meine" aria-selected="false" aria-controls="p-meine">Meine Aufträge</button>
+      <button type="button" role="tab" id="t-frei" aria-selected="false" aria-controls="p-pruefen" hidden>Ohne Auftrag (Admin)</button>
+      <button type="button" role="tab" id="t-prot" aria-selected="false" aria-controls="p-prot">Protokoll</button>
+      <button type="button" role="tab" id="t-verw" aria-selected="false" aria-controls="s-verwaltung" hidden>Verwaltung</button>
+    </div>
+
+    <!-- Warteschlange -->
+    <section class="card" id="p-warte" role="tabpanel" aria-labelledby="t-warte">
+      <h2>Warteschlange</h2>
+      <p class="meta">Aufträge, die ein Prüfer übernehmen kann. Sie sehen Name und Adresse des Einreichers, damit Sie Bindungen erkennen. Ihr eigenes Profil und Profile mit eingetragener Bindung erscheinen hier nie. Mit „Übernehmen“ erklären Sie, dass Sie keine Bindung zum Einreicher haben.</p>
+      <div class="knoepfe" style="margin-top:8px"><button class="btn ghost" type="button" id="b-warte-neu">Aktualisieren</button><span class="meta" id="w-kapazitaet" style="align-self:center"></span></div>
+      <div id="m-warte" role="status" aria-live="polite"></div>
+      <div id="l-warte"></div>
+    </section>
+
+    <!-- Meine Aufträge -->
+    <section class="card" id="p-meine" role="tabpanel" aria-labelledby="t-meine" hidden>
+      <h2>Meine Aufträge</h2>
+      <p class="meta">Aufträge, die Ihnen zugewiesen sind oder waren. Geprüft wird nur aus einem Auftrag heraus.</p>
+      <div class="knoepfe" style="margin-top:8px"><button class="btn ghost" type="button" id="b-meine-neu">Aktualisieren</button></div>
+      <div id="m-meine" role="status" aria-live="polite"></div>
+      <div id="l-meine"></div>
+    </section>
+
+    <!-- Prüfbereich: aus einem Auftrag oder (nur Administratoren) ohne Auftrag -->
+    <div id="p-pruefen" role="tabpanel" hidden>
     <section class="card" id="s-eintrag">
-      <h2>2. Eintrag suchen</h2>
-      <form id="f-eintrag" autocomplete="off">
-        <div class="zeile">
-          <div><label for="adresse">Profiladresse</label><input id="adresse" placeholder="z. B. falkotest" maxlength="60" required autocapitalize="none" spellcheck="false"></div>
-          <div><label for="eid">Eintragskennung (8 Zeichen)</label><input id="eid" placeholder="z. B. S0H4GWAC" maxlength="8" minlength="8" required autocapitalize="characters" spellcheck="false"></div>
+      <div class="kontext" id="k-kontext"></div>
+      <div id="a-leiste" hidden>
+        <dl class="kv" id="a-kv"></dl>
+        <div id="a-rueckfragen"></div>
+        <div class="knoepfe" id="a-knoepfe">
+          <button class="btn" type="button" id="b-starten" hidden>Prüfung beginnen</button>
+          <button class="btn ghost" type="button" id="b-abgeben" hidden>Zurück in die Warteschlange</button>
+          <button class="btn ghost" type="button" id="b-zurueck">Zu „Meine Aufträge“</button>
         </div>
-        <div class="knoepfe"><button class="btn" type="submit">Eintrag laden</button></div>
-      </form>
+        <div id="a-fragebox" hidden style="margin-top:14px">
+          <label for="a-frage">Rückfrage an den Einreicher (höchstens 500 Zeichen)</label>
+          <textarea id="a-frage" maxlength="500"></textarea>
+          <div class="knoepfe"><button class="btn ghost" type="button" id="b-frage">Rückfrage stellen</button></div>
+        </div>
+        <div id="m-auftrag" role="status" aria-live="polite"></div>
+      </div>
+      <div id="f-frei" hidden>
+        <h2>Eintrag suchen (ohne Auftrag)</h2>
+        <p class="meta">Nur für Administratoren. Alles, was Sie hier signieren, ablehnen oder widerrufen, steht im Protokoll als „ohne Auftrag“. Läuft für den Eintrag ein Prüfauftrag, geht es nur über den Auftrag.</p>
+        <form id="f-eintrag" autocomplete="off">
+          <div class="zeile">
+            <div><label for="adresse">Profiladresse</label><input id="adresse" placeholder="z. B. falkotest" maxlength="60" required autocapitalize="none" spellcheck="false"></div>
+            <div><label for="eid">Eintragskennung (8 Zeichen)</label><input id="eid" placeholder="z. B. S0H4GWAC" maxlength="8" minlength="8" required autocapitalize="characters" spellcheck="false"></div>
+          </div>
+          <div class="knoepfe"><button class="btn" type="submit">Eintrag laden</button></div>
+        </form>
+      </div>
       <div id="m-eintrag" role="status" aria-live="polite"></div>
       <div id="ansicht" hidden>
         <h3 id="e-titel" style="margin:18px 0 4px"></h3>
@@ -88,7 +146,7 @@
 
     <!-- 3. Auswahl und Vorschau -->
     <section class="card" id="s-auswahl" hidden>
-      <h2>3. Prüfung wählen</h2>
+      <h2>Prüfung wählen</h2>
       <div class="zeile">
         <div><label for="stufe">Stufe</label><select id="stufe"><option value="S2">S2 · Geprüft</option><option value="S3">S3 · Geprüft und von Dritten bestätigt</option></select></div>
         <div><label for="weg">Prüfweg</label><select id="weg"></select></div>
@@ -113,13 +171,14 @@
           <button class="btn" type="button" id="b-signieren" disabled>Signieren</button>
           <button class="btn ghost" type="button" id="b-ablehnen">Ablehnen (nur Protokoll)</button>
         </div>
+        <div id="grund-zeile" hidden style="margin-top:10px"><label for="a-grund">Grund der Ablehnung (sieht der Einreicher)</label><select id="a-grund"><option value="nicht_nachweisbar">Die Angabe ließ sich nicht nachweisen</option><option value="beleg_fehlt">Der Beleg fehlt oder war nicht erreichbar</option></select></div>
         <div id="m-signieren" role="status" aria-live="polite"></div>
       </div>
     </section>
 
     <!-- 4. Widerrufen -->
     <section class="card" id="s-widerruf" hidden>
-      <h2>4. Bericht widerrufen</h2>
+      <h2>Bericht widerrufen</h2>
       <p class="meta">Der Eintrag fällt sofort auf S1 zurück. Die öffentliche Widerrufsliste (Format abgeklopft-widerruf/2) auf der Webseite ändert sich dadurch nicht von selbst: Kennung und Prüfsumme gehören danach in widerruf_eingabe.json, dann signiert widerruf_signieren.mjs die Liste neu (siehe Hinweis nach dem Widerruf).</p>
       <label for="w-grund">Grund (kurz, höchstens 200 Zeichen, wird nicht gespeichert)</label>
       <input id="w-grund" maxlength="200">
@@ -128,16 +187,17 @@
       <div id="m-widerruf" role="status" aria-live="polite"></div>
     </section>
 
-    <!-- 5. Protokoll -->
-    <section class="card" id="s-protokoll">
+    </div>
+    <!-- Protokoll -->
+    <section class="card" id="p-prot" role="tabpanel" aria-labelledby="t-prot" hidden>
       <h2>Protokoll</h2>
       <p class="meta">Jede Signatur, Ablehnung und jeder Widerruf steht in einer Kette mit Prüfsummen. Der Server rechnet sie bei jedem Abruf nach.</p>
       <div class="knoepfe" style="margin-top:8px"><button class="btn ghost" type="button" id="b-protokoll">Protokoll anzeigen</button></div>
       <div id="m-protokoll" role="status" aria-live="polite"></div>
-      <div class="tabelle"><table id="t-protokoll" hidden><thead><tr><th>Nr.</th><th>Zeit</th><th>Aktion</th><th>Kennung</th><th>Prüfsumme</th></tr></thead><tbody></tbody></table></div>
+      <div class="tabelle"><table id="t-protokoll" hidden><thead><tr><th>Nr.</th><th>Zeit</th><th>Aktion</th><th>Auftrag</th><th>Kennung</th><th>Prüfsumme</th></tr></thead><tbody></tbody></table></div>
     </section>
     <!-- Verwaltung (nur Administratoren) -->
-    <section class="card" id="s-verwaltung" hidden>
+    <section class="card" id="s-verwaltung" role="tabpanel" aria-labelledby="t-verw" hidden>
       <h2>Verwaltung</h2>
       <h3 style="margin:10px 0 4px">Bewerbungen</h3>
       <div class="knoepfe" style="margin-top:6px"><button class="btn ghost" type="button" id="b-bew-neu">Aktualisieren</button></div>
@@ -176,7 +236,19 @@ const STATUS = { angefragt: "angefragt, noch keine Antwort", ja: "Ja", teilweise
 let schluessel = "";            // nur im Arbeitsspeicher
 let geladen = null;             // Antwort der Eintragsansicht
 let vorschau = null;
-let meineId = "";            // letzte Vorschau samt der Auswahl, mit der sie erzeugt wurde
+let meineId = "";
+let modus = null;               // null | { typ: "auftrag", id } | { typ: "frei" } (frei: nur Administratoren, ohne Auftrag)
+let auftrag = null;             // zuletzt geladener Auftrag (Prüfer-Ansicht)
+const FRIST_NAME = { liegt_bis: "Liegt in der Warteschlange bis", start_bis: "Beginnen bis", pruefung_bis: "Prüfen bis", antwort_bis: "Antwort des Einreichers bis" };
+const GRUND_NAME = { nicht_nachweisbar: "Die Angabe ließ sich nicht nachweisen.", beleg_fehlt: "Der Beleg fehlt oder war nicht erreichbar.", keine_antwort: "Der Einreicher hat auf die Rückfrage nicht geantwortet.", frist_abgelaufen: "Der Auftrag wurde nicht rechtzeitig übernommen.", zurueckgezogen: "Der Einreicher hat den Auftrag zurückgezogen." };
+const EREIGNIS = { beantragt: "Beantragt", art_gewaehlt: "Prüfart gewählt", art_bestaetigt: "Prüfart bestätigt", art_geaendert: "Prüfart geändert", uebernommen: "Von einem Prüfer übernommen", zugewiesen: "Vom Admin zugewiesen", gestartet: "Prüfung begonnen", rueckfrage: "Rückfrage gestellt", antwort: "Einreicher hat geantwortet", abgegeben: "Zurück in die Warteschlange", abgegeben_in_rueckfrage: "Zurück in die Warteschlange (aus der Rückfrage)", freigegeben_in_rueckfrage: "Vom Admin freigegeben (aus der Rückfrage)", freigegeben_ausschluss_in_rueckfrage: "Freigegeben (Bindung)", freigegeben: "Vom Admin freigegeben", freigegeben_ausschluss: "Freigegeben (Bindung)", signiert: "Geprüft", widerrufen: "Bericht widerrufen", zurueck_in_warteschlange: "Nicht begonnen: zurück in die Warteschlange", erinnerung_an_pruefer: "Erinnerung: Prüffrist überschritten", keine_antwort: "Abgelehnt: keine Antwort", frist_abgelaufen: "Abgelaufen", eintrag_geaendert: "Eintrag geändert", zurueckgezogen: "Zurückgezogen", nicht_nachweisbar: "Abgelehnt: nicht nachweisbar", beleg_fehlt: "Abgelehnt: Beleg fehlt" };
+const TABS = { "t-warte": "p-warte", "t-meine": "p-meine", "t-frei": "p-pruefen", "t-prot": "p-prot", "t-verw": "s-verwaltung" };
+function zeige(tabId, panelId) {
+  const ziel = panelId || TABS[tabId];
+  for (const [t, p] of Object.entries(TABS)) { $(t).setAttribute("aria-selected", String(t === tabId)); $(p).hidden = p !== ziel; }
+  if (ziel !== "p-pruefen") $("p-pruefen").hidden = true;
+  else $("p-pruefen").hidden = false;
+}
 
 function el(tag, text, attrs) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
 function meldung(id, art, text) {
@@ -202,11 +274,14 @@ if (LOKAL) { const h = $("serverhinweis"); h.hidden = false; h.textContent = "Lo
 
 // ---- 1. Anmelden ----
 function abmelden() {
-  schluessel = ""; geladen = null; vorschau = null; meineId = "";
+  schluessel = ""; geladen = null; vorschau = null; meineId = ""; modus = null; auftrag = null;
+  $("t-frei").hidden = true; $("t-verw").hidden = true; $("l-warte").replaceChildren(); $("l-meine").replaceChildren(); $("w-kapazitaet").textContent = "";
+  $("a-leiste").hidden = true; $("f-frei").hidden = true; $("a-fragebox").hidden = true; $("a-frage").value = "";
+  zeige("t-warte");
   $("schluessel").value = ""; $("angemeldet").hidden = true; $("hauptteil").hidden = true; $("f-anmelden").hidden = false;
   verwaltungLeeren();
   $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true; $("t-protokoll").hidden = true;
-  for (const id of ["m-anmelden", "m-eintrag", "m-auswahl", "m-signieren", "m-widerruf", "m-protokoll"]) meldung(id);
+  for (const id of ["m-anmelden", "m-eintrag", "m-auswahl", "m-signieren", "m-widerruf", "m-protokoll", "m-warte", "m-meine", "m-auftrag"]) meldung(id);
 }
 $("f-anmelden").addEventListener("submit", async ev => {
   ev.preventDefault();
@@ -221,7 +296,9 @@ $("f-anmelden").addEventListener("submit", async ev => {
     $("a-kid").textContent = j.signierschluessel ? j.signierschluessel.kid + " (" + (j.signierschluessel.modus === "pilot" ? "Pilot-Testschlüssel, Berichte tragen „beispiel“" : j.signierschluessel.modus) + ")" : "keiner eingerichtet, Signieren nicht möglich";
     $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; $("hauptteil").hidden = false;
     meldung("m-anmelden", "ok", "Angemeldet.");
-    if (j.admin === true) { $("s-verwaltung").hidden = false; verwaltungLaden(); }
+    $("t-frei").hidden = j.admin !== true; $("t-verw").hidden = j.admin !== true;
+    zeige("t-warte"); warteLaden();
+    if (j.admin === true) verwaltungLaden();
   } catch (e) { schluessel = ""; meldung("m-anmelden", "bad", e.status === 401 ? "Der Schlüssel stimmt nicht. Bitte prüfen Sie ihn und versuchen Sie es erneut." : fehlerText(e)); }
   $("b-anmelden").disabled = false;
 });
@@ -232,8 +309,8 @@ function stufeText(n) { return n === 3 ? "S3 · Geprüft und bestätigt" : n ===
 function ansichtFuellen(j) {
   const e = j.eintrag, p = j.profil;
   $("e-titel").textContent = e.titel;
-  $("e-meta").textContent = e.kategorie + " · Eintrag " + $("eid").value.toUpperCase();
-  $("e-profil").textContent = p.name + " (" + (p.art === "ki-agent" ? "KI-Agent" : "Mensch") + ", abgeklopft.de/" + p.adresse + ")" + (p.art === "ki-agent" && p.betreiber ? ", Betreiber: " + p.betreiber.name : "");
+  $("e-meta").textContent = e.kategorie + " · Eintrag " + e.id;
+  $("e-profil").textContent = p.name + " (" + (p.art === "ki-agent" ? "KI-Agent" : "Person") + ", abgeklopft.de/" + p.adresse + ")" + (p.art === "ki-agent" && p.betreiber ? ", Betreiber: " + p.betreiber.name : "");
   $("e-zeitraum").textContent = e.zeitraum || "–";
   $("e-text").textContent = e.text || "–";
   $("e-faehig").textContent = (e.faehigkeiten || []).join(", ") || "–";
@@ -251,7 +328,7 @@ function ansichtFuellen(j) {
     const k = el("div", undefined, { class: "result", style: "margin-top:8px" });
     k.appendChild(el("b", "An " + a.an + " (" + a.angefragt + "): " + (STATUS[a.status] || a.status)));
     if (a.status !== "angefragt") {
-      k.appendChild(el("div", a.name + ", " + a.rolle + ", " + a.firma + " · als " + (a.von === "ki-agent" ? "KI-Agent" : "Mensch") + (a.verantwortlich ? ", verantwortlich: " + a.verantwortlich : "") + " · " + a.datum, { class: "meta" }));
+      k.appendChild(el("div", a.name + ", " + a.rolle + ", " + a.firma + " · als " + (a.von === "ki-agent" ? "KI-Agent" : "Person") + (a.verantwortlich ? ", verantwortlich: " + a.verantwortlich : "") + " · " + a.datum, { class: "meta" }));
       if (a.kommentar) k.appendChild(el("div", "„" + a.kommentar + "“", { class: "mehrzeilig" }));
     }
     af.appendChild(k);
@@ -284,6 +361,7 @@ function ansichtFuellen(j) {
   $("ansicht").hidden = false;
 }
 async function eintragLaden(still) {
+  if (!modus || modus.typ !== "frei") return;
   const a = $("adresse").value.trim().toLowerCase(), id = $("eid").value.trim().toUpperCase();
   if (!still) meldung("m-eintrag");
   try {
@@ -298,6 +376,11 @@ async function eintragLaden(still) {
 $("f-eintrag").addEventListener("submit", ev => { ev.preventDefault(); eintragLaden(false); });
 
 // ---- 3. Auswahl, Vorschau, Signieren, Ablehnen ----
+// Pfad der Prüf-Aktionen: aus dem Auftrag, oder (nur Administratoren) ohne Auftrag über Adresse und Eintragskennung
+const basis = () => modus.typ === "auftrag" ? "/v1/pruefer/auftraege/" + modus.id : "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + geladen.eintrag.id;
+const neuLaden = () => modus.typ === "auftrag" ? auftragLaden(true) : eintragLaden(true);
+// Rückmeldung nach dem Aktion: im Auftrag steht sie oben im Auftrag (die Auswahl ist danach ausgeblendet), sonst bei der Auswahl
+const rueckmeldung = (art, text) => meldung(modus.typ === "auftrag" ? "m-auftrag" : "m-auswahl", art, text);
 function auswahl() {
   const s = $("stufe").value;
   const o = { stufe: s, pruefweg: $("weg").value, gueltig_tage: Number($("tage").value) };
@@ -318,7 +401,7 @@ $("b-vorschau").addEventListener("click", async () => {
   vorschauZuruecksetzen();
   const o = auswahl();
   try {
-    const v = await api("POST", "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + $("eid").value.toUpperCase() + "/vorschau", o);
+    const v = await api("POST", basis() + "/vorschau", o);
     vorschau = { v, o };
     $("v-kennung").textContent = v.kennung; $("v-summe").textContent = v.pruefsumme; $("v-kid").textContent = v.kid;
     $("v-inhalt").textContent = JSON.stringify(v.inhalt, null, 2);
@@ -331,9 +414,9 @@ $("b-signieren").addEventListener("click", async () => {
   const body = { ...vorschau.o, bestaetigt: true, pruefsumme: vorschau.v.pruefsumme, ausgestellt_vorschau: vorschau.v.ausgestellt_vorschau };
   if ($("ersetzen").checked) body.ersetzen = true;
   try {
-    const r = await api("POST", "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + $("eid").value.toUpperCase() + "/signieren", body);
-    await eintragLaden(true);
-    meldung("m-auswahl", "ok", "Signiert: " + r.stufe + ", Kennung " + r.kennung + ", gültig bis " + r.gueltigBis + ". Protokoll-Nr. " + r.protokoll.lfd + ". Der Eintrag ist jetzt " + stufeText(r.stufe === "S3" ? 3 : 2) + ".");
+    const r = await api("POST", basis() + "/signieren", body);
+    await neuLaden();
+    rueckmeldung("ok", "Signiert: " + r.stufe + ", Kennung " + r.kennung + ", gültig bis " + r.gueltigBis + ". Protokoll-Nr. " + r.protokoll.lfd + ". Der Eintrag ist jetzt " + stufeText(r.stufe === "S3" ? 3 : 2) + ".");
   } catch (e) {
     $("b-signieren").disabled = !$("bestaetigt").checked;
     meldung("m-signieren", "bad", e.code === "bereits_signiert" ? "Der Eintrag hat schon einen Bericht. Setzen Sie das Häkchen „ersetzen“, wenn Sie ihn überschreiben wollen." : fehlerText(e));
@@ -342,8 +425,10 @@ $("b-signieren").addEventListener("click", async () => {
 $("b-ablehnen").addEventListener("click", async () => {
   if (!geladen) return;
   try {
-    const r = await api("POST", "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + $("eid").value.toUpperCase() + "/ablehnen", auswahl());
-    meldung("m-auswahl", "ok", "Abgelehnt und im Protokoll vermerkt (Kennung " + r.kennung + ", Nr. " + r.protokoll.lfd + "). Der Eintrag bleibt unverändert.");
+    const o = auswahl(); if (modus.typ === "auftrag") o.grund = $("a-grund").value;
+    const r = await api("POST", basis() + "/ablehnen", o);
+    if (modus.typ === "auftrag") await neuLaden();
+    rueckmeldung("ok", "Abgelehnt und im Protokoll vermerkt (Kennung " + r.kennung + ", Nr. " + r.protokoll.lfd + "). Der Eintrag bleibt unverändert.");
   } catch (e) { meldung("m-signieren", "bad", fehlerText(e)); }
 });
 
@@ -354,8 +439,8 @@ $("b-widerruf").addEventListener("click", async () => {
   $("b-widerruf").disabled = true;
   const body = { bestaetigt: true }; const g = $("w-grund").value.trim(); if (g) body.grund = g;
   try {
-    const r = await api("POST", "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + $("eid").value.toUpperCase() + "/widerrufen", body);
-    await eintragLaden(true);
+    const r = await api("POST", basis() + "/widerrufen", body);
+    await neuLaden();
     const m = $("m-eintrag"); m.replaceChildren();
     const d = el("div", undefined, { class: "result ok" });
     d.appendChild(el("b", "Widerrufen. Der Eintrag ist wieder S1."));
@@ -364,6 +449,143 @@ $("b-widerruf").addEventListener("click", async () => {
     m.appendChild(d);
   } catch (e) { $("b-widerruf").disabled = !$("w-bestaetigt").checked; meldung("m-widerruf", "bad", e.code === "kein_bericht" ? "Dieser Eintrag hat keinen Prüfbericht mehr." : fehlerText(e)); }
 });
+
+// ---- Reiter ----
+$("t-warte").addEventListener("click", () => { zeige("t-warte"); warteLaden(); });
+$("t-meine").addEventListener("click", () => { zeige("t-meine"); meineLaden(); });
+$("t-prot").addEventListener("click", () => zeige("t-prot"));
+$("t-verw").addEventListener("click", () => zeige("t-verw"));
+$("t-frei").addEventListener("click", () => {
+  if (modus && modus.typ === "frei") { zeige("t-frei"); return; }   // geladener Eintrag bleibt beim Wechsel der Reiter erhalten
+  modus = { typ: "frei" }; auftrag = null; geladen = null; vorschau = null;
+  const k = $("k-kontext"); k.className = "kontext frei"; k.textContent = "Ohne Auftrag (Administrator): Signieren, Ablehnen und Widerrufen stehen im Protokoll als „ohne Auftrag“.";
+  $("a-leiste").hidden = true; $("f-frei").hidden = false; $("grund-zeile").hidden = true;
+  $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true; meldung("m-eintrag"); meldung("m-auftrag");
+  zeige("t-frei");
+});
+const alter = n => n === 0 ? "heute eingegangen" : n === 1 ? "seit 1 Tag in der Warteschlange" : "seit " + n + " Tagen in der Warteschlange";
+function kopf(a) {
+  const k = el("div", undefined, { class: "auftrag" });
+  k.appendChild(el("h3", a.eintrag.titel));
+  k.appendChild(el("div", a.eintrag.kategorie + " · Einreicher: " + a.profil.name + " (abgeklopft.de/" + a.profil.adresse + ")", { class: "meta" }));
+  return k;
+}
+
+// ---- Warteschlange ----
+async function warteLaden() {
+  meldung("m-warte");
+  try {
+    const j = await api("GET", "/v1/pruefer/warteschlange"), l = $("l-warte"); l.replaceChildren();
+    $("w-kapazitaet").textContent = "Offen: " + j.offen + " von " + j.kapazitaet + " (Kapazität)";
+    if (!j.warteschlange.length) l.appendChild(el("p", "Die Warteschlange ist leer.", { class: "meta" }));
+    for (const q of j.warteschlange) {
+      const k = kopf(q);
+      k.appendChild(el("div", alter(q.alter_tage) + " · läuft ab nach dem " + q.liegt_bis, { class: "meta" }));
+      const lb = el("label", undefined, { class: "check" }), cb = el("input", undefined, { type: "checkbox" });
+      lb.appendChild(cb); lb.appendChild(el("span", "Ich habe keine Bindung zum Einreicher."));
+      k.appendChild(lb);
+      const z = el("div", undefined, { class: "knoepfe" }); z.style.marginTop = "8px";
+      const b = el("button", "Übernehmen", { class: "btn", type: "button" }); b.disabled = true;
+      cb.addEventListener("change", () => { b.disabled = !cb.checked; });
+      b.addEventListener("click", async () => {
+        b.disabled = true;
+        try { await api("POST", "/v1/pruefer/auftraege/" + q.id + "/uebernehmen", { keine_bindung: true }); await auftragOeffnen(q.id); }
+        catch (e) { meldung("m-warte", "bad", e.code === "kapazitaet" || e.status === 409 || e.status === 403 ? e.meldung : fehlerText(e)); b.disabled = !cb.checked; warteLaden(); }
+      });
+      z.appendChild(b); k.appendChild(z); l.appendChild(k);
+    }
+  } catch (e) { if (e.status === 401) { abmelden(); meldung("m-anmelden", "bad", "Die Anmeldung ist nicht mehr gültig. Bitte melden Sie sich neu an."); return; } meldung("m-warte", "bad", fehlerText(e)); }
+}
+
+// ---- Meine Aufträge ----
+function fristZeile(a) {
+  const f = a.naechste_frist; if (!f || !f.bis) return null;
+  return (FRIST_NAME[f.name] || f.name) + " " + f.bis + (a.ueberfaellig ? " (überfällig)" : "");
+}
+async function meineLaden() {
+  meldung("m-meine");
+  try {
+    const j = await api("GET", "/v1/pruefer/auftraege"), l = $("l-meine"); l.replaceChildren();
+    if (!j.auftraege.length) l.appendChild(el("p", "Sie haben noch keinen Auftrag übernommen. Die Warteschlange zeigt, was offen ist.", { class: "meta" }));
+    for (const a of j.auftraege) {
+      const k = kopf(a);
+      const z = el("div", undefined, { class: "meta" });
+      z.appendChild(el("span", a.zustand_anzeige, { class: "zustand" + (a.ueberfaellig ? " faellig" : "") }));
+      const fz = a.offen ? fristZeile(a) : null; if (fz) z.appendChild(el("span", fz));
+      if (!a.offen && a.grund) z.appendChild(el("span", GRUND_NAME[a.grund] || a.grund));
+      k.appendChild(z);
+      const kn = el("div", undefined, { class: "knoepfe" }); kn.style.marginTop = "8px";
+      const b = el("button", "Öffnen", { class: "btn ghost", type: "button" });
+      b.addEventListener("click", () => auftragOeffnen(a.id));
+      kn.appendChild(b); k.appendChild(kn); l.appendChild(k);
+    }
+  } catch (e) { if (e.status === 401) { abmelden(); meldung("m-anmelden", "bad", "Die Anmeldung ist nicht mehr gültig. Bitte melden Sie sich neu an."); return; } meldung("m-meine", "bad", fehlerText(e)); }
+}
+
+// ---- Ein Auftrag ----
+async function auftragOeffnen(id) {
+  modus = { typ: "auftrag", id }; geladen = null; vorschau = null; auftrag = null;
+  $("f-frei").hidden = true; $("a-leiste").hidden = false; $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true;
+  meldung("m-eintrag"); meldung("m-auftrag"); $("a-frage").value = "";
+  zeige("t-meine", "p-pruefen");
+  await auftragLaden(false);
+}
+async function auftragLaden(still) {
+  if (!modus || modus.typ !== "auftrag") return;
+  if (!still) { meldung("m-eintrag"); meldung("m-auftrag"); }
+  try { auftragAnzeigen(await api("GET", "/v1/pruefer/auftraege/" + modus.id)); }
+  catch (e) {
+    if (e.status === 401) { abmelden(); meldung("m-anmelden", "bad", "Die Anmeldung ist nicht mehr gültig. Bitte melden Sie sich neu an."); return; }
+    meldung("m-auftrag", "bad", e.status === 404 ? "Diesen Auftrag gibt es nicht (mehr) oder er gehört nicht mehr zu Ihnen." : fehlerText(e));
+    $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true;
+  }
+}
+function auftragAnzeigen(a) {
+  auftrag = a;
+  const k = $("k-kontext"); k.className = "kontext"; k.textContent = "Prüfauftrag · " + a.eintrag.titel + " · Einreicher: " + a.profil.name + " (abgeklopft.de/" + a.profil.adresse + ")";
+  const kv = $("a-kv"); kv.replaceChildren();
+  const zeile = (t, v) => { kv.appendChild(el("dt", t)); kv.appendChild(el("dd", v)); };
+  zeile("Zustand", a.zustand_anzeige + (a.ueberfaellig ? " (Frist überschritten)" : ""));
+  const fz = a.offen ? fristZeile(a) : null; if (fz) zeile("Frist", fz);
+  if (!a.offen && a.grund) zeile("Grund", GRUND_NAME[a.grund] || a.grund);
+  if (a.ergebnis_kennung) zeile("Bericht", a.ergebnis_kennung);
+  zeile("Verlauf", (a.ereignisse || []).map(v => (v.zeit || "").slice(0, 10) + " " + (EREIGNIS[v.code] || v.code)).join(" · "));
+  const rf = $("a-rueckfragen"); rf.replaceChildren();
+  for (const r of a.rueckfragen || []) {
+    const d = el("div", undefined, { class: "result", style: "margin-top:8px" });
+    d.appendChild(el("b", "Rückfrage (" + String(r.gefragt).slice(0, 10) + ")"));
+    d.appendChild(el("div", r.frage, { class: "mehrzeilig" }));
+    d.appendChild(el("div", r.antwort ? "Antwort: " + r.antwort : r.beantwortet ? "Nicht beantwortet (der Auftrag wurde zurückgegeben)." : "Noch keine Antwort des Einreichers.", { class: "meta" }));
+    rf.appendChild(d);
+  }
+  $("b-starten").hidden = a.zustand !== "zugewiesen";
+  $("b-abgeben").hidden = !(a.zustand === "zugewiesen" || a.zustand === "in_pruefung" || a.zustand === "rueckfrage");
+  $("a-fragebox").hidden = !(a.zustand === "zugewiesen" || a.zustand === "in_pruefung");
+  $("grund-zeile").hidden = false;
+  if (a.pruefung) {
+    geladen = a.pruefung; ansichtFuellen(a.pruefung);
+    $("s-auswahl").hidden = a.zustand !== "in_pruefung";
+    $("s-widerruf").hidden = !(a.zustand === "geprueft" && a.pruefung.bericht);
+  } else { geladen = null; $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true; }
+  if (a.zustand === "zugewiesen") meldung("m-eintrag", "warn", "Lesen Sie den Eintrag. Mit „Prüfung beginnen“ starten Sie die Prüfung, erst danach können Sie eine Vorschau erzeugen.");
+  else if (a.zustand === "rueckfrage") meldung("m-eintrag", "warn", "Der Einreicher ist am Zug. Bis zu seiner Antwort ist keine Vorschau und kein Signieren möglich.");
+  else if (!a.offen && a.zustand !== "geprueft") meldung("m-eintrag", "warn", "Dieser Auftrag ist abgeschlossen.");
+  else meldung("m-eintrag");
+}
+async function auftragAktion(pfad, body, okText, zurueck) {
+  meldung("m-auftrag");
+  try { await api("POST", "/v1/pruefer/auftraege/" + modus.id + pfad, body); if (zurueck) { zurueck(); return; } await auftragLaden(true); if (okText) meldung("m-auftrag", "ok", okText); }
+  catch (e) { meldung("m-auftrag", "bad", fehlerText(e)); }
+}
+$("b-starten").addEventListener("click", () => auftragAktion("/starten", {}, "Die Prüfung hat begonnen. Sie haben jetzt 7 Tage Zeit."));
+$("b-abgeben").addEventListener("click", () => auftragAktion("/abgeben", {}, null, () => { zeige("t-warte"); modus = null; warteLaden(); meldung("m-warte", "ok", "Der Auftrag liegt wieder in der Warteschlange."); }));
+$("b-frage").addEventListener("click", () => {
+  const t = $("a-frage").value.trim();
+  if (!t) { meldung("m-auftrag", "bad", "Bitte schreiben Sie eine Frage."); return; }
+  auftragAktion("/rueckfrage", { text: t }, "Die Rückfrage ist beim Einreicher. Er hat 14 Tage Zeit zu antworten.");
+  $("a-frage").value = "";
+});
+$("b-zurueck").addEventListener("click", () => { modus = null; zeige("t-meine"); meineLaden(); });
 
 // ---- Protokoll ----
 $("b-protokoll").addEventListener("click", async () => {
@@ -375,7 +597,7 @@ $("b-protokoll").addEventListener("click", async () => {
     const tb = $("t-protokoll").tBodies[0]; tb.replaceChildren();
     for (const z of j.eintraege.slice().reverse()) {
       const tr = el("tr");
-      for (const t of [String(z.lfd), datum(z.zeit), z.aktion, z.kennung || "–", z.pruefsumme ? z.pruefsumme.slice(0, 16) + "…" : "–"]) tr.appendChild(el("td", t));
+      for (const t of [String(z.lfd), datum(z.zeit), z.aktion, z.ohne_auftrag === true ? "ohne Auftrag" : z.ohne_auftrag === false ? "über Auftrag" : "–", z.kennung || "–", z.pruefsumme ? z.pruefsumme.slice(0, 16) + "…" : "–"]) tr.appendChild(el("td", t));
       tb.appendChild(tr);
     }
     $("t-protokoll").hidden = !j.eintraege.length;

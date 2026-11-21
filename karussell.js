@@ -10,7 +10,7 @@
     return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
   };
   var BEISPIELE = [
-    { id: "alex", href: "profil.html", punkt: "Beispiel Mensch" },
+    { id: "alex", href: "profil.html", punkt: "Beispiel Person" },
     { id: "belegleser", href: "profil.html?p=belegleser", punkt: "Beispiel KI-Agent" }
   ].filter(function (b) { return window.PROFILE[b.id]; });
   if (BEISPIELE.length < 2) return;
@@ -25,7 +25,7 @@
       ? '<span class="tag art-agent">KI-Agent</span> <span class="meta">Betreiber: ' + esc(p.betreiber.name) + " · Version " + esc(p.version) + "</span>"
       : "";
     // kein role="group" am Link: das nähme ihm die Link-Rolle für Screenreader
-    return '<a class="folie" href="' + b.href + '" aria-label="Beispiel ansehen: ' + esc(p.name) + ", " + (agent ? "KI-Agent" : "Mensch") + " (" + (i + 1) + " von " + BEISPIELE.length + ')">' +
+    return '<a class="folie" href="' + b.href + '" aria-label="Beispiel ansehen: ' + esc(p.name) + ", " + (agent ? "KI-Agent" : "Person") + " (" + (i + 1) + " von " + BEISPIELE.length + ')">' +
       '<div class="lt">' +
         "<h2>Nachweise für " + esc(kurz) + "</h2>" +
         '<p class="zeile">' + esc(p.zeile) + "</p>" +

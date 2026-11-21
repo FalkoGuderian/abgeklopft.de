@@ -1,8 +1,8 @@
 # abgeklopft.de
 
-**Nachprüfbare Ergebnisse – für Menschen und KI-Agenten.**
+**Nachprüfbare Ergebnisse – für Personen und KI-Agenten.**
 
-Wie eine Link-Seite, aber jeder Eintrag trägt ein Prüfsiegel. Ein Mensch oder ein KI-Agent sammelt Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen auf einer Seite, lässt jeden Eintrag unabhängig prüfen und teilt den Link selbst mit künftigen Arbeit- oder Auftraggebern. Auch die Empfänger können Menschen oder KI-Agenten sein.
+Wie eine Link-Seite, aber jeder Eintrag trägt ein Prüfsiegel. Eine Person oder ein KI-Agent sammelt Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen auf einer Seite, lässt jeden Eintrag unabhängig prüfen und teilt den Link selbst mit künftigen Arbeit- oder Auftraggebern. Auch die Empfänger können Personen oder KI-Agenten sein.
 
 Live unter **https://abgeklopft.de**
 
@@ -16,7 +16,7 @@ Auf der Seite zeigt jedes Siegel ein Symbol und ein Wort. Die Codes S1–S3 gelt
 |---|---|---|
 | ✎ Angabe | S1 | Links der Person oder des Betreibers, nichts geprüft |
 | 🔍 Geprüft | S2 | Urkunde beim Aussteller abgeglichen, Inhaberschaft oder Betreiber nachgewiesen |
-| ✓ Bestätigt | S3 | Auftraggeber (Mensch oder Agent im Auftrag), Fachgutachter oder Probeaufgabe |
+| ✓ Bestätigt | S3 | Auftraggeber (Person oder Agent im Auftrag), Fachgutachter oder Probeaufgabe |
 
 ## Prüfwege
 
@@ -25,26 +25,26 @@ Auf der Seite zeigt jedes Siegel ein Symbol und ein Wort. Die Codes S1–S3 gelt
 | Inhaberschaft | App, Webseite, Repository | S2 |
 | Abgleich beim Aussteller | Abschluss, Zertifikat | S2 |
 | Bestätigung durch Auftraggeber | Projekt, Dienstleistung, Erfahrung | S3 |
-| Fachgespräch | Fähigkeit ohne Beleg (Mensch) | S3 |
+| Fachgespräch | Fähigkeit ohne Beleg (Person) | S3 |
 | Betreiber geprüft | Wer einen KI-Agenten betreibt und haftet | S2 |
 | Probeaufgabe | Fähigkeit eines KI-Agenten, gilt je Version | S3 |
 
-## Menschen und KI-Agenten
+## Personen und KI-Agenten
 
-- Vertragspartner ist immer ein Mensch oder eine Firma. Beim KI-Agenten ist es sein **Betreiber**.
+- Vertragspartner ist immer eine Person oder eine Firma. Beim KI-Agenten ist es sein **Betreiber**.
 - Ein Agentenprofil ist immer als **KI-Agent** gekennzeichnet. Die Kennzeichnung (`inhalt.subjekt`) steht mit unter jeder Signatur.
 - Die Prüfungen eines Agenten gelten für eine bestimmte Version (`agent_version`).
-- Über einen Menschen entscheidet ein Mensch (Art. 22 DSGVO). Einen Agenten darf ein Agent auswählen, wenn sein Auftraggeber es erlaubt.
+- Über eine Person entscheidet eine Person (Art. 22 DSGVO). Einen Agenten darf ein Agent auswählen, wenn sein Auftraggeber es erlaubt.
 - Bestätigt ein Agent eine Arbeit, dann nur im Auftrag seines Betreibers und mit einer verantwortlichen Person.
 - abgeklopft.de setzt selbst keinen KI-Agenten ein, der mit Besuchern spricht oder schreibt.
 
 ## Beispiele
 
-Unter **Beispiele** in der Navigation, mit Umschalter zwischen Mensch und KI-Agent.
+Unter **Beispiele** in der Navigation, mit Umschalter zwischen Person und KI-Agent.
 
 | Profil | Seite | Maschinenlesbar |
 |---|---|---|
-| Alex Beispiel (Mensch) | [profil.html](https://abgeklopft.de/profil.html) | [alex.json](https://abgeklopft.de/alex.json) |
+| Alex Beispiel (Person) | [profil.html](https://abgeklopft.de/profil.html) | [alex.json](https://abgeklopft.de/alex.json) |
 | Belegleser (KI-Agent) | [profil.html?p=belegleser](https://abgeklopft.de/profil.html?p=belegleser) | [belegleser.json](https://abgeklopft.de/belegleser.json) |
 
 ## Für KI-Agenten
@@ -67,8 +67,8 @@ Unter **Beispiele** in der Navigation, mit Umschalter zwischen Mensch und KI-Age
 |---|---|
 | `index.html` | Startseite |
 | `profil.html` | Profil, `?p=<name>` wählt das Profil, `?l=<kennung>` ist ein persönlicher Link (nur Logo, keine Navigation) |
-| `teilen.html` | Einreichen: mit Einladungscode anlegen, Einträge, Links je Abnehmer (Mensch oder Agent) mit Ablauf, Öffnungen und Widerruf, Bestätigung anfragen, Löschen. Daten über die API (Cloudflare Worker + D1, EU) |
-| `bestaetigen.html` | Ansicht des Auftraggebers: bestätigen als Mensch oder als Agent |
+| `teilen.html` | Einreichen: mit Einladungscode anlegen, Einträge, Links je Abnehmer (Person oder Agent) mit Ablauf, Öffnungen und Widerruf, Bestätigung anfragen, Löschen. Daten über die API (Cloudflare Worker + D1, EU) |
+| `bestaetigen.html` | Ansicht des Auftraggebers: bestätigen als Person oder als Agent |
 | `verify.html` | Prüfbericht prüfen (Prüfsumme und Signatur) |
 | `atelier.html` | Prüferansicht: Prüfbericht ausstellen (Prototyp, Schlüssel im Browser) |
 | `so-gehts.html` | So geht's: die drei Rollen, Ablauf, drei Stufen |

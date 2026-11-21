@@ -303,7 +303,30 @@ nav.profilwahl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin
   .pa-zeilen line,.pa-schimmer,.pa-siegel,.pa-haken{animation:none}
 }
 
-/* Band „Erfundenes Beispiel“ schräg über der oberen rechten Ecke der Vorschaukachel */
+/* Prüfaufträge (teilen.html): Zeitleiste, nur Zustand und Fristen, nie eine Wertung der Person */
+.auftrag{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px;background:var(--surface)}
+.auftrag-kopf{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.auftrag-kopf h3{margin:0;font-size:1.02rem;line-height:1.3;overflow-wrap:anywhere}
+.zustand{display:inline-block;font:650 .74rem/1.4 var(--mono);letter-spacing:.02em;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);white-space:nowrap}
+.zustand.jetzt{border-color:var(--brand);color:var(--brand)}
+.zustand.zu{color:var(--muted)}
+.zl{list-style:none;margin:12px 0 4px;padding:0 0 0 20px;border-left:2px solid var(--line)}
+.zl li{position:relative;padding:0 0 12px 14px;font-size:.92rem;line-height:1.4}
+.zl li:last-child{padding-bottom:2px}
+.zl li::before{content:"";position:absolute;left:-27px;top:.3em;width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.zl li.erledigt::before{background:var(--brand);border-color:var(--brand)}
+.zl li.jetzt::before{border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 22%,transparent)}
+.zl li.ausstehend{color:var(--muted)}
+.zl b{font-weight:650}
+.zl .meta{display:block;margin-top:2px}
+.fristkasten{margin-top:8px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--brand) 7%,var(--surface));border:1px solid color-mix(in srgb,var(--brand) 25%,var(--line));font-size:.9rem}
+.rueckfragekasten{margin-top:10px;padding:12px 14px;border-radius:10px;border:1px solid var(--warn);background:color-mix(in srgb,var(--warn) 8%,var(--surface))}
+.rueckfragekasten textarea{font-family:inherit;min-height:70px}
+.artwahl label{font-weight:400;display:flex;gap:8px;align-items:flex-start;margin:8px 0}
+.artwahl input{width:auto;margin-top:.3em}
+.artwahl .gesperrt{color:var(--muted)}
+
+/* Band „Fiktives Beispiel“ schräg über der oberen rechten Ecke der Vorschaukachel */
 .mock{position:relative;overflow:hidden}
 .mock .band{position:absolute;top:40px;right:-56px;width:210px;transform:rotate(45deg);background:var(--brand);color:var(--brand-ink);text-align:center;font:650 .6rem/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:7px 0;box-shadow:0 2px 8px -2px rgb(13 22 38/.35);pointer-events:none}
 .mock .lt-kopf{margin:16px 2px 8px;font:650 .72rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left}

@@ -29,7 +29,7 @@
 </div></header>
 <nav class="reiter wrap" id="reiterleiste" aria-label="Bereiche von Start"><a href="/index.html">Übersicht</a><a href="/profil.html" aria-current="page">Beispiele</a></nav>
 <main class="wrap">
-  <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="/alex.json">abgeklopft.de/alex.json</a> (Mensch) und <a href="/belegleser.json">abgeklopft.de/belegleser.json</a> (KI-Agent). Persönliche Links <code>profil.html?l=&lt;kennung&gt;</code> gibt es als JSON unter <code>https://abgeklopft-api.falko-guderian.workers.dev/v1/l/&lt;kennung&gt;.json</code>. Eine Anleitung für KI-Agenten steht in <a href="/llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
+  <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="/alex.json">abgeklopft.de/alex.json</a> (Person) und <a href="/belegleser.json">abgeklopft.de/belegleser.json</a> (KI-Agent). Persönliche Links <code>profil.html?l=&lt;kennung&gt;</code> gibt es als JSON unter <code>https://abgeklopft-api.falko-guderian.workers.dev/v1/l/&lt;kennung&gt;.json</code>. Eine Anleitung für KI-Agenten steht in <a href="/llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
   <nav class="profilwahl" id="wahl" aria-label="Beispielprofile"></nav>
   <div id="vorab"></div>
   <div id="profilteil">
@@ -46,7 +46,7 @@
     <div id="liste"></div>
     <div class="lt-banner">
       <p class="meta" id="zusammen"></p>
-      <div class="note" id="hinweis">Erfundenes Beispiel. Personen, Firmen und Hochschulen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.</div>
+      <div class="note" id="hinweis">Fiktives Beispiel. Personen, Firmen und Hochschulen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.</div>
     </div>
   </div>
 </main>
@@ -70,8 +70,8 @@ function kopf(p, adresse) {
   $("padr").textContent = adresse || "";
   $("av").classList.toggle("agent", ag);
   $("part").innerHTML = ag
-    ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Kein Mensch. Vertragspartner ist der Betreiber.</span>`
-    : `<span class="tag art-mensch">Mensch</span>`;
+    ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Keine Person. Vertragspartner ist der Betreiber.</span>`
+    : `<span class="tag art-mensch">Person</span>`;
   document.title = p.name + " · abgeklopft.de";
 }
 function betreiberKasten(b, version, hinweis, siegel) {
@@ -158,7 +158,7 @@ if (vorschau) {
   $("wahl").innerHTML = Object.entries(PROFILE).map(([id, x]) =>
     `<a href="profil.html${id === "alex" ? "" : "?p=" + id}"${id === PROFIL_ID ? ' aria-current="page"' : ""}>${esc(x.profil.name)} · ${esc(ARTEN[x.profil.art].kurz)}</a>`).join("");
   if (!PROFIL.erfunden) $("hinweis").hidden = true;
-  else if (agent) $("hinweis").textContent = "Erfundenes Beispiel. Agent, Betreiber, Firmen und Personen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.";
+  else if (agent) $("hinweis").textContent = "Fiktives Beispiel. Agent, Betreiber, Firmen und Personen sind Platzhalter. Klicken Sie auf einen Eintrag, um Prüfweg, Prüfvermerk und Bestätigungen zu sehen.";
   profilZeigen("liste", PORTFOLIO, null);
   zusammenfassung(PORTFOLIO, stufeVon);
 }

@@ -22,10 +22,10 @@ window.PRUEFWEGE = {
 };
 window.WEG_JE_KATEGORIE = { Erfahrung: "auftraggeber", Abschluss: "aussteller", Zertifikat: "aussteller", Produkt: "inhaberschaft", Dienstleistung: "auftraggeber", Identität: "betreiber", Fähigkeit: "probeaufgabe" };
 
-// Wer ein Profil hat: Mensch oder KI-Agent. Vertragspartner ist immer ein Mensch oder eine Firma,
+// Wer ein Profil hat: Person oder KI-Agent. Vertragspartner ist immer eine Person oder eine Firma,
 // beim KI-Agenten der Betreiber. Ein Agent wird immer sichtbar als KI-Agent gekennzeichnet.
 window.ARTEN = {
-  mensch: { name: "Mensch", kurz: "Mensch" },
+  mensch: { name: "Person", kurz: "Person" },
   "ki-agent": { name: "KI-Agent", kurz: "KI-Agent" }
 };
 
@@ -141,7 +141,7 @@ window.PROFILE.belegleser = { profil: {
     id: "kanzlei", kategorie: "Erfahrung", titel: "Rechnungserfassung für eine Steuerkanzlei",
     zeitraum: "2025–2026",
     text: "14.000 Eingangsrechnungen von 60 Mandanten erfasst und vorkontiert. Unsichere Fälle gehen an eine Mitarbeiterin, die freigibt.",
-    skills: ["Rechnungen", "Vorkontierung", "Übergabe an Menschen"],
+    skills: ["Rechnungen", "Vorkontierung", "Übergabe an Personen"],
     stufe: 3, weg: "auftraggeber",
     bestaetigt: [{ name: "Mira Kessler", rolle: "Steuerberaterin, Beispiel-Steuerkanzlei", datum: "2026-03-10", kommentar: "Stichprobe von 500 Belegen: 3 Fehler. Seit einem Jahr im Einsatz." }],
     beleg: "Bestätigung über dienstliche Adresse @beispiel-kanzlei.de"

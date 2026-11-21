@@ -29,7 +29,7 @@
         <label for="einl">Einladungscode (Pilotphase)</label>
         <input id="einl" required placeholder="PILOT-XXXX-XXXX" autocapitalize="characters" spellcheck="false">
         <label for="part">Das Profil gehört</label>
-        <select id="part"><option value="mensch">einem Menschen (mir)</option><option value="ki-agent">einem KI-Agenten (ich bin der Betreiber)</option></select>
+        <select id="part"><option value="mensch">einer Person (mir)</option><option value="ki-agent">einem KI-Agenten (ich bin der Betreiber)</option></select>
         <label for="pname" id="pnamel">Ihr Name</label>
         <input id="pname" required maxlength="120" placeholder="z. B. Alex Beispiel">
         <label for="pzeile">Eine Zeile über Sie</label>
@@ -133,7 +133,24 @@
     </section>
 
     <section>
-      <h2>2 · Persönliche Links</h2>
+      <h2>2 · Prüfung beantragen</h2>
+      <p class="sub">Beantragen Sie für einen Eintrag eine Prüfung und verfolgen Sie hier den Stand. Sie sehen immer, wer gerade am Zug ist, bis wann und was bei Ablauf einer Frist passiert. Angezeigt wird nur der Stand des Auftrags, nie eine Bewertung Ihrer Person.</p>
+      <p class="meta" id="pnotiz" role="status" hidden></p>
+      <div id="pdialog" class="card" hidden aria-live="polite">
+        <h3 id="pdtitel" style="margin-top:0">Prüfung beantragen</h3>
+        <fieldset class="artwahl" style="border:0;padding:0;margin:0">
+          <legend class="meta" style="padding:0">Wie soll geprüft werden?</legend>
+          <label><input type="radio" name="part" value="manuell" id="part_manuell" checked> <span><b>Ein Prüfer prüft</b> (manuell). Ein zugelassener Prüfer sichtet Ihren Eintrag und den Beleg. Es prüft nie jemand mit Bindung zu Ihnen.</span></label>
+          <label class="gesperrt"><input type="radio" name="part" value="ki" id="part_ki" disabled> <span><b>KI prüft</b> <span class="tag">KI-Prüfung: geplant, noch nicht verfügbar</span></span></label>
+        </fieldset>
+        <div class="fristkasten">Fristen: Ihr Auftrag wartet bis zu <b>30 Tage</b> auf einen Prüfer. Ein Prüfer beginnt innerhalb von <b>3 Tagen</b> nach der Übernahme, die Prüfung dauert höchstens <b>7 Tage</b>. Auf eine Rückfrage haben Sie <b>14 Tage</b> Zeit. Nach dem Antrag steht bei jedem Schritt, bis wann er dauert.</div>
+        <div class="row"><button class="btn" type="button" id="pdsenden">Prüfung beantragen</button><button class="btn ghost" type="button" id="pdabbr">Abbrechen</button></div>
+      </div>
+      <div id="auftraege"></div>
+    </section>
+
+    <section>
+      <h2>3 · Persönliche Links</h2>
       <p class="sub">Ein eigener Link je Arbeit- oder Auftraggeber. Sie wählen die Einträge und die Laufzeit. Sie sehen, wann der Link geöffnet wurde. Der Abnehmer erfährt das vor dem Öffnen. Dass ein Link nicht geöffnet wird, sagt nichts über das Ergebnis.</p>
       <form id="lf" autocomplete="off" class="two">
         <div>
@@ -141,7 +158,7 @@
           <input id="emp" required maxlength="160" placeholder="z. B. Musterfirma GmbH, Bereich KI" aria-describedby="emphilfe">
           <p class="meta" id="emphilfe">Der Abnehmername steht lesbar im Link. Jeder, an den der Link weitergeleitet wird, sieht ihn.</p>
           <label for="eart">Der Link geht an</label>
-          <select id="eart"><option value="mensch">einen Menschen (Seite im Browser)</option><option value="ki-agent">einen KI-Agenten (Seite und JSON)</option></select>
+          <select id="eart"><option value="mensch">eine Person (Seite im Browser)</option><option value="ki-agent">einen KI-Agenten (Seite und JSON)</option></select>
           <label for="tage">Gültig für Tage</label>
           <input id="tage" type="number" min="1" max="365" value="30">
           <div class="row"><button class="btn" type="submit">Link erstellen</button></div>
@@ -157,7 +174,7 @@
     </section>
 
     <section>
-      <h2>3 · Bestätigung anfragen</h2>
+      <h2>4 · Bestätigung anfragen</h2>
       <p class="sub">Wer ein Ergebnis abgenommen hat, antwortet über einen Link mit Name, Rolle, Firma und einem Satz. Die Antwort steht dann am Eintrag als „Bestätigung erhalten – noch nicht geprüft“. Zu „Abgenommen“ wird sie erst, wenn ein Prüfer sie geprüft hat.</p>
       <form id="bf" autocomplete="off" class="two">
         <div>
@@ -173,7 +190,7 @@
     </section>
 
     <section>
-      <h2>4 · Dieses Gerät und Löschen</h2>
+      <h2>5 · Dieses Gerät und Löschen</h2>
       <div class="two">
         <div class="card">
           <h3>Auf diesem Gerät abmelden</h3>
@@ -205,7 +222,7 @@ const basis = location.href.replace(/[#?].*$/, "").replace(/[^/]*$/, "");
 // Basis für lesbare Links /<adresse>/<kurz>: lokal diese Seite, sonst abgeklopft.de (auch in der App)
 const LESBAR_BASIS = location.protocol === "http:" && location.hostname === "localhost" ? location.origin : "https://abgeklopft.de";
 const lesbarerLink = x => x.kurz && stand.profil.adresse ? LESBAR_BASIS + "/" + stand.profil.adresse + "/" + x.kurz : "";
-let konto = kontoLesen(), stand = null, nochmalFn = null;
+let konto = kontoLesen(), stand = null, auftr = null, nochmalFn = null;
 
 function fehler(e, nochmal) {
   $("erfolg").hidden = true;
@@ -276,6 +293,8 @@ async function laden() {
   $("laedt").hidden = false;
   try {
     stand = await api("GET", "/v1/profile/" + konto.id, undefined, konto.schluessel);
+    // Prüfaufträge: fehlt der Pfad auf dem Server (noch nicht eingespielt) oder schlägt er fehl, bleibt der Rest der Seite benutzbar
+    try { auftr = (await api("GET", `/v1/profile/${konto.id}/auftraege`, undefined, konto.schluessel)).auftraege; } catch { auftr = null; }
     $("laedt").hidden = true; zeige("mit"); zeichnen();
   } catch (err) {
     $("laedt").hidden = true;
@@ -293,7 +312,7 @@ function zeichnen() {
   $("mzeile").textContent = [p.zeile, p.ort].filter(Boolean).join(" · ");
   $("mart").innerHTML = ag
     ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Betreiber: ${esc(p.betreiber.name)}, ${esc(p.betreiber.sitz)} · Version ${esc(p.agent_version)}</span>`
-    : `<span class="tag art-mensch">Mensch</span>`;
+    : `<span class="tag art-mensch">Person</span>`;
   $("ename").value = p.name; $("ezeile").value = p.zeile; $("eort").value = p.ort;
   $("eadr").value = p.adresse || ""; $("eadrvor").textContent = $("eadrvor2").textContent = p.adresse || "ihr-name";
   $("madr").innerHTML = p.adresse ? `Ihre Adresse: abgeklopft.de/<b>${esc(p.adresse)}</b> (Links: abgeklopft.de/${esc(p.adresse)}/<i>empfänger-kennung</i>)` : "Noch keine Adresse. Sie wird beim nächsten Link aus Ihrem Namen abgeleitet, oder tragen Sie unter „Profil bearbeiten“ eine ein.";
@@ -305,7 +324,7 @@ function zeichnen() {
   $("eliste").innerHTML = E.length ? E.map(e => `<div class="eintrag-zeile">
       <div style="flex:1;min-width:200px"><span class="badge b1">${STUFEN[1].siegel}</span> <b>${esc(e.titel)}</b> <span class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + esc(e.zeitraum) : ""}</span>
         ${e.bestaetigungen.filter(b => b.status === "erhalten").map(b => `<br><span class="meta">Bestätigung erhalten – noch nicht geprüft: ${esc(ANTWORT_TEXT[b.antwort])} von ${esc(b.name)}</span>`).join("")}</div>
-      <div class="knoepfe"><button class="btn ghost klein" type="button" data-bearb="${esc(e.id)}">bearbeiten</button><button class="btn ghost klein" type="button" data-eweg="${esc(e.id)}">löschen</button></div>
+      <div class="knoepfe">${pruefKnopf(e)}<button class="btn ghost klein" type="button" data-bearb="${esc(e.id)}">bearbeiten</button><button class="btn ghost klein" type="button" data-eweg="${esc(e.id)}">löschen</button></div>
     </div>`).join("") : `<p class="meta">Noch keine Einträge. Fügen Sie Ihren ersten Eintrag hinzu.</p>`;
   if (!E.length) $("eneu").open = true;
   $("auswahl").innerHTML = E.length ? E.map(e =>
@@ -335,7 +354,134 @@ function zeichnen() {
       ${a.status === "angefragt" ? `<span class="meta">${ST.angefragt}</span>` : `<b>${esc(ANTWORT_TEXT[a.antwort])}</b> · ${a.von === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(a.name)}, ${esc(a.rolle)}, ${esc(a.firma)}${a.verantwortlich ? ", verantwortlich: " + esc(a.verantwortlich) : ""}${a.kommentar ? '<br><span class="meta">„' + esc(a.kommentar) + '“</span>' : ""}<br><span class="meta">noch nicht geprüft${a.antwort === "nein" ? " · sehen nur Sie" : ""}</span>`}</div>
       <div class="knoepfe">${a.status === "angefragt" ? `<button class="btn ghost klein" type="button" data-akopie="${esc(a.id)}">Link kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-aweg="${esc(a.id)}">löschen</button></div></div>`).join("")
     : `<p class="meta">Noch keine Anfragen.</p>`;
+  auftraegeZeichnen();
 }
+
+// ---------- Prüfaufträge: nur Zustand, Fristen und Verlauf, nie eine Wertung der Person ----------
+const AM_ZUG = { einreicher: "Sie", pruefer: "ein Prüfer", system: "das System" };
+const ABLAUF_TEXT = {
+  auftrag_laeuft_ab: "Der Auftrag läuft ab und wird beendet.",
+  zurueck_in_warteschlange: "Der Auftrag geht zurück in die Warteschlange, ein anderer Prüfer kann ihn übernehmen.",
+  erinnerung_an_pruefer: "Prüfer und Verwaltung werden erinnert, der Auftrag bleibt bestehen.",
+  abgelehnt_keine_antwort: "Der Auftrag wird beendet, weil keine Antwort kam (Zustand „Abgelehnt“)."
+};
+const FRIST_NAME = { liegt_bis: "Wartezeit bis zur Zuweisung", start_bis: "Prüfer beginnt", pruefung_bis: "Prüfung", antwort_bis: "Ihre Antwort" };
+const GRUND_TEXT = { zurueckgezogen: "Von Ihnen zurückgezogen.", frist: "Die Wartezeit ist abgelaufen.", frist_abgelaufen: "Der Auftrag wurde innerhalb von 30 Tagen nicht übernommen und ist abgelaufen.", keine_antwort: "Es kam keine Antwort auf die Rückfrage.", nicht_nachweisbar: "Nicht nachweisbar.", beleg_fehlt: "Beleg fehlt." };
+// Ereignisse, die dem Einreicher im Verlauf erklärt werden (ohne Prüfername): Rückgaben, Fristen des Systems
+const HINWEIS_TEXT = {
+  uebernommen: "Ein Prüfer hat den Auftrag übernommen.", zugewiesen: "Die Verwaltung hat den Auftrag einem Prüfer zugewiesen.", gestartet: "Die Prüfung hat begonnen.",
+  abgegeben: "Der Auftrag liegt wieder in der Warteschlange.", abgegeben_in_rueckfrage: "Der Auftrag liegt wieder in der Warteschlange. Die offene Rückfrage hat sich erledigt, Sie müssen sie nicht mehr beantworten.",
+  freigegeben: "Die Verwaltung hat den Auftrag zurück in die Warteschlange gegeben.", freigegeben_in_rueckfrage: "Die Verwaltung hat den Auftrag zurück in die Warteschlange gegeben. Die offene Rückfrage hat sich erledigt.",
+  freigegeben_ausschluss: "Der Auftrag liegt wieder in der Warteschlange (anderer Prüfer).", freigegeben_ausschluss_in_rueckfrage: "Der Auftrag liegt wieder in der Warteschlange (anderer Prüfer). Die offene Rückfrage hat sich erledigt.",
+  zurueck_in_warteschlange: "Die Prüfung wurde nicht rechtzeitig begonnen: Der Auftrag liegt wieder in der Warteschlange.",
+  erinnerung_an_pruefer: "Die Prüffrist ist überschritten. Prüfer und Verwaltung wurden erinnert.",
+  keine_antwort: "Auf die Rückfrage kam keine Antwort. Der Auftrag wurde beendet.", frist_abgelaufen: "Der Auftrag wurde nicht rechtzeitig übernommen und ist abgelaufen."
+};
+const fristDatum = d => d ? new Date(d + "T00:00:00Z").toLocaleDateString("de-DE", { timeZone: "UTC", day: "2-digit", month: "2-digit", year: "numeric" }) : "";
+const offenerAuftrag = eid => (auftr || []).find(a => a.eintrag.id === eid && a.offen);
+function pruefKnopf(e) {
+  if (auftr === null) return "";
+  const a = offenerAuftrag(e.id);
+  if (a) return `<a class="btn ghost klein" href="#auftrag-${esc(a.id)}">Prüfung: ${esc(a.zustand_anzeige)}</a>`;
+  if (e.stufe && e.stufe > 1) return "";
+  return `<button class="btn klein" type="button" data-pruef="${esc(e.id)}">Prüfung beantragen</button>`;
+}
+function zeitleiste(a) {
+  const erst = {};
+  for (const v of a.ereignisse) if (!(v.nach in erst)) erst[v.nach] = v.zeit;
+  const schritte = ["eingereicht", "art_gewaehlt", "zugewiesen", "in_pruefung"];
+  if (erst.rueckfrage || a.zustand === "rueckfrage") schritte.push("rueckfrage");
+  const NAME = { eingereicht: "Eingereicht", art_gewaehlt: "Prüfart gewählt", zugewiesen: "Zugewiesen", in_pruefung: "In Prüfung", rueckfrage: "Rückfrage" };
+  const li = [];
+  for (const z of schritte) {
+    const erreicht = z in erst;
+    if (!erreicht && !a.offen) continue;
+    const jetzt = a.offen && a.zustand === z;
+    li.push(`<li class="${jetzt ? "jetzt" : erreicht ? "erledigt" : "ausstehend"}"><b>${NAME[z]}</b>${erreicht ? ` <span class="meta" style="display:inline">· ${esc(datumDe(erst[z]))}</span>` : ""}${jetzt ? fristZeile(a) : ""}</li>`);
+  }
+  if (a.offen) li.push(`<li class="ausstehend"><b>Ergebnis</b> <span class="meta" style="display:inline">· Geprüft oder Abgelehnt</span></li>`);
+  else li.push(`<li class="erledigt"><b>${esc(a.zustand_anzeige)}</b> <span class="meta" style="display:inline">· ${esc(datumDe(a.abgeschlossen))}</span>${a.grund && GRUND_TEXT[a.grund] ? `<span class="meta">${esc(GRUND_TEXT[a.grund])}</span>` : ""}${a.ergebnis_kennung ? `<span class="meta">Prüfbericht ${esc(a.ergebnis_kennung)}</span>` : ""}</li>`);
+  return `<ol class="zl">${li.join("")}</ol>`;
+}
+function hinweise(a) {
+  const z = (a.ereignisse || []).filter(v => HINWEIS_TEXT[v.code]).slice(-4);
+  return z.length ? `<ul class="hinweise" style="margin:8px 0 0;padding-left:18px">${z.map(v => `<li class="meta" style="color:var(--ink)">${esc(datumDe(v.zeit))}: ${esc(HINWEIS_TEXT[v.code])}${v.akteur === "system" ? " (automatisch)" : ""}</li>`).join("")}</ul>` : "";
+}
+function fristZeile(a) {
+  const f = a.naechste_frist;
+  const wer = a.am_zug ? `Am Zug: <b>${esc(AM_ZUG[a.am_zug] || a.am_zug)}</b>.` : "";
+  const bis = f && f.bis ? ` ${esc(FRIST_NAME[f.name] || "Frist")} bis <b>${esc(fristDatum(f.bis))}</b>.` : "";
+  const folge = f && ABLAUF_TEXT[f.bei_ablauf] ? ` Wenn die Frist abläuft: ${esc(ABLAUF_TEXT[f.bei_ablauf])}` : "";
+  return `<span class="meta" style="color:var(--ink)">${wer}${bis}${folge}</span>`;
+}
+function auftragHtml(a) {
+  const arttext = a.art === "manuell" ? "Ein Prüfer prüft" : a.art === "ki" ? "KI prüft" : "Prüfart noch nicht gewählt";
+  const aktiv = a.offen;
+  const rueck = a.zustand === "rueckfrage" && a.rueckfrage ? `<div class="rueckfragekasten"><b>Rückfrage${a.rueckfrage.code === "eintrag_geaendert" ? " (Eintrag geändert)" : ""}</b>
+      <p style="margin:6px 0">${esc(a.rueckfrage.frage)}</p>
+      <form data-antwort="${esc(a.id)}" autocomplete="off"><label for="ant-${esc(a.id)}">Ihre Antwort (höchstens 500 Zeichen)</label>
+      <textarea id="ant-${esc(a.id)}" maxlength="500" required></textarea>
+      <div class="row"><button class="btn" type="submit">Antworten</button></div></form></div>` : "";
+  const art = aktiv && (a.zustand === "eingereicht" || a.zustand === "art_gewaehlt") && a.art === null
+    ? `<div class="row" style="margin-top:8px"><button class="btn klein" type="button" data-artwahl="${esc(a.id)}">Prüfart wählen: Ein Prüfer prüft</button></div>` : "";
+  return `<div class="auftrag" id="auftrag-${esc(a.id)}">
+    <div class="auftrag-kopf"><div><h3>${esc(a.eintrag.titel)}</h3><span class="meta">${esc(arttext)} · beantragt ${esc(datumDe(a.erstellt))}</span></div>
+      <span class="zustand ${aktiv ? "jetzt" : "zu"}">${esc(a.zustand_anzeige)}</span></div>
+    ${zeitleiste(a)}${hinweise(a)}${art}${rueck}
+    ${aktiv ? `<div class="row" style="margin-top:6px"><button class="btn ghost klein" type="button" data-zurueck="${esc(a.id)}">Auftrag zurückziehen</button></div>` : ""}
+  </div>`;
+}
+function auftraegeZeichnen() {
+  const box = $("auftraege"), notiz = $("pnotiz");
+  if (auftr === null) {
+    notiz.hidden = false; notiz.textContent = "Prüfaufträge sind auf dem Server noch nicht verfügbar. Ihre Einträge und Links funktionieren wie gewohnt.";
+    box.innerHTML = ""; $("pdialog").hidden = true; return;
+  }
+  notiz.hidden = true;
+  const offen = auftr.filter(a => a.offen), zu = auftr.filter(a => !a.offen);
+  box.innerHTML = (offen.length ? offen.map(auftragHtml).join("") : `<p class="meta">Kein Prüfauftrag offen. Wählen Sie bei einem Eintrag „Prüfung beantragen“.</p>`)
+    + (zu.length ? `<details style="margin-top:14px"><summary>Abgeschlossene Aufträge (${zu.length})</summary>${zu.map(auftragHtml).join("")}</details>` : "");
+}
+// Dialog „Prüfung beantragen“
+let pdEintrag = null;
+function pdOeffnen(eid) {
+  const e = stand.eintraege.find(x => x.id === eid); if (!e) return;
+  pdEintrag = eid; $("pdtitel").textContent = "Prüfung beantragen: " + e.titel;
+  $("part_manuell").checked = true; $("pdialog").hidden = false;
+  $("pdialog").scrollIntoView({ block: "nearest" }); $("pdsenden").focus();
+}
+$("pdabbr").addEventListener("click", () => { $("pdialog").hidden = true; pdEintrag = null; });
+$("pdsenden").addEventListener("click", e => {
+  still();
+  mitSperre(e.currentTarget, async () => {
+    try {
+      await api("POST", `/v1/profile/${konto.id}/auftraege`, { eintrag_id: pdEintrag, art: "manuell" }, konto.schluessel);
+      $("pdialog").hidden = true; pdEintrag = null; await laden();
+      erfolg("Prüfung beantragt. Unten sehen Sie den Stand, die Fristen und wer am Zug ist.");
+      $("auftraege").scrollIntoView({ block: "nearest" });
+    } catch (err) { fehler(err); }
+  });
+});
+$("eliste").addEventListener("click", e => { const b = e.target.closest("[data-pruef]"); if (b) pdOeffnen(b.dataset.pruef); });
+$("auftraege").addEventListener("click", e => {
+  const w = e.target.closest("[data-artwahl]"), z = e.target.closest("[data-zurueck]");
+  if (w) mitSperre(w, async () => {
+    try { await api("POST", `/v1/profile/${konto.id}/auftraege/${w.dataset.artwahl}/art`, { art: "manuell" }, konto.schluessel); await laden(); erfolg("Prüfart gewählt: Ein Prüfer prüft."); }
+    catch (err) { fehler(err); }
+  });
+  if (z) zweimal(z, "wirklich zurückziehen?", () => api("POST", `/v1/profile/${konto.id}/auftraege/${z.dataset.zurueck}/zurueckziehen`, {}, konto.schluessel)
+    .then(laden).then(() => erfolg("Prüfauftrag zurückgezogen."), fehler));
+});
+$("auftraege").addEventListener("submit", e => {
+  const f = e.target.closest("[data-antwort]"); if (!f) return;
+  e.preventDefault(); still();
+  mitSperre(e.submitter, async () => {
+    try {
+      await api("POST", `/v1/profile/${konto.id}/auftraege/${f.dataset.antwort}/antwort`, { text: f.querySelector("textarea").value.trim() }, konto.schluessel);
+      await laden(); erfolg("Antwort gesendet. Die Prüfung läuft weiter.");
+    } catch (err) { fehler(err); }
+  });
+});
 
 // Profil bearbeiten
 $("pform").addEventListener("submit", e => {
