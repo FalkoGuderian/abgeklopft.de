@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<style>
+.b{fill:#2340d4}.h{stroke:#fff}
+@media (prefers-color-scheme:dark){.b{fill:#8098ff}.h{stroke:#0a0f18}}
+</style>
+<rect class="b" width="64" height="64" rx="14"/>
+<path class="h" d="M17 33.5l10.5 10.5L47.5 21" fill="none" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
