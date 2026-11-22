@@ -49,7 +49,7 @@ const PA_SVG = `<svg class="pa" viewBox="0 0 84 70" role="img" aria-label="Karte
 const WURZEL_ANKER = [];
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/, HEX64 = /^[0-9a-f]{64}$/, KENNUNG = /^AK-[0-9A-F]{4}-[0-9A-F]{4}$/, DATUM = /^\d{4}-\d{2}-\d{2}$/;
 const GRUENDE = ["auf_wunsch", "fehler", "schluessel"], TAG = 86400000;
-const RANG = ["format_nicht_zulaessig", "veraendert", "signatur_ungueltig", "nicht_signiert", "unbekannter_schluessel", "schluessel_gesperrt", "widerrufen", "schluessel_nicht_gueltig", "profil_weicht_ab"];
+const RANG = ["format_nicht_zulaessig", "pruefobjekt_fehlt", "pruefobjekt_unvollstaendig", "pruefobjekt_zu_gross", "veraendert", "signatur_ungueltig", "nicht_signiert", "unbekannter_schluessel", "schluessel_gesperrt", "widerrufen", "schluessel_nicht_gueltig", "profil_weicht_ab"];
 const WIDERRUF_GRUND = { auf_wunsch: "auf Wunsch der Person", fehler: "wegen eines Fehlers im Bericht", schluessel: "Schlüssel nicht mehr vertrauenswürdig" };
 const jetztMs = () => Math.floor(Date.now() / 1000) * 1000;
 function zeit(t) {   // streng JJJJ-MM-TTThh:mm:ssZ, sonst null; Millisekunden
@@ -66,6 +66,29 @@ async function edPruefen(x, wert, text) {
   } catch { return false; }
 }
 const gleichMenge = (o, felder) => { const a = Object.keys(o).sort().join("|"); return a === [...felder].sort().join("|"); };
+// Version 3: Pflichtblock `pruefobjekt` (gleiche Regeln wie scripts/pruefen.mjs). Rückgabe [Status|null, Text, bereinigtes Objekt|null]
+const TEIL_ID = /^[a-z0-9-]{1,24}$/, PO_MAX_TEXT = 500, PO_MAX_LISTE = 20;
+const textOk = v => typeof v === "string" && v.trim() !== "";
+const listeOk = l => Array.isArray(l) && l.some(textOk) && l.every(x => typeof x === "string");
+function pruefobjektPruefen(po) {
+  if (po === undefined || po === null) return ["pruefobjekt_fehlt", "Berichtsversion 3 ohne „pruefobjekt“ (Pflichtfeld)", null];
+  if (typeof po !== "object" || Array.isArray(po)) return ["pruefobjekt_unvollstaendig", "„pruefobjekt“ ist kein Objekt", null];
+  const fehlt = ["gegenstand", "version_stand", "methode"].filter(f => !textOk(po[f]));
+  if (!listeOk(po.umfang_geprueft)) fehlt.push("umfang_geprueft");
+  const ng = po.nicht_geprueft, na = po.nichts_ausgeschlossen;
+  if ("nichts_ausgeschlossen" in po && typeof na !== "boolean") fehlt.push("nichts_ausgeschlossen");
+  if ("nicht_geprueft" in po && !Array.isArray(ng)) fehlt.push("nicht_geprueft");
+  else if (!listeOk(ng) && na !== true) fehlt.push("nicht_geprueft (oder nichts_ausgeschlossen: true)");
+  if (fehlt.length) return ["pruefobjekt_unvollstaendig", "„pruefobjekt“ unvollständig: " + fehlt.join(", "), null];
+  for (const f of ["gegenstand", "version_stand", "methode"]) if (po[f].length > PO_MAX_TEXT) return ["pruefobjekt_zu_gross", `„pruefobjekt.${f}“ länger als ${PO_MAX_TEXT} Zeichen`, null];
+  for (const f of ["umfang_geprueft", "nicht_geprueft"]) {
+    const l = po[f] || [];
+    if (l.length > PO_MAX_LISTE || l.some(x => x.length > PO_MAX_TEXT)) return ["pruefobjekt_zu_gross", `„pruefobjekt.${f}“ hat mehr als ${PO_MAX_LISTE} Punkte oder Punkte über ${PO_MAX_TEXT} Zeichen`, null];
+  }
+  const out = { gegenstand: po.gegenstand, version_stand: po.version_stand, umfang_geprueft: po.umfang_geprueft.filter(x => x.trim()), nicht_geprueft: (ng || []).filter(x => x.trim()), methode: po.methode };
+  if (na === true) out.nichts_ausgeschlossen = true;
+  return [null, "", out];
+}
 function formatnummer(f) { const m = /^abgeklopft-nachweise\/(\d+)\.(\d+)$/.exec(String(f ?? "")); return m ? [Number(m[1]), Number(m[2])] : null; }
 
 // Schlüssel aus jwks.json: Typ, Zeitraum und Fingerabdruck geprüft; Wurzeln nur mit Vertrauensanker; kid muss zu x passen (nur 32 Bit)
@@ -158,10 +181,20 @@ async function bewerte(u, kx) {
   const version = inhalt.version, ausgestellt = inhalt.ausgestellt;
   const profil = kx.profil, e = kx.eintrag;
   // 1. Format
-  if (![1, 2].includes(version) && version !== undefined) fehler("format_nicht_zulaessig", `Berichtsversion ${JSON.stringify(version)} unbekannt`);
-  if (version === 2) {
-    if (zeit(ausgestellt) === null) fehler("format_nicht_zulaessig", "Version 2 braucht ausgestellt als JJJJ-MM-TTThh:mm:ssZ (UTC)");
-    if (profil) { const nr = formatnummer(profil.format); if (!nr || nr[0] < 0 || (nr[0] === 0 && nr[1] < 4)) fehler("format_nicht_zulaessig", `Format ${JSON.stringify(profil.format)} passt nicht zu Berichten der Version 2 (mindestens 0.4)`); }
+  if (![1, 2, 3].includes(version) && version !== undefined) fehler("format_nicht_zulaessig", `Berichtsversion ${JSON.stringify(version)} unbekannt`);
+  if (version === 2 || version === 3) {
+    if (zeit(ausgestellt) === null) fehler("format_nicht_zulaessig", `Version ${version} braucht ausgestellt als JJJJ-MM-TTThh:mm:ssZ (UTC)`);
+    const mind = version === 2 ? 4 : 5;
+    if (profil) { const nr = formatnummer(profil.format); if (!nr || nr[0] < 0 || (nr[0] === 0 && nr[1] < mind)) fehler("format_nicht_zulaessig", `Format ${JSON.stringify(profil.format)} passt nicht zu Berichten der Version ${version} (mindestens 0.${mind})`); }
+  }
+  let po = null;
+  if (version === 3) {
+    const [st, tx, o] = pruefobjektPruefen(inhalt.pruefobjekt);
+    if (st) fehler(st, tx);
+    if ("teil" in inhalt && !(typeof inhalt.teil === "string" && TEIL_ID.test(inhalt.teil))) fehler("format_nicht_zulaessig", "„teil“ ist keine zulässige Teil-Id ([a-z0-9-], 1 bis 24 Zeichen)");
+    if ("pruefer_art" in inhalt && !["mensch", "ki"].includes(inhalt.pruefer_art)) fehler("format_nicht_zulaessig", "„pruefer_art“ muss „mensch“ oder „ki“ sein");
+    po = o;
+    if (po) { if (typeof inhalt.teil === "string") po.teil = inhalt.teil; if (["mensch", "ki"].includes(inhalt.pruefer_art)) po.pruefer_art = inhalt.pruefer_art; }
   }
   // 2. Prüfsumme und Kennung
   if (summe !== u.pruefsumme) fehler("veraendert", "Prüfsumme stimmt nicht: Inhalt verändert");
@@ -191,8 +224,8 @@ async function bewerte(u, kx) {
   if (schlOk) sigOk = lokal ? (await signaturPruefen(s, text)).status === "vertraut" : await edPruefen(k.x, s.wert, text);
   if (schlOk && !sigOk) fehler("signatur_ungueltig", "Signatur ungültig");
   // 6. Zeit (Version 2)
-  const ausMs = version === 2 ? zeit(ausgestellt) : (typeof ausgestellt === "string" && DATUM.test(ausgestellt) ? Date.parse(ausgestellt + "T00:00:00Z") : null);
-  if (version === 2 && ausMs !== null) {
+  const ausMs = version === 2 || version === 3 ? zeit(ausgestellt) : (typeof ausgestellt === "string" && DATUM.test(ausgestellt) ? Date.parse(ausgestellt + "T00:00:00Z") : null);
+  if ((version === 2 || version === 3) && ausMs !== null) {
     if (ausMs > ctx.jetzt + 5 * 60000) fehler("schluessel_nicht_gueltig", "ausgestellt liegt in der Zukunft (Zeitangabe unplausibel)");
     if (k && k.typ === "signierung" && !(k._von !== null && k._bis !== null && k._von <= ausMs && ausMs < k._bis)) fehler("schluessel_nicht_gueltig", `Der Schlüssel war zum Ausstellungszeitpunkt ${ausgestellt} nicht gültig`);
   }
@@ -226,7 +259,7 @@ async function bewerte(u, kx) {
     for (const [n, a, sg] of vgl) if (a !== sg) fehler("profil_weicht_ab", `${n}: Profil sagt ${JSON.stringify(a)}, signiert ist ${JSON.stringify(sg)}`);
   }
   const status = befunde.length ? RANG.find(r => befunde.includes(r)) : widerrufUnpruefbar ? "widerrufsstatus_nicht_pruefbar" : !gueltig ? "abgelaufen" : lokal ? "lokal_vertraut" : pilot ? "beispiel_pilot" : "echt";
-  return { status, lokal, f, k, kid, kennung: kennung || erw, w, sperrDatum, widerrufEintrag, inhalt, gueltig, widerrufGrund: w.grund };
+  return { status, lokal, version, po: f.length ? null : po, f, k, kid, kennung: kennung || erw, w, sperrDatum, widerrufEintrag, inhalt, gueltig, widerrufGrund: w.grund };
 }
 
 // Anzeige nach Tabelle 5.3 (Texte wörtlich). Haken nur bei „echt“ und „beispiel_pilot“.
@@ -260,6 +293,20 @@ function anzeige(r, kx) {
   return { typ: "bad", html: "Unbekanntes Ergebnis." };
 }
 
+// Block „Prüfobjekt“ (Klartext): nur bei Ergebnissen, die den Bericht nicht als fehlerhaft ausweisen
+const OHNE_BLOCK = ["veraendert", "signatur_ungueltig", "format_nicht_zulaessig", "pruefobjekt_fehlt", "pruefobjekt_unvollstaendig", "pruefobjekt_zu_gross", "schluessel_nicht_gueltig", "schluessel_gesperrt", "widerrufen", "profil_weicht_ab"];
+function pruefobjektBlock(r) {
+  if (OHNE_BLOCK.includes(r.status)) return "";
+  const li = l => l.map(x => esc(x)).join("; ");
+  if (r.version !== 3 || !r.po) return `<div class="pobl" data-pruefobjekt="nicht_angegeben" style="margin-top:.8rem;padding:10px 12px;border-radius:10px;border:1px solid var(--warn);background:color-mix(in srgb,var(--warn) 7%,var(--surface))"><b>Prüfobjekt: nicht angegeben.</b> Der Umfang der Prüfung steht nicht im Bericht (Bericht vor Format 0.5). Nicht als vollständige Prüfung lesen.</div>`;
+  const p = r.po;
+  const nicht = p.nicht_geprueft.length ? li(p.nicht_geprueft) : "nichts ausgeschlossen (vom Prüfer ausdrücklich bestätigt)";
+  return `<div class="pobl" data-pruefobjekt="angegeben" style="margin-top:.8rem;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface)"><b>Prüfobjekt</b><br>` +
+    `<b>Geprüft:</b> ${li(p.umfang_geprueft)}.<br><b>Nicht geprüft:</b> ${nicht}.<br><b>Stand:</b> ${esc(p.version_stand)}<br>` +
+    `<b>Gegenstand:</b> ${esc(p.gegenstand)}<br><b>Methode:</b> ${esc(p.methode)}` +
+    (p.teil ? `<br><b>Teil:</b> ${esc(p.teil)}` : "") +
+    (p.pruefer_art === "ki" ? `<br><b>Geprüft von einer KI (nicht menschlich).</b> Siegel: Geprüft mit Zusatz „KI“.` : p.pruefer_art === "mensch" ? `<br>Geprüft von einem Menschen.` : "") + `</div>`;
+}
 // Ergebnisse anzeigen; jedes trägt data-status (maschinenlesbar, gleiche Namen wie die Skripte mit --json)
 function zeige(liste) {
   $("erg").innerHTML = liste.map(r => `<div class="result ${r.typ}" data-status="${esc(r.status)}"${r.id ? ` data-eintrag="${esc(r.id)}"` : ""}${r.test ? ' data-testliste="1"' : ""}>` +
@@ -282,7 +329,7 @@ async function pruefen(testListe) {
     if (!x.u || !x.u.inhalt || !x.u.pruefsumme) { aus.push({ typ: "bad", html: "Es fehlen „inhalt“ oder „pruefsumme“.", status: "format_nicht_zulaessig", id }); continue; }
     if (!window.JWKS && !lesen(VERTRAUT_KEY).some(k => k.kid === (x.u.signatur || {}).kid)) { aus.push({ typ: "bad", html: "<b>Die Liste der zugelassenen Prüfer ließ sich nicht laden.</b> Ohne sie kann der Bericht nicht geprüft werden. Die Seite funktioniert nur über das Netz.", status: "nicht_ladbar", id }); continue; }
     const r = await bewerte(x.u, { ctx, profil: x.profil, eintrag: x.eintrag, testListe });
-    aus.push({ ...anzeige(r, x), status: r.status, id, test: !!(r.w && r.w.test) });
+    { const an = anzeige(r, x); aus.push({ ...an, html: an.html + pruefobjektBlock(r), status: r.status, id, test: !!(r.w && r.w.test) }); }
   }
   zeige(aus);
 }
