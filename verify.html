@@ -49,7 +49,7 @@ const PA_SVG = `<svg class="pa" viewBox="0 0 84 70" role="img" aria-label="Karte
 const WURZEL_ANKER = [];
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/, HEX64 = /^[0-9a-f]{64}$/, KENNUNG = /^AK-[0-9A-F]{4}-[0-9A-F]{4}$/, DATUM = /^\d{4}-\d{2}-\d{2}$/;
 const GRUENDE = ["auf_wunsch", "fehler", "schluessel"], TAG = 86400000;
-const RANG = ["format_nicht_zulaessig", "pruefobjekt_fehlt", "pruefobjekt_unvollstaendig", "pruefobjekt_zu_gross", "veraendert", "signatur_ungueltig", "nicht_signiert", "unbekannter_schluessel", "schluessel_gesperrt", "widerrufen", "schluessel_nicht_gueltig", "profil_weicht_ab"];
+const RANG = ["format_nicht_zulaessig", "teile_ungueltig", "teile_zyklus", "pruefobjekt_fehlt", "pruefobjekt_unvollstaendig", "pruefobjekt_zu_gross", "teil_zuordnung_falsch", "veraendert", "signatur_ungueltig", "nicht_signiert", "unbekannter_schluessel", "schluessel_gesperrt", "widerrufen", "schluessel_nicht_gueltig", "profil_weicht_ab"];
 const WIDERRUF_GRUND = { auf_wunsch: "auf Wunsch der Person", fehler: "wegen eines Fehlers im Bericht", schluessel: "Schlüssel nicht mehr vertrauenswürdig" };
 const jetztMs = () => Math.floor(Date.now() / 1000) * 1000;
 function zeit(t) {   // streng JJJJ-MM-TTThh:mm:ssZ, sonst null; Millisekunden
@@ -196,6 +196,12 @@ async function bewerte(u, kx) {
     po = o;
     if (po) { if (typeof inhalt.teil === "string") po.teil = inhalt.teil; if (["mensch", "ki"].includes(inhalt.pruefer_art)) po.pruefer_art = inhalt.pruefer_art; }
   }
+  // 1b. Zuordnung zu Eintrag und Teil (nur bei Einträgen mit „teile“)
+  if (kx.teil !== undefined) {
+    if (version !== 3) fehler("teil_zuordnung_falsch", `der Bericht muss Version 3 sein (hat ${JSON.stringify(version)})`);
+    else if (inhalt.teil !== kx.teil) fehler("teil_zuordnung_falsch", `der Bericht gehört zu Teil ${JSON.stringify(sauber(inhalt.teil, 30))}, nicht zu Teil ${kx.teil}`);
+    if (e && inhalt.eintrag !== e.id) fehler("teil_zuordnung_falsch", `der Bericht gehört zu Eintrag ${JSON.stringify(sauber(inhalt.eintrag, 30))}, nicht zu ${JSON.stringify(e.id)}`);
+  } else if (kx.ganzesMitTeilen && "teil" in inhalt) fehler("teil_zuordnung_falsch", "Der Bericht des ganzen Eintrags trägt eine Teil-Id; er gehört zu einem Teil");
   // 2. Prüfsumme und Kennung
   if (summe !== u.pruefsumme) fehler("veraendert", "Prüfsumme stimmt nicht: Inhalt verändert");
   const erw = "AK-" + summe.slice(0, 4).toUpperCase() + "-" + summe.slice(4, 8).toUpperCase();
@@ -253,13 +259,13 @@ async function bewerte(u, kx) {
   if (profil && e) {
     if (e.gueltig === true && !gueltig) fehler("profil_weicht_ab", "Profil sagt gültig, Prüfbericht ist abgelaufen");
     const adr = (profil.profil?.adresse || "").replace(/^https?:\/\//, "");
-    const vgl = [["Stufe", e.stufe, "S" + inhalt.stufe], ["Eintrag", e.id, inhalt.eintrag], ["Person/KI-Agent", profil.profil?.art, inhalt.subjekt],
+    const vgl = [["Stufe", e.stufe, "S" + inhalt.stufe], ["Eintrag", e.id, kx.teil === undefined ? inhalt.eintrag : e.id], ["Person/KI-Agent", profil.profil?.art, inhalt.subjekt],
       ["Prüfweg", e.pruefung?.pruefweg, inhalt.pruefweg], ...(adr ? [["Profiladresse", adr, inhalt.profil]] : []),
       ...(profil.profil?.art === "ki-agent" ? [["agent_version", profil.profil.agent_version, inhalt.agent_version]] : [])];
     for (const [n, a, sg] of vgl) if (a !== sg) fehler("profil_weicht_ab", `${n}: Profil sagt ${JSON.stringify(a)}, signiert ist ${JSON.stringify(sg)}`);
   }
   const status = befunde.length ? RANG.find(r => befunde.includes(r)) : widerrufUnpruefbar ? "widerrufsstatus_nicht_pruefbar" : !gueltig ? "abgelaufen" : lokal ? "lokal_vertraut" : pilot ? "beispiel_pilot" : "echt";
-  return { status, lokal, version, po: f.length ? null : po, f, k, kid, kennung: kennung || erw, w, sperrDatum, widerrufEintrag, inhalt, gueltig, widerrufGrund: w.grund };
+  return { status, lokal, version, unpruefbar: widerrufUnpruefbar, po: f.length ? null : po, f, k, kid, kennung: kennung || erw, w, sperrDatum, widerrufEintrag, inhalt, gueltig, widerrufGrund: w.grund };
 }
 
 // Anzeige nach Tabelle 5.3 (Texte wörtlich). Haken nur bei „echt“ und „beispiel_pilot“.
@@ -293,6 +299,235 @@ function anzeige(r, kx) {
   return { typ: "bad", html: "Unbekanntes Ergebnis." };
 }
 
+// ===== Teile (Schritt D1): gleiche Regeln wie scripts/pruefen.mjs. Es zählt immer die berechnete Stufe, nie die behauptete. =====
+const TEIL_TYPEN = ["produkt", "prozess", "dienstleistung", "dokument", "abschluss", "sonstiges"];
+const TEIL_TYP_NAME = { produkt: "Produkt", prozess: "Prozess", dienstleistung: "Dienstleistung", dokument: "Dokument", abschluss: "Abschluss", sonstiges: "Sonstiges" };
+const TEIL_ARTEN = { zeitlich: ["nach_ende", "nach_start", "gleichzeitig"], raeumlich: ["gleicher_ort", "anderer_ort"], logisch: ["setzt_voraus", "nutzt", "ersetzt", "ist_variante_von"] };
+const TEILE_MAX = 12, STUFE_NR = { S1: 1, S2: 2, S3: 3 };
+const istObj = o => o !== null && typeof o === "object" && !Array.isArray(o);
+const sauber = (t, n = 90) => { t = String(t ?? "").replace(/[\x00-\x1f\x7f​-‏‪-‮⁦-⁩]/g, " "); return t.length <= n ? t : t.slice(0, n - 1) + "…"; };
+const ANWEISUNG = /ignorier|ignore (all|your|previous)|vergiss (alle|deine)|stufe.{0,40}S[23]|markier\w*.{0,40}S[23]|als (geprüft|bestätigt)|schick\w* .{0,30} an |system ?prompt/i;
+const auffaellig = (...t) => t.some(x => ANWEISUNG.test(String(x ?? "")));
+function monatDatum(t, ende) {
+  const m = typeof t === "string" ? /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(t) : null;
+  if (!m) return null;
+  const j = Number(m[1]), mo = Number(m[2]);
+  if (mo < 1 || mo > 12 || j < 1) return null;
+  const letzter = [31, (j % 4 === 0 && j % 100 !== 0) || j % 400 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][mo - 1];
+  if (m[3] === undefined) return [j, mo, ende ? letzter : 1];
+  const tag = Number(m[3]);
+  return tag >= 1 && tag <= letzter ? [j, mo, tag] : null;
+}
+const datumKleiner = (a, b) => a[0] !== b[0] ? a[0] < b[0] : a[1] !== b[1] ? a[1] < b[1] : a[2] < b[2];
+// Modell von angabe_der_person.teile prüfen. Rückgabe [Status|null, Text, bereinigte Liste|null]
+function teilePruefen(roh) {
+  const nein = t => ["teile_ungueltig", t, null];
+  if (!Array.isArray(roh) || roh.length < 1 || roh.length > TEILE_MAX) return nein(`„teile“ muss eine Liste mit 1 bis ${TEILE_MAX} Teilen sein`);
+  const ids = [];
+  for (const t of roh) {
+    if (!istObj(t)) return nein("Teil ist kein Objekt");
+    if (!(typeof t.id === "string" && TEIL_ID.test(t.id))) return nein("Teil-Id fehlt oder ist unzulässig ([a-z0-9-], 1 bis 24 Zeichen)");
+    if (ids.includes(t.id)) return nein(`Teil-Id ${t.id} kommt doppelt vor`);
+    ids.push(t.id);
+  }
+  const teile = [];
+  for (const t of roh) {
+    const i = t.id;
+    if (!(textOk(t.titel) && t.titel.length <= 120)) return nein(`Teil ${i}: titel fehlt oder ist länger als 120 Zeichen`);
+    if (!TEIL_TYPEN.includes(t.typ)) return nein(`Teil ${i}: typ unbekannt`);
+    if ("pflicht" in t && typeof t.pflicht !== "boolean") return nein(`Teil ${i}: pflicht muss true oder false sein`);
+    const n = { id: i, titel: t.titel, typ: t.typ, pflicht: "pflicht" in t ? t.pflicht : true, abhaengig_von: [] };
+    if ("ort" in t) { if (typeof t.ort !== "string" || t.ort.length > 80) return nein(`Teil ${i}: ort ist kein Text oder länger als 80 Zeichen`); n.ort = t.ort; }
+    if ("zeitraum" in t) {
+      const z = t.zeitraum, v = istObj(z) ? monatDatum(z.von, false) : null, b = istObj(z) ? monatDatum(z.bis, true) : null;
+      if (!v || !b) return nein(`Teil ${i}: zeitraum braucht von und bis als JJJJ-MM oder JJJJ-MM-TT`);
+      if (datumKleiner(b, v)) return nein(`Teil ${i}: zeitraum von liegt nach bis`);
+      n.zeitraum = { von: z.von, bis: z.bis };
+    }
+    const ab = "abhaengig_von" in t ? t.abhaengig_von : [];
+    if (!Array.isArray(ab)) return nein(`Teil ${i}: abhaengig_von ist keine Liste`);
+    for (const d of ab) {
+      if (!istObj(d)) return nein(`Teil ${i}: abhaengig_von-Eintrag ist kein Objekt`);
+      if (typeof d.teil !== "string" || !ids.includes(d.teil)) return nein(`Teil ${i}: abhaengig_von verweist auf einen unbekannten Teil`);
+      if (d.teil === i) return nein(`Teil ${i}: abhaengig_von verweist auf sich selbst`);
+      if (!Object.hasOwn(TEIL_ARTEN, d.beziehung)) return nein(`Teil ${i}: beziehung unbekannt`);
+      if (!TEIL_ARTEN[d.beziehung].includes(d.art)) return nein(`Teil ${i}: art passt nicht zur Beziehung ${d.beziehung}`);
+      if ("hinweis" in d && (typeof d.hinweis !== "string" || d.hinweis.length > 120)) return nein(`Teil ${i}: hinweis ist kein Text oder länger als 120 Zeichen`);
+      const o = { teil: d.teil, beziehung: d.beziehung, art: d.art }; if ("hinweis" in d) o.hinweis = d.hinweis;
+      n.abhaengig_von.push(o);
+    }
+    teile.push(n);
+  }
+  // Zyklen: der Graph aller Verweise (alle Beziehungstypen gemeinsam) muss azyklisch sein
+  const kanten = Object.fromEntries(teile.map(t => [t.id, [...new Set(t.abhaengig_von.map(d => d.teil))].sort()]));
+  const zustand = {};
+  const besuche = (k, weg) => {
+    zustand[k] = 1;
+    for (const nxt of kanten[k]) {
+      if (zustand[nxt] === 1) return [...weg, k, nxt];
+      if (!(nxt in zustand)) { const r = besuche(nxt, [...weg, k]); if (r) return r; }
+    }
+    zustand[k] = 2; return null;
+  };
+  for (const k of Object.keys(kanten)) if (!(k in zustand)) { const r = besuche(k, []); if (r) return ["teile_zyklus", "Zyklus in abhaengig_von: " + r.slice(r.indexOf(r.at(-1))).join(" -> "), null]; }
+  return [null, "", teile];
+}
+// Eintrag mit Teilen: Modell prüfen, jeden Teil-Bericht prüfen, Gesamtstufe selbst nachrechnen
+async function teileBewerten(e, profil, ctx, testListe) {
+  const a = e.angabe_der_person || {}, pr = istObj(e.pruefung) ? e.pruefung : {};
+  const f = [], befunde = [];
+  const t = { id: e.id, titel: a.titel, f, warn: [], teile: [], eigen: null, eigenPo: null, gesamt: null, stufe: "S1", status: "s1", unpruef: false, ort: [] };
+  const fehler = (st, x) => { f.push(x); befunde.push(st); };
+  const ende = (gnr, begrenzt, abgeleitet, status) => {
+    t.stufe = "S" + gnr; t.gesamt = { stufe: t.stufe, abgeleitet, begrenzt_durch: [...begrenzt] };
+    t.status = befunde.length ? (RANG.find(r => befunde.includes(r)) || "format_nicht_zulaessig") : status; return t;
+  };
+  const [st, tx, teile] = teilePruefen(a.teile);
+  if (st) { fehler(st, tx); return ende(1, [], true, "s1"); }
+  const nr = formatnummer(profil.format);
+  if (!nr || nr[0] < 0 || (nr[0] === 0 && nr[1] < 5)) { fehler("format_nicht_zulaessig", `Format ${JSON.stringify(profil.format)} passt nicht zu Einträgen mit Teilen (mindestens 0.5)`); return ende(1, [], true, "s1"); }
+  if (profil.profil?.selbst_angelegt) { fehler("format_nicht_zulaessig", "selbst angelegtes Profil mit Teilen: es gibt keine Prüfberichte, alles ist S1"); return ende(1, [], true, "s1"); }
+  const pt = pr.teile === undefined ? [] : pr.teile;
+  if (!Array.isArray(pt) || pt.some(x => !istObj(x))) { fehler("teile_ungueltig", "„pruefung.teile“ ist keine Liste von Objekten"); return ende(1, [], true, "s1"); }
+  const ids = teile.map(x => x.id), gemeldet = {};
+  for (const x of pt) {
+    if (!ids.includes(x.id)) fehler("teil_zuordnung_falsch", `„pruefung.teile“ nennt Teil ${JSON.stringify(sauber(x.id, 30))}, der nicht zu diesem Eintrag gehört`);
+    else if (Object.hasOwn(gemeldet, x.id)) fehler("teil_zuordnung_falsch", `„pruefung.teile“ nennt Teil ${x.id} doppelt`);
+    else gemeldet[x.id] = x;
+  }
+  let unpruef = false, abgelaufen = false, pilot = false;
+  const bericht = async (et, bk, ber, kx) => {   // gibt { rr, ok } zurück; fehlerhaft Aufgebautes zählt als nicht belastbar
+    if (!istObj(ber) || !istObj(ber.inhalt) || !ber.pruefsumme) { fehler("format_nicht_zulaessig", `${bk}: es fehlen „inhalt“ oder „pruefsumme“`); return { rr: null, ok: false }; }
+    const rr = await bewerte(ber, { ctx, profil, eintrag: et, testListe, ...kx });
+    for (const m of rr.f) f.push(`${bk}: ${m}`);
+    if (rr.f.length) befunde.push(RANG.includes(rr.status) ? rr.status : "format_nicht_zulaessig");
+    return { rr, ok: rr.f.length === 0 };
+  };
+  for (const tt of teile) {
+    const x = gemeldet[tt.id];
+    const te = { ...tt, stufe: "S1", status: "s1", pruefweg: null, po: null, fehler: [], hinweis: null };
+    t.teile.push(te);
+    if (x !== undefined) {
+      const et = { id: e.id, stufe: x.stufe, pruefung: { pruefweg: x.pruefweg } };
+      if (x.stufe === "S1") { if (x.pruefbericht) { const m = "S1 mit Prüfbericht: Bericht wird ignoriert"; fehler("format_nicht_zulaessig", `Teil ${tt.id}: ${m}`); te.fehler.push(m); te.status = "format_nicht_zulaessig"; } }
+      else if (!x.pruefbericht) { const m = `${x.stufe} ohne Prüfbericht: als S1 behandeln`; fehler("format_nicht_zulaessig", `Teil ${tt.id}: ${m}`); te.fehler.push(m); te.status = "format_nicht_zulaessig"; }
+      else {
+        const n0 = f.length;
+        const { rr, ok } = await bericht(et, `Teil ${tt.id}`, x.pruefbericht, { teil: tt.id });
+        te.fehler = f.slice(n0);
+        if (rr) {
+          te.status = rr.status; te.pruefweg = ok ? rr.inhalt.pruefweg ?? null : null; te.po = ok ? rr.po : null;
+          if (ok && typeof x.stufe === "string" && Object.hasOwn(STUFE_NR, x.stufe)) {
+            if (rr.status === "lokal_vertraut") te.hinweis = "Schlüssel nur in diesem Browser vertraut: zählt als S1";
+            else if (!rr.gueltig) abgelaufen = true;   // abgelaufener Bericht zählt nicht
+            else { te.stufe = x.stufe; pilot = pilot || rr.status === "beispiel_pilot"; }
+          }
+          unpruef = unpruef || !!rr.unpruefbar;
+        }
+      }
+    }
+  }
+  // Bericht des Ganzen (optional): nur ein gültiger Bericht zählt
+  let eigen = null;
+  if (e.pruefbericht) {
+    const ber = e.pruefbericht, ist = istObj(ber) && istObj(ber.inhalt) ? ber.inhalt.stufe : undefined;
+    const ee = { ...e, stufe: [1, 2, 3].includes(ist) ? "S" + ist : e.stufe };
+    const { rr, ok } = await bericht(ee, "Eigene Prüfung", ber, { ganzesMitTeilen: true });
+    eigen = "S1";
+    if (rr) {
+      t.eigenPo = ok ? rr.po : null; t.eigenStatus = rr.status; t.eigenPruefweg = ok ? rr.inhalt.pruefweg ?? null : null;
+      unpruef = unpruef || !!rr.unpruefbar; abgelaufen = abgelaufen || !rr.gueltig;
+      if (ok && rr.gueltig && [1, 2, 3].includes(ist) && rr.status !== "lokal_vertraut") { eigen = "S" + ist; pilot = pilot || rr.status === "beispiel_pilot"; }
+    }
+    t.eigen = eigen;
+  }
+  // Gesamtstufe: min(Pflichtteile); mit eigener Prüfung min(eigene, Pflichtteile)
+  const werte = t.teile.filter(x => x.pflicht).map(x => [STUFE_NR[x.stufe], x.id]);
+  if (eigen) werte.push([STUFE_NR[eigen], "gesamt"]);
+  let gnr = 1, begrenzt = [];
+  if (werte.length) { gnr = Math.min(...werte.map(w => w[0])); begrenzt = werte.filter(w => w[0] === gnr).map(w => w[1]); }
+  const abgeleitet = eigen === null;
+  const vergleiche = (name, wert) => {
+    if (typeof wert !== "string" || !Object.hasOwn(STUFE_NR, wert)) fehler("profil_weicht_ab", `${name}: Profil sagt ${JSON.stringify(wert)}, berechnet ist S${gnr} (es gilt S${gnr})`);
+    else if (STUFE_NR[wert] > gnr) fehler("profil_weicht_ab", `${name}: Profil sagt ${wert}, berechnet ist S${gnr} (es gilt S${gnr})`);
+    else if (STUFE_NR[wert] < gnr) t.warn.push(`${name}: Profil sagt ${wert}, berechnet ist S${gnr} (es gilt S${gnr})`);
+  };
+  vergleiche("Stufe", e.stufe);
+  const g = pr.gesamt;
+  if (g !== undefined && g !== null) {
+    if (!istObj(g)) t.warn.push("„pruefung.gesamt“ ist kein Objekt und wird ignoriert");
+    else {
+      vergleiche("pruefung.gesamt.stufe", g.stufe);
+      if ("abgeleitet" in g && g.abgeleitet !== abgeleitet) {
+        if (g.abgeleitet === false) fehler("profil_weicht_ab", "pruefung.gesamt.abgeleitet: Profil sagt false (eigene Prüfung), es gibt aber keinen Bericht des Ganzen");
+        else t.warn.push("pruefung.gesamt.abgeleitet: Profil sagt true, es gibt aber eine eigene Prüfung des Ganzen");
+      }
+      if ("begrenzt_durch" in g && (!Array.isArray(g.begrenzt_durch) || JSON.stringify(g.begrenzt_durch.map(String).sort()) !== JSON.stringify([...begrenzt].sort()))) t.warn.push(`pruefung.gesamt.begrenzt_durch weicht ab: berechnet ${begrenzt.join(", ") || "keine"}`);
+      if ("regel" in g && g.regel !== "min_pflichtteile") t.warn.push("pruefung.gesamt.regel ist nicht min_pflichtteile (wird ignoriert)");
+    }
+  }
+  t.unpruef = unpruef;
+  return ende(gnr, begrenzt, abgeleitet, unpruef ? "widerrufsstatus_nicht_pruefbar" : abgelaufen ? "abgelaufen" : gnr === 1 ? "s1" : pilot ? "beispiel_pilot" : "echt");
+}
+const TEILE_TEXT = {
+  echt: null, beispiel_pilot: null,
+  s1: "Nichts Verpflichtendes ist geprüft: Die Gesamtstufe ist S1.",
+  teile_ungueltig: "Die Angaben zu den Teilen sind ungültig. Es gilt höchstens S1.",
+  teile_zyklus: "Die Teile verweisen im Kreis aufeinander. Es gilt höchstens S1.",
+  teil_zuordnung_falsch: "Ein Bericht gehört nicht zu diesem Eintrag oder Teil. Der Teil zählt als S1.",
+  veraendert: "Ein Bericht wurde verändert. Der Teil zählt als S1.",
+  signatur_ungueltig: "Die Signatur eines Berichts ist ungültig. Der Teil zählt als S1.",
+  nicht_signiert: "Ein Bericht ist nicht signiert. Der Teil zählt als S1.",
+  unbekannter_schluessel: "Ein Bericht ist mit einem unbekannten Schlüssel signiert. Der Teil zählt als S1.",
+  schluessel_nicht_gueltig: "Der Schlüssel eines Berichts war zum Ausstellungszeitpunkt nicht gültig. Der Teil zählt als S1.",
+  schluessel_gesperrt: "Der Schlüssel eines Berichts wurde gesperrt. Der Teil zählt als S1.",
+  widerrufen: "Ein Bericht wurde widerrufen. Der Teil zählt als S1.",
+  format_nicht_zulaessig: "Format nicht zulässig. Der Teil zählt als S1.",
+  profil_weicht_ab: "Das Profil behauptet mehr, als die Berichte tragen. Es gilt die berechnete Stufe.",
+  abgelaufen: "Mindestens ein Bericht ist abgelaufen und zählt als S1.",
+  widerrufsstatus_nicht_pruefbar: "Der Widerrufsstatus konnte nicht geprüft werden. Die Berichte sind echt signiert, können aber zurückgezogen worden sein."
+};
+function poKurz(po) {
+  if (!po) return "";
+  const li = l => l.map(x => esc(sauber(x, 120))).join("; ");
+  return `<span class="meta"><b>Geprüft:</b> ${li(po.umfang_geprueft)}. <b>Nicht geprüft:</b> ${po.nicht_geprueft.length ? li(po.nicht_geprueft) : "nichts ausgeschlossen (vom Prüfer ausdrücklich bestätigt)"}. <b>Stand:</b> ${esc(sauber(po.version_stand, 120))}</span>`;
+}
+// Anzeige: Gesamtstufe, Liste der Teile (Klartext), Fehler. data-status wie bei den Skripten (--json).
+function anzeigeTeile(t) {
+  const sg = n => (STUFEN[n] || { siegel: "?" }).siegel;
+  const gnr = STUFE_NR[t.stufe];
+  const typ = t.status === "echt" || t.status === "beispiel_pilot" ? "ok" : t.status === "s1" || t.status === "widerrufsstatus_nicht_pruefbar" ? "warn" : "bad";
+  const haken = typ === "ok";
+  const kopf = TEILE_TEXT[t.status];
+  const titel = esc(sauber(t.titel, 80));
+  let html = `<b>Projekt „${titel}“ aus Teilen: Gesamtstufe ${t.stufe} „${esc(sg(gnr))}“.</b>` + (kopf ? ` ${esc(kopf)}` : "") +
+    (t.status === "beispiel_pilot" ? " Nur Beispiel, keine echte Prüfung." : "");
+  const reg = t.gesamt;
+  html += `<p class="gesamt" data-gesamt="${esc(t.stufe)}" data-abgeleitet="${reg.abgeleitet}" style="margin:.7rem 0 .2rem"><b>Gesamtstufe ${esc(t.stufe)}</b> (${reg.abgeleitet ? "abgeleitet aus den Pflichtteilen" : "eigene Prüfung des Ganzen, nie höher als der schwächste Pflichtteil"})` +
+    `${reg.begrenzt_durch.length ? `, begrenzt durch: ${esc(reg.begrenzt_durch.join(", "))}` : ", keine Pflichtteile geprüft"}. Berechnet aus den Berichten, nicht aus Angaben im Profil.</p>`;
+  if (t.teile.length) {
+    html += `<div class="teile" data-teile="${t.teile.length}" style="margin-top:.5rem"><b>Teile</b><ul style="margin:.3rem 0 0;padding-left:1.1rem">` +
+      t.teile.map(x => {
+        const n = STUFE_NR[x.stufe], schlecht = x.fehler.length || x.status === "abgelaufen";
+        const wo = [x.zeitraum ? `${esc(x.zeitraum.von)} bis ${esc(x.zeitraum.bis)}` : "", x.ort ? esc(sauber(x.ort, 80)) : ""].filter(Boolean).join(", ");
+        const abh = x.abhaengig_von.length ? `<br><span class="meta">hängt ab von: ${x.abhaengig_von.map(d => esc(d.teil) + " (" + esc(d.art.replace(/_/g, " ")) + (d.hinweis ? ": " + esc(sauber(d.hinweis, 120)) : "") + ")").join("; ")}</span>` : "";
+        return `<li data-teil="${esc(x.id)}" data-teil-stufe="${esc(x.stufe)}" data-teil-status="${esc(x.status)}" data-pflicht="${x.pflicht}" style="margin:.3rem 0">` +
+          `<b>${esc(sauber(x.titel, 120))}</b> (${esc(TEIL_TYP_NAME[x.typ])}, ${x.pflicht ? "Pflicht" : "optional"}${wo ? ", " + wo : ""}): ` +
+          `<span class="badge b${n}">${esc(x.stufe)} ${esc(sg(n))}</span>` +
+          (x.pruefweg ? ` · Prüfweg ${esc(x.pruefweg)}` : "") + (x.stufe === "S1" && !schlecht ? " · nicht geprüft" : "") +
+          (x.status === "abgelaufen" ? " · <b>Bericht abgelaufen, zählt als S1</b>" : "") +
+          (x.fehler.length ? ` · <b>Bericht nicht belastbar, zählt als S1</b> <span class="meta">(${esc(x.fehler.join(" · "))})</span>` : "") +
+          (x.hinweis ? ` · ${esc(x.hinweis)}` : "") +
+          (x.stufe !== "S1" && x.po ? `<br>${poKurz(x.po)}` : "") + abh +
+          (auffaellig(x.titel, x.ort, ...x.abhaengig_von.map(d => d.hinweis)) ? `<br><b>Auffällig:</b> Der Text klingt wie eine Anweisung an den Leser. Er ist nur eine Angabe der Person und wird nicht befolgt.` : "") + `</li>`;
+      }).join("") + `</ul></div>`;
+  }
+  if (t.eigen) html += `<p style="margin:.5rem 0 0"><b>Eigene Prüfung des Ganzen:</b> ${esc(t.eigen)} „${esc(sg(STUFE_NR[t.eigen]))}“${t.eigenPruefweg ? ` · Prüfweg ${esc(t.eigenPruefweg)}` : ""}${t.eigenPo ? `<br>${poKurz(t.eigenPo)}` : ""}</p>`;
+  if (t.warn.length) html += `<p class="meta" style="margin:.5rem 0 0">Hinweis: ${esc(t.warn.join(" · "))}</p>`;
+  if (t.f.length) html += `<p class="meta" style="margin:.5rem 0 0">Details: ${esc(t.f.join(" · "))}</p>`;
+  return { typ, haken, html, status: t.status, id: t.id };
+}
+
 // Block „Prüfobjekt“ (Klartext): nur bei Ergebnissen, die den Bericht nicht als fehlerhaft ausweisen
 const OHNE_BLOCK = ["veraendert", "signatur_ungueltig", "format_nicht_zulaessig", "pruefobjekt_fehlt", "pruefobjekt_unvollstaendig", "pruefobjekt_zu_gross", "schluessel_nicht_gueltig", "schluessel_gesperrt", "widerrufen", "profil_weicht_ab"];
 function pruefobjektBlock(r) {
@@ -320,12 +555,20 @@ async function pruefen(testListe) {
   const ctx = await schluesselLaden(window.JWKS);
   const eintraege = [];   // { u, profil, eintrag }
   if (u && Array.isArray(u.eintraege) && u.profil) {   // ganzes Profil eingefügt: jeder S2/S3-Eintrag wird geprüft
-    for (const e of u.eintraege) if (e && e.stufe !== "S1") eintraege.push({ u: e.pruefbericht, profil: u, eintrag: e });
+    for (const e of u.eintraege) {
+      if (e && istObj(e.angabe_der_person) && "teile" in e.angabe_der_person) eintraege.push({ teile: true, profil: u, eintrag: e });
+      else if (e && e.stufe !== "S1") eintraege.push({ u: e.pruefbericht, profil: u, eintrag: e });
+    }
     if (!eintraege.length) return meld("warn", "<b>Keine Prüfberichte.</b> Dieses Profil enthält nur Eigene Angaben (S1). Sie sind nicht geprüft.", false, "s1");
   } else eintraege.push({ u, profil: null, eintrag: null });
   const aus = [];
   for (const x of eintraege) {
     const id = x.eintrag ? x.eintrag.id : undefined;
+    if (x.teile) {
+      if (!window.JWKS && !lesen(VERTRAUT_KEY).length) { aus.push({ typ: "bad", html: "<b>Die Liste der zugelassenen Prüfer ließ sich nicht laden.</b> Ohne sie können die Berichte nicht geprüft werden. Die Seite funktioniert nur über das Netz.", status: "nicht_ladbar", id }); continue; }
+      aus.push(anzeigeTeile(await teileBewerten(x.eintrag, x.profil, ctx, testListe)));
+      continue;
+    }
     if (!x.u || !x.u.inhalt || !x.u.pruefsumme) { aus.push({ typ: "bad", html: "Es fehlen „inhalt“ oder „pruefsumme“.", status: "format_nicht_zulaessig", id }); continue; }
     if (!window.JWKS && !lesen(VERTRAUT_KEY).some(k => k.kid === (x.u.signatur || {}).kid)) { aus.push({ typ: "bad", html: "<b>Die Liste der zugelassenen Prüfer ließ sich nicht laden.</b> Ohne sie kann der Bericht nicht geprüft werden. Die Seite funktioniert nur über das Netz.", status: "nicht_ladbar", id }); continue; }
     const r = await bewerte(x.u, { ctx, profil: x.profil, eintrag: x.eintrag, testListe });
