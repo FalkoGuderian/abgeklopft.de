@@ -23,10 +23,13 @@
 
   <section>
     <h2>Urkunde prüfen</h2>
-    <p class="sub">Fügen Sie das JSON einer Urkunde ein. Die Seite berechnet die Prüfsumme neu und sucht die Urkunde im Register.</p>
-    <label for="json">Urkunde (JSON)</label>
-    <textarea id="json" placeholder='{"inhalt":{…},"pruefsumme":"…"}'></textarea>
-    <div class="row"><button class="btn" id="pruef" type="button">Prüfen</button><button class="btn ghost" id="beispiel" type="button">Beispiel laden</button><button class="btn ghost" id="manip" type="button">Test: Inhalt verfälschen</button><button class="btn ghost" id="faelsch" type="button">Test: Fälschung mit neu berechneter Prüfsumme</button><button class="btn ghost" id="widtest" type="button">Test: widerrufener Bericht</button></div>
+    <p class="sub">Die Seite berechnet die Prüfsumme einer Urkunde neu, prüft die Signatur und sucht die Urkunde im Register. „Beispiel prüfen“ zeigt den Ablauf an einem Beispielbericht. Eine eigene Urkunde fügen Sie in der technischen Ansicht ein.</p>
+    <div class="row"><button class="btn" id="pruef" type="button">Prüfen</button><button class="btn ghost" id="beispiel" type="button">Beispiel prüfen</button></div>
+    <details class="technik" id="technik" style="margin-top:14px"><summary class="meta" style="cursor:pointer">Technische Ansicht (für KI-Agenten)</summary>
+      <label for="json">Urkunde (JSON)</label>
+      <textarea id="json" placeholder='{"inhalt":{…},"pruefsumme":"…"}'></textarea>
+      <div class="row"><button class="btn ghost" id="manip" type="button">Test: Inhalt verfälschen</button><button class="btn ghost" id="faelsch" type="button">Test: Fälschung mit neu berechneter Prüfsumme</button><button class="btn ghost" id="widtest" type="button">Test: widerrufener Bericht</button></div>
+    </details>
     <div id="erg"></div>
     <h3 style="margin-top:30px">Zugelassene Prüfer (Schlüssel)</h3>
     <div id="schl"></div>
@@ -264,7 +267,7 @@ function zeige(liste) {
 function meld(typ, html, haken, status = "format_nicht_zulaessig") { zeige([{ typ, html, haken, status }]); }
 
 async function pruefen(testListe) {
-  let u; try { u = JSON.parse($("json").value); } catch { return meld("bad", "Kein gültiges JSON."); }
+  let u; try { u = JSON.parse($("json").value); } catch { return meld("bad", "Die Urkunde ist nicht lesbar (kein gültiges Format). Öffnen Sie die technische Ansicht und prüfen Sie den eingefügten Text."); }
   await JWKS_BEREIT;
   const ctx = await schluesselLaden(window.JWKS);
   const eintraege = [];   // { u, profil, eintrag }

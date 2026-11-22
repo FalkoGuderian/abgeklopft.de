@@ -51,7 +51,7 @@
     </div>
   </div>
 </main>
-<footer><div class="wrap" style="text-align:center">Geprüft mit <a href="/index.html">abgeklopft.de</a> · <a href="/verify.html">Wie lese ich die Stufen?</a> · <a href="/alex.json" id="jsonfuss">Für KI-Agenten (JSON)</a><span class="rechtlich"> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></span></div></footer>
+<footer><div class="wrap" style="text-align:center">Geprüft mit <a href="/index.html">abgeklopft.de</a> · <a href="/verify.html">Wie lese ich die Stufen?</a> · <a href="/alex.json" id="jsonfuss">Für KI-Agenten</a><span class="rechtlich"> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></span></div></footer>
 <script src="/data.js"></script><script src="/app.js"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -140,7 +140,7 @@ if (vorschau) {
       <p>Persönlicher Link für <b>${esc(info.fuer)}</b>, gültig bis ${esc(info.gueltig_bis)}.</p>
       <div class="note"><b>Bevor Sie öffnen:</b> Wenn Sie das Profil öffnen, sieht ${wer}, wann dieser Link geöffnet wurde und welche Einträge angesehen wurden. Gespeichert wird nur das, keine IP-Adresse und kein Name. Mehr dazu im <a href="/datenschutz.html">Datenschutz</a>.</div>
       <div class="row"><button class="btn" type="button" id="oeffnen">Profil öffnen</button></div>
-      <p class="meta">Für KI-Agenten: dieselbe Auswahl als JSON unter <code>${esc(jsonUrl)}</code>. Auch dieser Abruf wird angezeigt.</p>
+      <details class="technik"><summary class="meta" style="cursor:pointer">Technische Ansicht (für KI-Agenten)</summary><p class="meta">Dieselbe Auswahl als JSON unter <code>${esc(jsonUrl)}</code>. Auch dieser Abruf wird angezeigt.</p></details>
     </div>`;
     $("oeffnen").addEventListener("click", e => {
       e.target.disabled = true;

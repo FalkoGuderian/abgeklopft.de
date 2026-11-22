@@ -44,9 +44,11 @@
       <div id="ausgabe"><p class="meta">Die Urkunde erscheint hier.</p></div>
       <div class="row noprint" id="aktionen" hidden>
         <button class="btn ghost" type="button" id="druck">Drucken</button>
-        <button class="btn ghost" type="button" id="kopie">JSON kopieren</button>
       </div>
-      <p class="meta noprint" id="kopiemeldung"></p>
+      <details class="technik noprint" id="technikat" hidden style="margin-top:10px"><summary class="meta" style="cursor:pointer">Technische Ansicht (für KI-Agenten)</summary>
+        <div class="row" style="margin-top:8px"><button class="btn ghost" type="button" id="kopie">JSON kopieren</button></div>
+        <p class="meta" id="kopiemeldung"></p>
+      </details>
     </div>
   </div>
 </main>
@@ -119,7 +121,7 @@ function zeigen(u) {
     </dl>
     <div class="stamp">PROTOTYP · KEINE RECHTSWIRKUNG</div>
   </div>`;
-  $("aktionen").hidden = false;
+  $("aktionen").hidden = false; $("technikat").hidden = false;
 }
 $("druck").onclick = () => window.print();
 $("kopie").onclick = async () => {

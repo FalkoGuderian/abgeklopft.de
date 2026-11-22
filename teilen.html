@@ -159,7 +159,7 @@
           <input id="emp" required maxlength="160" placeholder="z. B. Musterfirma GmbH, Bereich KI" aria-describedby="emphilfe">
           <p class="meta" id="emphilfe">Der Abnehmername steht lesbar im Link. Jeder, an den der Link weitergeleitet wird, sieht ihn.</p>
           <label for="eart">Der Link geht an</label>
-          <select id="eart"><option value="mensch">eine Person (Seite im Browser)</option><option value="ki-agent">einen KI-Agenten (Seite und JSON)</option></select>
+          <select id="eart"><option value="mensch">eine Person (Seite im Browser)</option><option value="ki-agent">einen KI-Agenten (Seite und maschinenlesbar)</option></select>
           <label for="tage">Gültig für Tage</label>
           <input id="tage" type="number" min="1" max="365" value="30">
           <div class="row"><button class="btn" type="submit">Link erstellen</button></div>
@@ -338,9 +338,9 @@ function zeichnen() {
       return `<div class="eintrag-zeile"><div style="flex:1;min-width:200px">
           ${x.empfaenger_art === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}<b>${esc(x.empfaenger)}</b> <span class="meta">· ${x.auswahl.length} Einträge · ${status}</span>
           ${aktiv && lesbarerLink(x) ? `<br><span class="meta" style="overflow-wrap:anywhere"><b>Link:</b> <span style="font-family:var(--mono)">${esc(lesbarerLink(x).replace(/^https?:\/\//, ""))}</span></span>` : ""}
-          <br><span class="meta">Geöffnet: ${auf.length ? auf.length + "×" + (json ? ` (davon ${json}× JSON)` : "") + ", zuletzt " + esc(datumDe(auf[auf.length - 1].zeit)) : "noch nicht"}</span>
+          <br><span class="meta">Geöffnet: ${auf.length ? auf.length + "×" + (json ? ` (davon ${json}× maschinenlesbar)` : "") + ", zuletzt " + esc(datumDe(auf[auf.length - 1].zeit)) : "noch nicht"}</span>
           ${an.length ? `<br><span class="meta">Angesehen: ${an.map(id => esc(titelVon(id))).join(", ")}</span>` : ""}</div>
-        <div class="knoepfe">${aktiv ? `<a class="btn ghost klein" href="${esc(lesbarerLink(x) || "profil.html?l=" + x.id)}" target="_blank" rel="noopener">öffnen</a><button class="btn ghost klein" type="button" data-kopie="${esc(x.id)}">kopieren</button>${lesbarerLink(x) ? `<button class="btn ghost klein" type="button" data-ausweich="${esc(x.id)}" title="Alter Link mit geheimer Kennung, falls der lesbare nicht öffnet">Ausweichlink</button>` : ""}${x.empfaenger_art === "ki-agent" ? `<button class="btn ghost klein" type="button" data-json="${esc(x.id)}">JSON kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-widerruf="${esc(x.id)}">widerrufen</button>` : `<button class="btn ghost klein" type="button" data-lweg="${esc(x.id)}">entfernen</button>`}</div></div>`;
+        <div class="knoepfe">${aktiv ? `<a class="btn ghost klein" href="${esc(lesbarerLink(x) || "profil.html?l=" + x.id)}" target="_blank" rel="noopener">öffnen</a><button class="btn ghost klein" type="button" data-kopie="${esc(x.id)}">kopieren</button>${lesbarerLink(x) ? `<button class="btn ghost klein" type="button" data-ausweich="${esc(x.id)}" title="Alter Link mit geheimer Kennung, falls der lesbare nicht öffnet">Ausweichlink</button>` : ""}${x.empfaenger_art === "ki-agent" ? `<button class="btn ghost klein" type="button" data-json="${esc(x.id)}">Für KI-Agenten kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-widerruf="${esc(x.id)}">widerrufen</button>` : `<button class="btn ghost klein" type="button" data-lweg="${esc(x.id)}">entfernen</button>`}</div></div>`;
     }).join("") : `<p class="meta">Noch keine Links.</p>`;
 
   // Anfragen
@@ -554,7 +554,7 @@ $("links").addEventListener("click", e => {
   const lk = id => stand.links.find(x => x.id === id) || {};
   if (k) kopieren(lesbarerLink(lk(k.dataset.kopie)) || basis + "profil.html?l=" + k.dataset.kopie, "Link kopiert.");
   if (au) kopieren(basis + "profil.html?l=" + au.dataset.ausweich, "Ausweichlink kopiert. Er enthält die geheime Kennung statt der lesbaren Adresse.");
-  if (j) { const x = lk(j.dataset.json); kopieren(x.kurz && stand.profil.adresse ? API + "/v1/p/" + stand.profil.adresse + "/" + x.kurz + ".json" : API + "/v1/l/" + j.dataset.json + ".json", "JSON-Adresse für den Agenten kopiert."); }
+  if (j) { const x = lk(j.dataset.json); kopieren(x.kurz && stand.profil.adresse ? API + "/v1/p/" + stand.profil.adresse + "/" + x.kurz + ".json" : API + "/v1/l/" + j.dataset.json + ".json", "Maschinenlesbare Adresse für den Agenten kopiert."); }
   if (w) zweimal(w, "wirklich widerrufen?", () => api("POST", `/v1/profile/${konto.id}/links/${w.dataset.widerruf}/widerrufen`, {}, konto.schluessel)
     .then(laden).then(() => erfolg("Link widerrufen. Er funktioniert nicht mehr."), fehler));
   if (l) api("DELETE", `/v1/profile/${konto.id}/links/${l.dataset.lweg}`, undefined, konto.schluessel).then(laden).then(() => erfolg("Link mit allen Öffnungen entfernt."), fehler);
