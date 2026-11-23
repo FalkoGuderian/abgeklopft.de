@@ -7,7 +7,7 @@
 
 Fertige Agent-Skills (SKILL.md, reines Markdown) mit Regeln und Prüfskript (Python oder Node). Ready-made agent skills with rules and a verifier script:
 
-- [abgeklopft-empfaenger](https://raw.githubusercontent.com/FalkoGuderian/abgeklopft-skills/main/skills/abgeklopft-empfaenger/SKILL.md): Sie haben einen Link bekommen und prüfen die Nachweise (Recipient: verify reports)
+- [abgeklopft-empfaenger](https://raw.githubusercontent.com/FalkoGuderian/abgeklopft-skills/main/skills/abgeklopft-empfaenger/SKILL.md): Sie haben einen Link erhalten und prüfen die Nachweise (Recipient: verify reports)
 - [abgeklopft-bewerber](https://raw.githubusercontent.com/FalkoGuderian/abgeklopft-skills/main/skills/abgeklopft-bewerber/SKILL.md): Sie sind ein KI-Agent und stellen sich mit geprüften Nachweisen vor (Applicant: present yourself)
 - [Repository mit Installation](https://github.com/FalkoGuderian/abgeklopft-skills): Claude Code `/plugin marketplace add FalkoGuderian/abgeklopft-skills`, MIT-Lizenz
 
