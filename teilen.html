@@ -15,7 +15,6 @@
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav aria-label="Hauptmenü"><a href="index.html">Start</a><a href="teilen.html" aria-current="page">Einreichen</a><a href="gutachter.html">Prüfen</a><a href="abnehmer.html">Abnehmen</a><a href="so-gehts.html">So geht's</a></nav>
 </div></header>
-<div class="wrap abmeldeleiste" id="abmeldeleiste" style="display:none" title="Der Schlüssel wird von diesem Gerät entfernt. Ihr Profil bleibt bestehen. Zurück kommen Sie nur mit dem Wiederherstellungscode."><button class="btn ghost klein" type="button" id="abmelden">Abmelden</button></div>
 <main class="wrap" style="padding-top:28px">
   <h1>Einreichen: Mein Profil</h1>
   <div class="result bad fehlerzeile" id="fehler" role="alert" hidden><span id="fehlertext"></span> <button class="btn ghost klein" type="button" id="nochmal" hidden>Erneut versuchen</button></div>
@@ -78,7 +77,7 @@
 
   <!-- B: eigenes Profil -->
   <div id="mit" hidden>
-    <div class="card" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+    <div class="card profilkarte" id="profil" tabindex="-1" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
       <div class="lt-avatar" id="mav" style="margin:0"></div>
       <div style="flex:1;min-width:200px">
         <h2 style="margin:0" id="mname"></h2>
@@ -88,7 +87,7 @@
       </div>
       <div class="row" style="margin:0"><a class="btn ghost" href="profil.html?vorschau=1" id="vorschau">Vorschau ansehen</a></div>
     </div>
-    <details style="margin-top:12px">
+    <details id="pbearb" style="margin-top:12px">
       <summary>Profil bearbeiten</summary>
       <form id="pform" autocomplete="off">
         <label for="ename">Name</label><input id="ename" required maxlength="120">
@@ -107,9 +106,19 @@
       </form>
     </details>
 
-    <section style="border-top:0;padding-top:18px">
-      <h2>1 · Einträge</h2>
-      <p class="sub">Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen mit Links als Beleg. Alle Einträge sind <span class="badge b1">Eingereicht</span> eigene Angaben. Geprüft oder bestätigt wird ein Eintrag erst durch einen Prüfer.</p>
+    <nav class="schritte" id="schritte" aria-label="Schritte dieser Seite">
+      <a href="#schritt-1" data-schritt="1"><span class="st"><span class="sn">1</span> Einträge</span><span class="sz" id="sz1">–</span></a>
+      <a href="#schritt-2" data-schritt="2"><span class="st"><span class="sn">2</span> Prüfung beantragen</span><span class="sz" id="sz2">–</span></a>
+      <a href="#schritt-3" data-schritt="3"><span class="st"><span class="sn">3</span> Persönliche Links</span><span class="sz" id="sz3">–</span></a>
+      <a href="#schritt-4" data-schritt="4"><span class="st"><span class="sn">4</span> Bestätigung anfragen</span><span class="sz" id="sz4">–</span></a>
+      <a href="#schritt-5" data-schritt="5"><span class="st"><span class="sn">5</span> Gerät &amp; Löschen</span><span class="sz">&nbsp;</span></a>
+    </nav>
+
+    <section class="abschnitt schritt-ziel" id="schritt-1" aria-labelledby="h-1">
+      <div class="abschnitt-kopf"><h2 id="h-1"><span class="abschnitt-nr">1<span class="nur-vorlesen"> · </span></span>Einträge</h2><p class="untertitel">Was Sie über sich und Ihre Arbeit eintragen</p></div>
+      <div class="abschnitt-kasten">
+      <details class="erklaer"><summary>Mehr dazu</summary>
+        <p>Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen mit Links als Beleg. Alle Einträge sind <span class="badge b1">Eingereicht</span> eigene Angaben. Geprüft oder bestätigt wird ein Eintrag erst durch einen Prüfer.</p></details>
       <div id="eliste"></div>
       <details id="eneu" style="margin-top:12px">
         <summary id="eneutitel">Eintrag hinzufügen</summary>
@@ -161,10 +170,12 @@
           <div class="row"><button class="btn" type="submit" id="esenden">Eintrag speichern</button><button class="btn ghost" type="button" id="eabbr" hidden>Abbrechen</button></div>
         </form>
       </details>
+      </div>
     </section>
 
-    <section>
-      <h2>2 · Prüfung beantragen</h2>
+    <section class="abschnitt schritt-ziel" id="schritt-2" aria-labelledby="h-2">
+      <div class="abschnitt-kopf"><h2 id="h-2"><span class="abschnitt-nr">2<span class="nur-vorlesen"> · </span></span>Prüfung beantragen</h2><p class="untertitel">Stand Ihrer Prüfaufträge und Fristen</p></div>
+      <div class="abschnitt-kasten">
       <p class="sub">Beantragen Sie für einen Eintrag eine Prüfung und verfolgen Sie hier den Stand. Sie sehen immer, wer gerade am Zug ist, bis wann und was bei Ablauf einer Frist passiert. Angezeigt wird nur der Stand des Auftrags, nie eine Bewertung Ihrer Person.</p>
       <p class="meta" id="pnotiz" role="status" hidden></p>
       <div id="pdialog" class="card" hidden aria-live="polite">
@@ -178,11 +189,14 @@
         <div class="row"><button class="btn" type="button" id="pdsenden">Prüfung beantragen</button><button class="btn ghost" type="button" id="pdabbr">Abbrechen</button></div>
       </div>
       <div id="auftraege"></div>
+      </div>
     </section>
 
-    <section>
-      <h2>3 · Persönliche Links</h2>
-      <p class="sub">Ein eigener Link je Abnehmer. Sie wählen die Einträge und die Laufzeit. Sie sehen, wann der Link geöffnet wurde. Der Abnehmer erfährt das vor dem Öffnen. Dass ein Link nicht geöffnet wird, sagt nichts über das Ergebnis.</p>
+    <section class="abschnitt schritt-ziel" id="schritt-3" aria-labelledby="h-3">
+      <div class="abschnitt-kopf"><h2 id="h-3"><span class="abschnitt-nr">3<span class="nur-vorlesen"> · </span></span>Persönliche Links</h2><p class="untertitel">Ein eigener Link je Abnehmer</p></div>
+      <div class="abschnitt-kasten">
+      <details class="erklaer"><summary>Mehr dazu</summary>
+        <p>Ein eigener Link je Abnehmer. Sie wählen die Einträge und die Laufzeit. Sie sehen, wann der Link geöffnet wurde. Der Abnehmer erfährt das vor dem Öffnen. Dass ein Link nicht geöffnet wird, sagt nichts über das Ergebnis.</p></details>
       <form id="lf" autocomplete="off" class="two">
         <div>
           <label for="emp">Abnehmer (Firma, Person oder KI-Agent)</label>
@@ -202,11 +216,13 @@
       <h3 style="margin-top:24px">Ihre Links</h3>
       <div id="links"></div>
       <p class="meta" id="kmeld" role="status"></p>
+      </div>
     </section>
 
-    <section>
-      <h2>4 · Bestätigung anfragen</h2>
-      <p class="sub">Wer ein Ergebnis abgenommen hat, antwortet über einen Link mit Name, Rolle, Firma und einem Satz. Die Antwort steht dann am Eintrag als „Bestätigung erhalten – noch nicht geprüft“. Zu „Abgenommen“ wird sie erst, wenn ein Prüfer sie geprüft hat.</p>
+    <section class="abschnitt schritt-ziel" id="schritt-4" aria-labelledby="h-4">
+      <div class="abschnitt-kopf"><h2 id="h-4"><span class="abschnitt-nr">4<span class="nur-vorlesen"> · </span></span>Bestätigung anfragen</h2><p class="untertitel">Antworten von Auftraggebern</p></div>
+      <div class="abschnitt-kasten">
+      <p class="sub">Wer ein Ergebnis abgenommen hat, antwortet über einen Link mit Name, Rolle, Firma und einem Satz. Die Antwort steht dann am Eintrag als „Bestätigung erhalten – noch nicht geprüft“. Zu „Abgenommen“ wird sie erst, wenn ein Prüfer sie geprüft hat. Der Prüfer stellt sicher, dass die Antwort wirklich von dieser Person stammt und sie das Ergebnis tatsächlich abgenommen hat. Sonst könnte sich jeder selbst bestätigen.</p>
       <form id="bf" autocomplete="off" class="two">
         <div>
           <label for="bein">Eintrag</label><select id="bein"></select>
@@ -218,10 +234,11 @@
       </form>
       <div id="anfragen" style="margin-top:16px"></div>
       <p class="meta">Schicken Sie den Anfrage-Link selbst, am besten an die dienstliche Adresse. abgeklopft.de verschickt in der Pilotphase keine E-Mails.</p>
+      </div>
     </section>
 
-    <section>
-      <h2>5 · Dieses Gerät und Löschen</h2>
+    <section class="abschnitt schritt-ziel" id="schritt-5" aria-labelledby="h-5">
+      <div class="abschnitt-kopf"><h2 id="h-5"><span class="abschnitt-nr">5<span class="nur-vorlesen"> · </span></span>Dieses Gerät und Löschen</h2><p class="untertitel">Profil endgültig entfernen</p></div>
       <div class="two">
         <div class="card">
           <h3>Profil löschen</h3>
@@ -241,7 +258,7 @@
   </section>
 </main>
 <footer><div class="wrap">Pilotphase: Einladungscode von kontakt@abgeklopft.de · Ihre Angaben werden verschlüsselt übertragen und in der EU gespeichert.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
-<script src="data.js"></script><script src="app.js"></script>
+<script src="data.js"></script><script src="app.js"></script><script src="nav-profil.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const basis = location.href.replace(/[#?].*$/, "").replace(/[^/]*$/, "");
@@ -265,7 +282,7 @@ async function mitSperre(knopf, fn) {
   const alt = knopf && knopf.disabled; if (knopf) knopf.disabled = true;
   try { return await fn(); } finally { if (knopf) knopf.disabled = alt; }
 }
-function zeige(was) { for (const id of ["ohne", "code", "mit"]) $(id).hidden = id !== was; $("abmeldeleiste").style.display = was === "mit" ? "" : "none"; }
+function zeige(was) { for (const id of ["ohne", "code", "mit"]) $(id).hidden = id !== was; }
 
 // ---------- A: anlegen / öffnen ----------
 $("part").addEventListener("change", () => {
@@ -325,7 +342,7 @@ async function laden() {
   } catch (err) {
     $("laedt").hidden = true;
     if (err.status === 403) {
-      kontoWeg(); konto = null; zeige("ohne");
+      kontoWeg(); konto = null; AKProfilMenue.name(null); zeige("ohne");
       fehler("Das Profil auf diesem Gerät gibt es nicht mehr oder der Schlüssel stimmt nicht. Öffnen Sie es mit Ihrem Wiederherstellungscode.");
     } else { zeige(null); fehler(err, laden); }
   }
@@ -333,11 +350,12 @@ async function laden() {
 const titelVon = id => ((stand.eintraege.find(e => e.id === id) || {}).titel) || "(gelöschter Eintrag)";
 function zeichnen() {
   const p = stand.profil, ag = p.art === "ki-agent";
+  AKProfilMenue.name(p.name);
   $("mav").textContent = kuerzelVon(p.name); $("mav").classList.toggle("agent", ag);
   $("mname").textContent = p.name;
   $("mzeile").textContent = [p.zeile, p.ort].filter(Boolean).join(" · ");
   $("mart").innerHTML = ag
-    ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Betreiber: ${esc(p.betreiber.name)}, ${esc(p.betreiber.sitz)} · Version ${esc(p.agent_version)}</span>`
+    ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Betreiber: ${esc(p.betreiber.name)}, ${esc(p.betreiber.sitz)} · Verantwortlich: ${esc(p.betreiber.verantwortlich)} · Version ${esc(p.agent_version)}</span>`
     : `<span class="tag art-mensch">Person</span>`;
   $("ename").value = p.name; $("ezeile").value = p.zeile; $("eort").value = p.ort;
   $("eadr").value = p.adresse || ""; $("eadrvor").textContent = $("eadrvor2").textContent = p.adresse || "ihr-name";
@@ -381,6 +399,7 @@ function zeichnen() {
       <div class="knoepfe">${a.status === "angefragt" ? `<button class="btn ghost klein" type="button" data-akopie="${esc(a.id)}">Link kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-aweg="${esc(a.id)}">löschen</button></div></div>`).join("")
     : `<p class="meta">Noch keine Anfragen.</p>`;
   auftraegeZeichnen();
+  kennzahlen(); profilAnker();
 }
 
 // ---------- Prüfaufträge: nur Zustand, Fristen und Verlauf, nie eine Wertung der Person ----------
@@ -796,15 +815,83 @@ $("anfragen").addEventListener("click", e => {
     .then(laden).then(() => erfolg("Anfrage gelöscht."), fehler));
 });
 
+
+// ---------- Schrittmenü: Zahlen aus den schon geladenen Antworten, aktueller Schritt ----------
+// Einträge = stand.eintraege; Geprüft/Abgenommen = Einträge mit berechneter Gesamtstufe S2/S3 (e.stufe, bei Teilen die Gesamtstufe);
+// offene Prüfaufträge = auftr (nur wenn der Auftragspfad antwortet); aktive Links = stand.links mit Status "gueltig"; offene Anfragen = stand.anfragen mit Status "angefragt".
+function kennzahlen() {
+  const z = (id, html) => { $(id).innerHTML = html; };
+  if (!stand) { for (const i of [1, 2, 3, 4]) z("sz" + i, "–"); return; }
+  const E = stand.eintraege, st = e => (e.stufe || 1);
+  const gepr = E.filter(e => st(e) === 2).length, abg = E.filter(e => st(e) === 3).length;
+  const offenA = auftr === null ? "–" : auftr.filter(a => a.offen).length;
+  const offenB = stand.anfragen.filter(a => a.status === "angefragt").length;
+  z("sz1", `<b>${E.length}</b> ${E.length === 1 ? "Eintrag" : "Einträge"}`);
+  z("sz2", `<b>${gepr}</b> Geprüft · ${offenA} offen`);
+  z("sz3", `<b>${stand.links.filter(x => x.status === "gueltig").length}</b> aktiv`);
+  z("sz4", `<b>${abg}</b> Abgenommen · ${offenB} offen`);
+  if (window.schrittNeu) window.schrittNeu();
+}
+(function () {
+  const nav = $("schritte"), kopf = document.querySelector("header.top");
+  const abschnitte = [1, 2, 3, 4, 5].map(n => $("schritt-" + n));
+  const kopfH = () => (kopf && getComputedStyle(kopf).position === "sticky") ? kopf.offsetHeight : 0;
+  const setzeKopf = () => document.documentElement.style.setProperty("--kopfhoehe", kopfH() + "px");
+  setzeKopf(); window.addEventListener("resize", setzeKopf);
+  function aktuell(n) {
+    for (const a of nav.querySelectorAll("a")) {
+      const an = a.dataset.schritt === String(n);
+      if (an) { if (a.getAttribute("aria-current") !== "location") { a.setAttribute("aria-current", "location"); mittig(a); } } else a.removeAttribute("aria-current");
+    }
+  }
+  function mittig(a) { if (nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2); }
+  // Nach einem Klick auf eine Kachel bleibt sie aktuell (auch wenn die Seite schon am Ende ist), bis die Person selbst weiterscrollt
+  let fest = 0;
+  // Ist das Scrollen zu Ende und die Seite nicht am Ende angekommen, zählt wieder die Lage der Abschnitte
+  let festTimer = 0;
+  const festLoesen = () => { if (!(window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4)) { fest = 0; neuBerechnen(); } };
+  if ("onscrollend" in window) window.addEventListener("scrollend", festLoesen);
+  else window.addEventListener("scroll", () => { clearTimeout(festTimer); festTimer = setTimeout(festLoesen, 250); }, { passive: true });
+  for (const ev of ["wheel", "touchmove", "keydown"]) window.addEventListener(ev, () => { fest = 0; }, { passive: true });
+  function neuBerechnen() {
+    if ($("mit").hidden) return;
+    const grenze = kopfH() + nav.offsetHeight + 40;
+    const unten = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    let n = 1;
+    abschnitte.forEach((s, i) => { if (s.getBoundingClientRect().top <= grenze) n = i + 1; });
+    aktuell(fest || (unten ? 5 : n));
+  }
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(neuBerechnen, { rootMargin: "-90px 0px -45% 0px", threshold: [0, 0.01, 1] });
+    abschnitte.forEach(s => io.observe(s));
+    const ende = document.createElement("div"); ende.setAttribute("aria-hidden", "true"); ende.style.height = "1px";
+    abschnitte[4].after(ende); io.observe(ende);
+  } else window.addEventListener("scroll", neuBerechnen, { passive: true });
+  nav.addEventListener("click", e => { const a = e.target.closest("a[data-schritt]"); if (a) { fest = +a.dataset.schritt; aktuell(fest); } });
+  window.addEventListener("hashchange", () => { profilAnker(true); });
+  window.schrittNeu = neuBerechnen; neuBerechnen();
+})();
+// teilen.html#profil: Profilkarte mit Bearbeiten-Bereich zeigen
+let profilAnkerErledigt = false;
+function profilAnker(erzwingen) {
+  if (location.hash !== "#profil" || $("mit").hidden) return;
+  if (profilAnkerErledigt && erzwingen !== true) return;
+  profilAnkerErledigt = true;
+  $("pbearb").open = true;
+  $("profil").scrollIntoView({ block: "start" });
+  $("profil").focus({ preventScroll: true });
+}
+
 // Abmelden, Löschen
-$("abmelden").addEventListener("click", e => zweimal(e.currentTarget, "Ohne Code kein Zurück. Abmelden?", () => {
-  kontoWeg(); konto = null; stand = null; $("abmelden").disabled = false; zeige("ohne"); erfolg("Auf diesem Gerät abgemeldet. Ihr Profil bleibt bestehen.");
-}));
+// Die Abmelden-Funktion liegt im Profilmenü des Hauptmenüs (nav-profil.js, Abfrage "Ohne Code kein Zurück. Abmelden?")
+AKProfilMenue.beiAbmelden(() => {
+  kontoWeg(); konto = null; stand = null; AKProfilMenue.name(null); zeige("ohne"); erfolg("Auf diesem Gerät abgemeldet. Ihr Profil bleibt bestehen.");
+});
 $("loeschwort").addEventListener("input", () => { $("loeschen").disabled = $("loeschwort").value.trim().toUpperCase() !== "LÖSCHEN"; });
 $("loeschen").addEventListener("click", e => mitSperre(e.currentTarget, async () => {
   try {
     await api("DELETE", "/v1/profile/" + konto.id, undefined, konto.schluessel);
-    kontoWeg(); konto = null; stand = null; $("loeschwort").value = "";
+    kontoWeg(); konto = null; stand = null; AKProfilMenue.name(null); $("loeschwort").value = "";
     zeige("ohne"); erfolg("Ihr Profil ist gelöscht, mit allen Einträgen, Links, Öffnungen und Anfragen.");
   } catch (err) { fehler(err); }
 }));

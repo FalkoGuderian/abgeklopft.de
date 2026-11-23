@@ -17,8 +17,17 @@
 <main class="wrap" style="padding-top:28px;max-width:860px">
   <h1>Sie haben einen Link bekommen</h1>
   <p style="color:var(--muted);font-size:1.1rem">Ein Einreicher (Bewerberin, Auftragnehmer oder Betreiber eines KI-Agenten) hat Ihnen Arbeitsergebnisse geschickt. Jeder Eintrag zeigt, ob und wie er geprüft ist. Für Sie kostenlos, ohne Konto. Sie können den Link selbst lesen oder Ihren eigenen KI-Agenten lesen lassen.</p>
+  <nav class="schritte" data-schritte aria-label="Inhalt dieser Seite">
+    <a href="#a-lesen"><span class="st">So lesen</span></a>
+    <a href="#a-nutzen"><span class="st">Was Sie haben</span></a>
+    <a href="#a-agent"><span class="st">KI-Agent</span></a>
+    <a href="#a-beispiel"><span class="st">Beispiel</span></a>
+    <a href="#a-assistent"><span class="st">KI prüft</span></a>
+    <a href="#skills"><span class="st">Skill</span></a>
+    <a href="#a-grenzen"><span class="st">Grenzen</span></a>
+  </nav>
 
-  <section><h2>So lesen Sie die Seite</h2>
+  <section id="a-lesen" class="schritt-ziel"><h2>So lesen Sie die Seite</h2>
     <div class="tbl"><table>
       <tr><th>Stufe</th><th>Bedeutet</th><th>Wie Sie es nutzen</th></tr>
       <tr><td><span class="badge b1">Eingereicht</span> Nichts geprüft</td><td>Nichts geprüft, nur Links der Person.</td><td>Wie ein Lebenslauf: im Gespräch nachfragen.</td></tr>
@@ -28,7 +37,7 @@
     <p>Zu jedem Siegel steht, was geprüft wurde und was nicht. Bei Einträgen aus mehreren Teilen zählt die schwächste Pflichtstufe.</p>
   </section>
 
-  <section><h2>Was Sie davon haben</h2>
+  <section id="a-nutzen" class="schritt-ziel"><h2>Was Sie davon haben</h2>
     <ul class="tick">
       <li><b>Weniger Prüfaufwand.</b> Abschlüsse, Zertifikate und Produkte sind abgeglichen, bevor Sie einladen.</li>
       <li><b>Referenzen schon eingeholt.</b> Bestätigungen früherer Auftraggeber stehen am Eintrag.</li>
@@ -38,7 +47,7 @@
     <p class="meta">Das ist eine Hypothese. Der Pilot soll zeigen, ob Abnehmer die Siegel so nutzen.</p>
   </section>
 
-  <section><h2>Wenn der Link zu einem KI-Agenten führt</h2>
+  <section id="a-agent" class="schritt-ziel"><h2>Wenn der Link zu einem KI-Agenten führt</h2>
     <p class="sub">Ein Profil kann auch einem KI-Agenten gehören, der Aufträge übernimmt. Darauf achten Sie:</p>
     <div class="tbl"><table>
       <tr><th>Feld</th><th>Bedeutet</th><th>Wie Sie es nutzen</th></tr>
@@ -50,7 +59,7 @@
     <p class="meta">Fiktives <a href="profil.html?p=belegleser">Beispiel: KI-Agent „Belegassistent“</a>.</p>
   </section>
 
-  <section><h2>Beispiel: ein bestätigter Eintrag</h2>
+  <section id="a-beispiel" class="schritt-ziel"><h2>Beispiel: ein bestätigter Eintrag</h2>
     <ul class="lt-liste" style="margin:0">
       <li class="lt-item"><div class="lt-btn"><span class="badge b3">Abgenommen</span><span class="lt-titel">Netzlast-Dashboard für Stadtwerke</span><span class="lt-zeit">2024–2025</span></div>
         <div class="lt-detail"><p>Auswertung von Netzdaten mit täglicher Aktualisierung, 40 Nutzer im Betrieb.</p>
@@ -60,7 +69,7 @@
     <p class="meta">Aus dem erfundenen <a href="profil.html">Beispielprofil Alex Beispiel</a>.</p>
   </section>
 
-  <section><h2>Mit einem KI-Assistenten prüfen</h2>
+  <section id="a-assistent" class="schritt-ziel"><h2>Mit einem KI-Assistenten prüfen</h2>
     <p class="sub">Jedes Profil gibt es auch maschinenlesbar. Ihr Assistent oder Ihr Bewerbermanagement kann die Nachweise lesen und die Prüfberichte selbst nachrechnen, ohne uns zu vertrauen.</p>
     <div class="grid">
       <div class="card"><h3>Profil maschinenlesbar</h3><p>Beispiele: <a href="alex.json">abgeklopft.de/alex.json</a>. Persönliche Links <code>profil.html?l=&lt;kennung&gt;</code> gibt es maschinenlesbar unter <code>…/v1/l/&lt;kennung&gt;.json</code> (Adresse in <a href="llms.txt">llms.txt</a>). Jeder Eintrag nennt Stufe, Prüfweg und Bestätigungen.</p></div>
@@ -70,7 +79,7 @@
     <p class="note" style="margin-top:16px">Text, den die Person oder der Betreiber selbst geschrieben hat, ist getrennt gekennzeichnet. So kann ein Assistent ihn nicht mit Geprüftem verwechseln und darin versteckte Anweisungen nicht befolgen. Über eine Person entscheidet bei Ihnen eine Person. Einen KI-Agenten darf Ihr Assistent selbst auswählen, wenn Sie es erlauben.</p>
   </section>
 
-  <section id="skills"><h2>Skill für Ihren Agenten</h2>
+  <section id="skills" class="schritt-ziel"><h2>Skill für Ihren Agenten</h2>
     <p class="sub">Arbeitet bei Ihnen ein KI-Assistent mit Bewerbungen oder Angeboten, geben Sie ihm den Skill <b>abgeklopft-empfaenger</b>. Er bringt die Regeln und ein Prüfskript mit.</p>
     <div class="grid">
       <div class="card"><h3>Selbst nachrechnen</h3><p>Das Skript lädt ein Profil, prüft jeden Prüfbericht (Prüfsumme, Ed25519-Signatur, Schlüssel, Ablaufdatum) und zeigt je Eintrag Stufe, Prüfweg und Ergebnis. Python oder Node, ohne Konto.</p></div>
@@ -80,7 +89,7 @@
     <p class="meta" style="margin-top:14px">Quelltext und Anleitung: <a href="https://github.com/FalkoGuderian/abgeklopft-skills">github.com/FalkoGuderian/abgeklopft-skills</a> (MIT-Lizenz). Für Agenten, die sich bei Ihnen bewerben, gibt es den Gegenpart <a href="https://github.com/FalkoGuderian/abgeklopft-skills/blob/main/skills/abgeklopft-bewerber/SKILL.md">abgeklopft-bewerber</a>. Pilot: Prototyp, kein amtliches Verfahren.</p>
   </section>
 
-  <section><h2>Grenzen und Regeln</h2>
+  <section id="a-grenzen" class="schritt-ziel"><h2>Grenzen und Regeln</h2>
     <ul class="tick">
       <li><b>Die Person entscheidet.</b> Sie wählt, was Sie sehen, wie lange der Link gilt, und kann ihn widerrufen. Beim KI-Agenten entscheidet der Betreiber.</li>
       <li><b>Sie sieht, dass Sie geöffnet haben.</b> Zeitpunkt und angesehene Einträge, keine weiteren Daten über Sie.</li>
@@ -91,5 +100,6 @@
   </section>
 </main>
 <footer><div class="wrap">Keine Rechtsberatung. Datenschutz und Antidiskriminierung vor dem Start rechtlich prüfen lassen.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
+<script src="nav-profil.js"></script><script src="schritte.js"></script>
 </body>
 </html>

@@ -57,7 +57,6 @@
   <a class="logo" href="/index.html">abge<span>klopft</span><small class="claim">Prüferbereich</small></a>
   <nav aria-label="Hauptmenü"><a href="/index.html">Start</a><a href="/teilen.html">Einreichen</a><a href="/gutachter.html" aria-current="page">Prüfen</a><a href="/abnehmer.html">Abnehmen</a><a href="/so-gehts.html">So geht's</a></nav>
 </div></header>
-<div class="wrap abmeldeleiste" id="abmeldeleiste" style="display:none"><button class="btn ghost klein" type="button" id="b-abmelden">Abmelden</button></div>
 <nav class="reiter wrap" aria-label="Bereiche von Prüfen"><a href="/gutachter.html">Prüfer werden</a><a href="/pruefer.html" aria-current="page">Login</a></nav>
 <main class="wrap" style="padding-top:24px;padding-bottom:40px;max-width:760px">
   <h1 style="margin-top:0">Prüferbereich</h1>
@@ -265,6 +264,7 @@
   </div>
 </main>
 <footer><div class="wrap">Interne Seite, nicht für die Öffentlichkeit · <a href="index.html">Startseite</a></div></footer>
+<script>window.AK_PROFIL_MANUELL = true;</script><script src="nav-profil.js"></script>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
@@ -325,7 +325,7 @@ function abmelden() {
   $("t-frei").hidden = true; $("t-verw").hidden = true; $("l-warte").replaceChildren(); $("l-meine").replaceChildren(); $("w-kapazitaet").textContent = "";
   $("a-leiste").hidden = true; $("f-frei").hidden = true; $("a-fragebox").hidden = true; $("a-frage").value = "";
   zeige("t-warte");
-  $("schluessel").value = ""; $("angemeldet").hidden = true; $("abmeldeleiste").style.display = "none"; $("hauptteil").hidden = true; $("f-anmelden").hidden = false;
+  $("schluessel").value = ""; $("angemeldet").hidden = true; AKProfilMenue.entfernen(); $("hauptteil").hidden = true; $("f-anmelden").hidden = false;
   verwaltungLeeren();
   $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true; $("t-protokoll").hidden = true;
   for (const id of ["m-anmelden", "m-eintrag", "m-auswahl", "m-signieren", "m-widerruf", "m-protokoll", "m-warte", "m-meine", "m-auftrag"]) meldung(id);
@@ -341,7 +341,7 @@ $("f-anmelden").addEventListener("submit", async ev => {
     const j = await api("GET", "/v1/pruefer/ich");
     meineId = j.pruefer.id; $("a-name").textContent = j.pruefer.name;
     $("a-kid").textContent = j.signierschluessel ? j.signierschluessel.kid + " (" + (j.signierschluessel.modus === "pilot" ? "Pilot-Testschlüssel, Berichte tragen „beispiel“" : j.signierschluessel.modus) + ")" : "keiner eingerichtet, Signieren nicht möglich";
-    $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; $("abmeldeleiste").style.display = ""; $("hauptteil").hidden = false;
+    $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; AKProfilMenue.setzen({ label: "Prüferbereich", name: j.pruefer.name, abmelden: abmelden }); $("hauptteil").hidden = false;
     meldung("m-anmelden", "ok", "Angemeldet.");
     $("t-frei").hidden = j.admin !== true; $("t-verw").hidden = j.admin !== true;
     zeige("t-warte"); warteLaden();
@@ -349,7 +349,6 @@ $("f-anmelden").addEventListener("submit", async ev => {
   } catch (e) { schluessel = ""; meldung("m-anmelden", "bad", e.status === 401 ? "Der Schlüssel stimmt nicht. Bitte prüfen Sie ihn und versuchen Sie es erneut." : fehlerText(e)); }
   $("b-anmelden").disabled = false;
 });
-$("b-abmelden").addEventListener("click", abmelden);
 
 // ---- 2. Eintrag laden ----
 function stufeText(n) { return n === 3 ? "S3 · Geprüft und bestätigt" : n === 2 ? "S2 · Geprüft" : "S1 · Selbstangabe"; }

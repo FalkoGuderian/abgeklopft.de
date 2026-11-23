@@ -17,8 +17,16 @@
 <main class="wrap" style="padding-top:28px;max-width:860px">
   <h1>Prüfer werden</h1>
   <p style="color:var(--muted);font-size:1.1rem">Ein Siegel ist nur so stark wie die Person, die prüft. Vieles prüft die Plattform automatisch, und Auftraggeber bestätigen selbst. Für Belege und Fachgespräche suchen wir Fachleute mit nachweisbarer Praxis. <a href="atelier.html">Zur Prüferansicht (Prototyp)</a></p>
+  <nav class="schritte" data-schritte aria-label="Inhalt dieser Seite">
+    <a href="#g-suchen"><span class="st">Wen wir suchen</span></a>
+    <a href="#g-rollen"><span class="st">Drei Rollen</span></a>
+    <a href="#g-regeln"><span class="st">Unabhängigkeit</span></a>
+    <a href="#g-raster"><span class="st">Bewertungsraster</span></a>
+    <a href="#g-zugelassen"><span class="st">Zugelassen</span></a>
+    <a href="#bewerben"><span class="st">Bewerben</span></a>
+  </nav>
 
-  <section><h2>Wen wir suchen</h2>
+  <section id="g-suchen" class="schritt-ziel"><h2>Wen wir suchen</h2>
     <div class="grid">
       <div class="card"><h3>Praxis statt Titel</h3><p>Mehrjährige, nachweisbare Praxis im Fachgebiet, zum Beispiel KI und Daten, Cloud, Produktentwicklung, Projekt- und Führungsverantwortung, Lehre.</p></div>
       <div class="card"><h3>Urteilsvermögen</h3><p>Sie erkennen, ob eine Arbeit trägt, auch wenn KI sie mit erstellt hat. Sie begründen ein Urteil schriftlich und knapp.</p></div>
@@ -26,7 +34,7 @@
     </div>
   </section>
 
-  <section><h2>Drei Rollen</h2>
+  <section id="g-rollen" class="schritt-ziel"><h2>Drei Rollen</h2>
     <div class="tbl"><table>
       <tr><th>Rolle</th><th>Aufgabe</th><th>Zugang</th><th>Vergütung (Annahme)</th></tr>
       <tr><td><span class="badge b2">Geprüft</span> Belegprüfer</td><td>Belege einsehen, abgleichen, Ergebnis begründen. Ca. 20 Minuten je Anspruch.</td><td>Bewerbung, eigene Praxis im Feld, Probeprüfung</td><td>Anteil an der Gebühr, Höhe im Gespräch</td></tr>
@@ -36,7 +44,7 @@
     <p class="meta">In der Pilotphase gibt es noch keine festen Beträge. Wir klären Aufwand und Vergütung mit den ersten Gutachtern gemeinsam.</p>
   </section>
 
-  <section><h2>Regeln zur Unabhängigkeit</h2>
+  <section id="g-regeln" class="schritt-ziel"><h2>Regeln zur Unabhängigkeit</h2>
     <ul class="tick">
       <li><b>Kein Coaching vor dem Urteil.</b> Wer eine Person gecoacht oder mentoriert hat, darf deren Anspruch nicht bewerten.</li>
       <li><b>Keine Eigenprüfung.</b> Auch der Betreiber lässt sein eigenes Portfolio von Dritten prüfen.</li>
@@ -48,7 +56,7 @@
     </ul>
   </section>
 
-  <section><h2>Beispiel-Bewertungsraster Fachgespräch (0 bis 3 Punkte je Kriterium)</h2>
+  <section id="g-raster" class="schritt-ziel"><h2>Beispiel-Bewertungsraster Fachgespräch (0 bis 3 Punkte je Kriterium)</h2>
     <div class="tbl"><table>
       <tr><th>Kriterium</th><th>Frage</th></tr>
       <tr><td>Echtheit</td><td>Hat die Person die Arbeit selbst gemacht? Kann sie Entscheidungen und Fehler erklären?</td></tr>
@@ -60,12 +68,12 @@
     <p class="meta">Bestanden ab 11 von 15 Punkten und keinem Kriterium mit 0. Auch diese Schwelle ist eine Annahme und müsste an echten Prüfungen kalibriert werden.</p>
   </section>
 
-  <section><h2>Bereits zugelassen?</h2>
+  <section id="g-zugelassen" class="schritt-ziel"><h2>Bereits zugelassen?</h2>
     <p>Sie sind bereits als Prüfer zugelassen?</p>
     <p><a class="btn" href="pruefer.html">Zum Login</a></p>
   </section>
 
-  <section id="bewerben"><h2>Als Prüfer bewerben</h2>
+  <section id="bewerben" class="schritt-ziel"><h2>Als Prüfer bewerben</h2>
     <p>Sie bewerben sich mit diesem Formular. Wir melden uns persönlich bei Ihnen. Bei einer Zusage erhalten Sie Ihren Login-Schlüssel.</p>
     <form id="g" autocomplete="off" novalidate>
       <label for="gn">Name</label><input id="gn" maxlength="100" required>
@@ -105,5 +113,6 @@ document.getElementById("g").addEventListener("submit", async e => {
   knopf.disabled = false;
 });
 </script>
+<script src="nav-profil.js"></script><script src="schritte.js"></script>
 </body>
 </html>

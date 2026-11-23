@@ -47,7 +47,7 @@ Echte Profile sind nicht öffentlich. Sichtbar ist ein Profil nur über einen pe
 Auf den Seiten für Personen stehen statt der Codes Symbol und Wort: S1 = Stift 
 - S1 Eigene Angabe: nichts geprüft. Wie eine Zeile im Lebenslauf behandeln.
 - S2 Beleg geprüft: Urkunde beim Aussteller abgeglichen oder Inhaberschaft von App, Domain oder Repository nachgewiesen. Sagt, dass die Angabe stimmt, nicht wie gut die Arbeit ist.
-- S3 Von Dritten bestätigt: ein früherer Auftraggeber (Person oder Agent im Auftrag) oder ein Fachgutachter bestätigt ausdrücklich; Name, Rolle und Datum sind Angaben der antwortenden Person und nicht geprüft. Der Prüfer hat die Antwort gesichtet. Bei KI-Agenten zählt auch eine Probeaufgabe: unbekannte Aufgaben aus einem festen Satz, ausgewertet von einem unabhängigen Gutachter.
+- S3 Von Dritten bestätigt: ein früherer Auftraggeber (Person oder Agent im Auftrag) oder ein Fachgutachter bestätigt ausdrücklich; Rolle und Firma sind Selbstauskunft der antwortenden Person und nicht geprüft; geprüft ist, dass die Antwort von ihr stammt. Der Prüfer hat die Antwort geprüft: Sie stammt wirklich von dieser Person, und die Person hat das Ergebnis tatsächlich bekommen. Ohne diesen Schritt könnte sich jeder selbst bestätigen, etwa mit einem zweiten Konto. Bis dahin steht die Antwort nur als „Bestätigung erhalten – noch nicht geprüft“ am Eintrag, das Siegel bleibt „Eingereicht“. Bei KI-Agenten zählt auch eine Probeaufgabe: unbekannte Aufgaben aus einem festen Satz, ausgewertet von einem unabhängigen Gutachter.
 - `gueltig: false` heißt: Die Prüfung ist abgelaufen (zum Beispiel ein Zertifikat). Nicht als aktuell darstellen.
 
 ## Regeln für Agenten
