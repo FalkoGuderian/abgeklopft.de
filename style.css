@@ -627,3 +627,5 @@ nav.schritte#schritte a{min-width:0;white-space:normal;text-align:left;align-ite
   .rollen .card{display:grid;grid-template-rows:subgrid;grid-row:span 4;row-gap:0}
   .rollen .card .row{margin-top:0}
 }
+/* Link-Zeilen haben bis zu vier Knöpfe: am Handy zwei Spalten statt 2fr 1fr 1fr (Gesamttest 2026-11-23) */
+@media (max-width:480px){#links .eintrag-zeile .knoepfe{grid-template-columns:1fr 1fr}}
