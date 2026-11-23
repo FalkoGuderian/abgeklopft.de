@@ -139,7 +139,6 @@ section > h2 + .grid,section > h2 + .steps,section > h2 + .tbl{margin-top:var(--
 section h3{font-size:var(--fs-l)}
 section .sub{color:var(--muted);font-size:var(--fs-m);margin:0 0 var(--sp-5);max-width:42em}
 .grid{display:grid;gap:var(--sp-4);grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-#stufen .grid{align-items:start}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:var(--sp-5)}
 .card h3{margin:0 0 var(--sp-2);font-size:var(--fs-l);line-height:1.25;font-weight:700}
 .card p{margin:var(--sp-2) 0;color:var(--muted);font-size:var(--fs-m)}
