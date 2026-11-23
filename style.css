@@ -139,6 +139,7 @@ section > h2 + .grid,section > h2 + .steps,section > h2 + .tbl{margin-top:var(--
 section h3{font-size:var(--fs-l)}
 section .sub{color:var(--muted);font-size:var(--fs-m);margin:0 0 var(--sp-5);max-width:42em}
 .grid{display:grid;gap:var(--sp-4);grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+#stufen .grid{align-items:start}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:var(--sp-5)}
 .card h3{margin:0 0 var(--sp-2);font-size:var(--fs-l);line-height:1.25;font-weight:700}
 .card p{margin:var(--sp-2) 0;color:var(--muted);font-size:var(--fs-m)}
@@ -618,3 +619,5 @@ nav.schritte[data-schritte] a{flex:0 1 auto;width:auto;min-width:0;padding:var(-
 nav.schritte#schritte{display:grid;grid-template-columns:repeat(4,1fr);align-items:stretch;overflow:visible;-webkit-mask-image:none;mask-image:none;position:static;margin-left:0;margin-right:0;padding-left:0;padding-right:0}
 nav.schritte#schritte a{min-width:0;white-space:normal;text-align:left;align-items:flex-start}
 @media (max-width:480px){nav.schritte#schritte{grid-template-columns:1fr 1fr}}
+/* Fieldsets (Teile, Prozess-Kennzahlen) dürfen schmaler als ihr Inhalt werden, sonst scrollt die Seite am Handy waagerecht (Gesamttest 2026-11-23) */
+.tf-teil,.tf-ab,.pz-kz{min-width:0}

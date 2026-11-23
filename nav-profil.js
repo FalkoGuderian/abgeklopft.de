@@ -24,7 +24,7 @@
   if (/^\/[a-z0-9-]{3,30}\/[a-z0-9-]{1,40}\/?$/.test(location.pathname)) return;
 
   var SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
-  var wrap = null, knopf = null, menue = null, zustand = null, abmeldeFn = null;
+  var wrap = null, knopf = null, menue = null, zustand = null, abmeldeFn = null, geoeffnet = 0;
 
   function lesen(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function angemeldet() {
@@ -45,7 +45,7 @@
   }
   function eintraege() { return menue ? Array.prototype.slice.call(menue.querySelectorAll('[role="menuitem"]')) : []; }
   function auf() {
-    menue.hidden = false; knopf.setAttribute("aria-expanded", "true");
+    menue.hidden = false; knopf.setAttribute("aria-expanded", "true"); geoeffnet = Date.now();
     var r = knopf.getBoundingClientRect(), w = menue.offsetWidth, links = Math.max(10, Math.min(r.right - w, window.innerWidth - w - 10));
     menue.style.left = links + "px"; menue.style.top = (r.bottom + 6) + "px";
     var e = eintraege(); if (e[0]) e[0].focus();
@@ -120,7 +120,8 @@
     aktuell();
   }
   function aussen(e) { if (menue && !menue.hidden && !menue.contains(e.target) && !knopf.contains(e.target)) zu(false); }
-  function zuAusLeise() { zu(false); }
+  // Ein Scroll-Ereignis unmittelbar nach dem Öffnen (Kopf scrollt am Handy mit, Seite springt zum Knopf) schließt das Menü nicht wieder
+  function zuAusLeise(e) { if (e && e.type === "scroll" && Date.now() - geoeffnet < 400) return; zu(false); }
   function entfernen() {
     document.removeEventListener("click", aussen, true);
     window.removeEventListener("resize", zuAusLeise); window.removeEventListener("scroll", zuAusLeise);
