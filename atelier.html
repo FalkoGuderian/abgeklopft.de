@@ -4,18 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Attestation erstellen · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=11c44e01">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
-<div class="proto">Prototyp · Prüferansicht · Die Urkunde wird im Browser erzeugt und nur lokal gespeichert</div>
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
+<div class="proto"><span class="proto-voll">Prototyp · Prüferansicht · Die Urkunde wird im Browser erzeugt und nur lokal gespeichert</span><details class="proto-kurz"><summary>Prototyp · Prüferansicht · <u>Mehr</u></summary><p>Prototyp · Prüferansicht · Die Urkunde wird im Browser erzeugt und nur lokal gespeichert</p></details></div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav aria-label="Hauptmenü"><a href="index.html">Start</a><a href="teilen.html">Einreichen</a><a href="gutachter.html" aria-current="page">Prüfen</a><a href="abnehmer.html">Abnehmen</a><a href="so-gehts.html">So geht's</a></nav>
 </div></header>
-<main class="wrap" style="padding-top:28px">
+<main id="inhalt" tabindex="-1" class="wrap">
   <h1>Prüfbericht ausstellen (Prüferansicht)</h1>
-  <p class="sub" style="color:var(--muted)">Wählen Sie einen Eintrag oder formulieren Sie einen neuen Anspruch. Die Stufe richtet sich nach dem Prüfweg.</p>
+  <p class="sub c-muted">Wählen Sie einen Eintrag oder formulieren Sie einen neuen Anspruch. Die Stufe richtet sich nach dem Prüfweg.</p>
   <div class="two">
     <form id="f" autocomplete="off">
       <label for="vorlage">Aus dem Portfolio übernehmen</label>
@@ -46,15 +47,15 @@
       <div class="row noprint" id="aktionen" hidden>
         <button class="btn ghost" type="button" id="druck">Drucken</button>
       </div>
-      <details class="technik noprint" id="technikat" hidden style="margin-top:10px"><summary class="meta" style="cursor:pointer">Technische Ansicht (für KI-Agenten)</summary>
-        <div class="row" style="margin-top:8px"><button class="btn ghost" type="button" id="kopie">JSON kopieren</button></div>
+      <details class="technik noprint mt-3" id="technikat" hidden><summary class="meta zeiger">Technische Ansicht (für KI-Agenten)</summary>
+        <div class="row mt-2"><button class="btn ghost" type="button" id="kopie">JSON kopieren</button></div>
         <p class="meta" id="kopiemeldung"></p>
       </details>
     </div>
   </div>
 </main>
-<footer><div class="wrap">„Geprüft“ und „Abgenommen“ sind im Prototyp nur Auswahlfelder. Der Signaturschlüssel entsteht beim ersten Ausstellen in diesem Browser. Produktiv liegt er nur auf dem Server, und nur zugelassene Prüfer stellen aus.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
-<script src="data.js"></script><script src="app.js"></script>
+<footer><div class="wrap"><p class="fuss-text">„Geprüft“ und „Abgenommen“ sind im Prototyp nur Auswahlfelder. Der Signaturschlüssel entsteht beim ersten Ausstellen in diesem Browser. Produktiv liegt er nur auf dem Server, und nur zugelassene Prüfer stellen aus.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
+<script src="data.js?v=0cb47df9"></script><script src="app.js?v=ba1da2e1"></script>
 <script>
 const $ = id => document.getElementById(id);
 PORTFOLIO.forEach(p => { const o = document.createElement("option"); o.value = p.id; o.textContent = p.titel; $("vorlage").append(o); });
@@ -130,6 +131,6 @@ $("kopie").onclick = async () => {
   catch { $("kopiemeldung").textContent = "Kopieren nicht möglich. Bitte das JSON auf der Prüfseite über die Kennung suchen."; }
 };
 </script>
-<script src="nav-profil.js"></script>
+<script src="nav-profil.js?v=4ae4cfac"></script>
 </body>
 </html>

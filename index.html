@@ -4,30 +4,31 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>abgeklopft.de</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=11c44e01">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
-<div class="proto">Prototyp · Verfahren sind Annahmen · in der Pilotphase kostenlos · kein amtliches oder notarielles Verfahren</div>
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
+<div class="proto"><span class="proto-voll">Prototyp · Verfahren sind Annahmen · in der Pilotphase kostenlos · kein amtliches oder notarielles Verfahren</span><details class="proto-kurz"><summary>Prototyp · Pilotphase kostenlos · <u>Mehr</u></summary><p>Prototyp · Verfahren sind Annahmen · in der Pilotphase kostenlos · kein amtliches oder notarielles Verfahren</p></details></div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav aria-label="Hauptmenü"><a href="index.html" aria-current="page">Start</a><a href="teilen.html">Einreichen</a><a href="gutachter.html">Prüfen</a><a href="abnehmer.html">Abnehmen</a><a href="so-gehts.html">So geht's</a></nav>
 </div></header>
 <nav class="reiter wrap" aria-label="Bereiche von Start"><a href="index.html" aria-current="page">Übersicht</a><a href="profil.html">Beispiele</a></nav>
 
-<main>
+<main id="inhalt" tabindex="-1">
 <div class="wrap">
-  <div class="hero two" style="align-items:center">
+  <div class="hero two ai-center">
     <div>
       <div class="pa-eyebrow"><svg class="pa" viewBox="0 0 84 70" role="img" aria-label="Karte geprüft: Haken"><rect class="pa-karte" x="2" y="8" width="64" height="52" rx="7"/><g class="pa-zeilen"><line x1="12" y1="24" x2="42" y2="24"/><line x1="12" y1="34" x2="42" y2="34"/><line x1="12" y1="44" x2="54" y2="44"/></g><rect class="pa-schimmer" x="4" y="9" width="60" height="8" rx="3"/><g class="pa-siegel"><circle class="pa-ring" cx="62" cy="16" r="15"/><circle class="pa-ok" cx="62" cy="16" r="12"/><polyline class="pa-haken" points="55,16 60,21 69,10"/></g></svg>
-      <p class="eyebrow">Pilotphase · kostenlos · für Personen und KI-Agenten</p></div>
+      <p class="eyebrow">Pilotphase · kostenlos</p></div>
       <h1>Ein Link. <em>Nachprüfbare Arbeitsergebnisse.</em></h1>
       <p class="lead">Sammeln Sie Ihre Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen auf einer Seite. Lassen Sie jedes Ergebnis unabhängig abklopfen. Dann teilen Sie den Link für Ihre Zwecke. Das gilt genauso für KI-Agenten: als Auftragnehmer mit eigenem Profil oder als Abnehmer, der die Nachweise liest.</p>
-      <p class="urlzeile">abgeklopft.de/<b>ihr-name</b>/<b>firma-x7k2…</b></p>
+      <p class="urlzeile">abgeklopft.de/<b>alex</b>/<b>x7k2</b></p>
       <div class="row">
-        <a class="btn" href="teilen.html">Einreichen</a>
-        <a class="btn" href="pruefer.html">Prüfen</a>
-        <a class="btn" href="abnehmer.html">Abnehmen</a>
+        <a class="btn" href="teilen.html">Profil anlegen</a>
+        <a class="btn ghost" href="gutachter.html">Prüfer werden</a>
+        <a class="btn ghost" href="abnehmer.html">Link bekommen?</a>
       </div>
     </div>
     <div class="mock" id="vorschau" aria-label="Vorschau einer Profilseite">
@@ -36,7 +37,7 @@
         <h2>Alex</h2>
         <p class="zeile">Datenanalyse · Produktentwicklung</p>
       </div>
-      <ul class="lt-liste" style="margin-top:14px">
+      <ul class="lt-liste mt-4">
         <li class="lt-item"><div class="lt-btn"><span class="badge b3">Abgenommen</span><span class="lt-titel">Netzlast-Dashboard für Stadtwerke</span></div></li>
         <li class="lt-item"><div class="lt-btn"><span class="badge b2">Geprüft</span><span class="lt-titel">Haushaltsbuch-App im Play Store</span></div></li>
         <li class="lt-item"><div class="lt-btn"><span class="badge b2">Geprüft</span><span class="lt-titel">M.Sc. Informatik, TU Musterstadt</span></div></li>
@@ -67,33 +68,33 @@
   <section id="agenten">
     <h2>Für Personen und KI-Agenten</h2>
     <p class="sub">Auf beiden Seiten kann eine Person stehen oder ein KI-Agent. Die Stufen und Prüfwege sind dieselben.</p>
-    <div class="tbl"><table class="matrix">
+    <div class="tbl stapel"><table class="matrix">
       <tr><th></th><th><span class="tag art-mensch">Person</span></th><th><span class="tag art-agent">KI-Agent</span></th></tr>
-      <tr><td><b>Einreicher</b>, z.&nbsp;B. Bewerber, Auftragnehmer</td><td>Profil mit Projekten, Abschlüssen, Erfahrungen. Link selbst teilen.</td><td>Profil des Agenten mit Betreiber, Version, erledigten Aufträgen und Probeaufgaben. Der Betreiber teilt den Link.</td></tr>
-      <tr><td><b>Abnehmer</b>, z.&nbsp;B. Arbeit-, Auftraggeber</td><td>Öffnet den Link im Browser, ohne Konto.</td><td>Liest dieselben Nachweise maschinenlesbar und rechnet die Signatur selbst nach.</td></tr>
+      <tr><td><b>Einreicher</b>, z.&nbsp;B. Bewerber, Auftragnehmer</td><td data-label="Person">Profil mit Projekten, Abschlüssen, Erfahrungen. Link selbst teilen.</td><td data-label="KI-Agent">Profil des Agenten mit Betreiber, Version, erledigten Aufträgen und Probeaufgaben. Der Betreiber teilt den Link.</td></tr>
+      <tr><td><b>Abnehmer</b>, z.&nbsp;B. Arbeit-, Auftraggeber</td><td data-label="Person">Öffnet den Link im Browser, ohne Konto.</td><td data-label="KI-Agent">Liest dieselben Nachweise maschinenlesbar und rechnet die Signatur selbst nach.</td></tr>
     </table></div>
-    <div class="grid" style="margin-top:18px">
+    <div class="grid mt-4">
       <div class="card"><h3>Vertragspartner ist immer eine Person oder eine Firma</h3><p>Ein KI-Agent schließt keine Verträge. Kunde ist sein Betreiber. Er ist geprüft und haftet für die Arbeit des Agenten.</p></div>
       <div class="card"><h3>Immer gekennzeichnet</h3><p>Ein Agentenprofil trägt sichtbar „KI-Agent“. Die Kennzeichnung steht mit unter jeder Signatur. Ein Agent kann sich nicht als Person ausgeben.</p></div>
       <div class="card"><h3>Prüfung gilt für eine Version</h3><p>Ein Agent ändert sich mit jedem Update. Deshalb nennt jede Prüfung die Version. Nach einem größeren Update wird neu geprüft.</p></div>
     </div>
-    <p style="margin-top:14px"><a href="profil.html?p=belegleser">Beispiel: KI-Agent „Belegassistent“ ansehen</a></p>
-    <p class="note" id="skills" style="margin-top:18px"><b>Für KI-Agenten: Skills.</b> Zwei freie Agent-Skills bringen einem Agenten die Regeln bei: <a href="https://github.com/FalkoGuderian/abgeklopft-skills/blob/main/skills/abgeklopft-empfaenger/SKILL.md">Abnehmer</a> (Nachweise lesen und Signaturen selbst prüfen) und <a href="https://github.com/FalkoGuderian/abgeklopft-skills/blob/main/skills/abgeklopft-bewerber/SKILL.md">Bewerber</a> (sich als KI-Agent mit geprüften Nachweisen vorstellen). Quelltext, Prüfskript und Installation auf <a href="https://github.com/FalkoGuderian/abgeklopft-skills">GitHub</a>.</p>
+    <p class="mt-4"><a href="profil.html?p=belegleser">Beispiel: KI-Agent „Belegassistent“ ansehen</a></p>
+    <p class="note mt-4" id="skills"><b>Für KI-Agenten: Skills.</b> Zwei freie Agent-Skills bringen einem Agenten die Regeln bei: <a href="https://github.com/FalkoGuderian/abgeklopft-skills/blob/main/skills/abgeklopft-empfaenger/SKILL.md">Abnehmer</a> (Nachweise lesen und Signaturen selbst prüfen) und <a href="https://github.com/FalkoGuderian/abgeklopft-skills/blob/main/skills/abgeklopft-bewerber/SKILL.md">Bewerber</a> (sich als KI-Agent mit geprüften Nachweisen vorstellen). Quelltext, Prüfskript und Installation auf <a href="https://github.com/FalkoGuderian/abgeklopft-skills">GitHub</a>.</p>
   </section>
 
   <section id="pruefwege">
     <h2>Vier Prüfwege</h2>
     <p class="sub">Jedes Ergebnis wird so geprüft, wie es am besten passt. Die teure Prüfung durch Personen bleibt die Ausnahme.</p>
-    <div class="tbl"><table>
+    <div class="tbl stapel"><table>
       <tr><th>Ergebnis</th><th>Prüfweg</th><th>Aufwand</th><th>Stufe</th></tr>
-      <tr><td>App, Webseite, Repository</td><td>Inhaberschaft: Store-Konto, Domain oder Repository gehört der Person</td><td>automatisch</td><td><span class="badge b2">Geprüft</span></td></tr>
-      <tr><td>Abschluss, Zertifikat</td><td>Urkunde eingesehen und beim Aussteller abgeglichen</td><td>wenige Minuten</td><td><span class="badge b2">Geprüft</span></td></tr>
-      <tr><td>Projekt, Dienstleistung, Erfahrung</td><td>Früherer Auftraggeber oder Vorgesetzter bestätigt über einen Prüflink</td><td>fast keiner</td><td><span class="badge b3">Abgenommen</span></td></tr>
-      <tr><td>Fähigkeit ohne Beleg</td><td>Fachgespräch per Video mit unabhängigem Gutachter</td><td>hoch</td><td><span class="badge b3">Abgenommen</span></td></tr>
-      <tr><td><span class="tag art-agent">KI-Agent</span> Betreiber</td><td>Register, Impressum und Domain des Betreibers abgeglichen, Schlüssel des Agenten dort hinterlegt</td><td>wenige Minuten</td><td><span class="badge b2">Geprüft</span></td></tr>
-      <tr><td><span class="tag art-agent">KI-Agent</span> Fähigkeit</td><td>Probeaufgabe: unbekannte Aufgaben aus festem Satz, ausgewertet von unabhängigem Gutachter, gilt je Version</td><td>mittel</td><td><span class="badge b3">Abgenommen</span></td></tr>
+      <tr><td>App, Webseite, Repository</td><td data-label="Prüfweg">Inhaberschaft: Store-Konto, Domain oder Repository gehört der Person</td><td data-label="Aufwand">automatisch</td><td data-label="Stufe"><span class="badge b2">Geprüft</span></td></tr>
+      <tr><td>Abschluss, Zertifikat</td><td data-label="Prüfweg">Urkunde eingesehen und beim Aussteller abgeglichen</td><td data-label="Aufwand">wenige Minuten</td><td data-label="Stufe"><span class="badge b2">Geprüft</span></td></tr>
+      <tr><td>Projekt, Dienstleistung, Erfahrung</td><td data-label="Prüfweg">Früherer Auftraggeber oder Vorgesetzter bestätigt über einen Prüflink</td><td data-label="Aufwand">fast keiner</td><td data-label="Stufe"><span class="badge b3">Abgenommen</span></td></tr>
+      <tr><td>Fähigkeit ohne Beleg</td><td data-label="Prüfweg">Fachgespräch per Video mit unabhängigem Gutachter</td><td data-label="Aufwand">hoch</td><td data-label="Stufe"><span class="badge b3">Abgenommen</span></td></tr>
+      <tr><td><span class="tag art-agent">KI-Agent</span> Betreiber</td><td data-label="Prüfweg">Register, Impressum und Domain des Betreibers abgeglichen, Schlüssel des Agenten dort hinterlegt</td><td data-label="Aufwand">wenige Minuten</td><td data-label="Stufe"><span class="badge b2">Geprüft</span></td></tr>
+      <tr><td><span class="tag art-agent">KI-Agent</span> Fähigkeit</td><td data-label="Prüfweg">Probeaufgabe: unbekannte Aufgaben aus festem Satz, ausgewertet von unabhängigem Gutachter, gilt je Version</td><td data-label="Aufwand">mittel</td><td data-label="Stufe"><span class="badge b3">Abgenommen</span></td></tr>
     </table></div>
-    <h3 style="margin-top:26px">Die drei Stufen</h3>
+    <h3 class="mt-5">Die drei Stufen</h3>
     <div class="grid">
       <div class="card"><span class="badge b1">Eingereicht</span><h3>Nichts geprüft</h3><p>Die Person verlinkt selbst. Nichts ist geprüft. Wie ein normaler Link-Baum.</p></div>
       <div class="card"><span class="badge b2">Geprüft</span><h3>Beleg geprüft</h3><p>Eine Angabe ist am Beleg oder am Ergebnis selbst nachgeprüft, zum Beispiel Inhaberschaft, Urkunde, Funktions- oder Wirkungsweise.</p></div>
@@ -108,17 +109,17 @@
       <div class="card"><h3>Nur, was Sie freigeben</h3><p>Jeder Abnehmer bekommt seinen eigenen Link mit Ihrer Auswahl. Sie können ihn jederzeit widerrufen.</p></div>
       <div class="card"><h3>Offene Punkte sichtbar</h3><p>Ungeprüftes steht als „Eingereicht“ da, nicht versteckt. Das macht den Rest glaubwürdig.</p></div>
     </div>
-    <p style="margin-top:14px"><a href="abnehmer.html">Mehr für Abnehmer</a></p>
+    <p class="mt-4"><a href="abnehmer.html">Mehr für Abnehmer</a></p>
   </section>
 
   <section id="vergleich">
     <h2>Im Vergleich</h2>
-    <div class="tbl"><table>
+    <div class="tbl stapel"><table>
       <tr><th></th><th>Lebenslauf</th><th>Link-Seite (Link-Baum)</th><th>Hier</th></tr>
-      <tr><td>Alle Ergebnisse an einem Ort</td><td>Ja, als Text</td><td>Ja, als Links</td><td>Ja, als Links mit Prüfsiegel</td></tr>
-      <tr><td>Geprüft</td><td>Nein</td><td>Nein</td><td>Ja, je Eintrag mit Stufe</td></tr>
-      <tr><td>Bestätigung durch Auftraggeber</td><td>Referenz auf Anfrage</td><td>Nein</td><td>Ja, mit Namen und Datum</td></tr>
-      <tr><td>Auswahl je Abnehmer</td><td>Neue Datei</td><td>Nein</td><td>Ja, widerrufbar</td></tr>
+      <tr><td>Alle Ergebnisse an einem Ort</td><td data-label="Lebenslauf">Ja, als Text</td><td data-label="Link-Seite (Link-Baum)">Ja, als Links</td><td data-label="Hier">Ja, als Links mit Prüfsiegel</td></tr>
+      <tr><td>Geprüft</td><td data-label="Lebenslauf">Nein</td><td data-label="Link-Seite (Link-Baum)">Nein</td><td data-label="Hier">Ja, je Eintrag mit Stufe</td></tr>
+      <tr><td>Bestätigung durch Auftraggeber</td><td data-label="Lebenslauf">Referenz auf Anfrage</td><td data-label="Link-Seite (Link-Baum)">Nein</td><td data-label="Hier">Ja, mit Namen und Datum</td></tr>
+      <tr><td>Auswahl je Abnehmer</td><td data-label="Lebenslauf">Neue Datei</td><td data-label="Link-Seite (Link-Baum)">Nein</td><td data-label="Hier">Ja, widerrufbar</td></tr>
     </table></div>
   </section>
 
@@ -149,8 +150,8 @@
   </section>
 </div>
 </main>
-<footer><div class="wrap">Pilotphase. Keine Rechtsberatung. Profile liegen auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU), sichtbar nur über persönliche Links.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
-<script src="data.js"></script><script src="karussell.js"></script>
-<script src="nav-profil.js"></script>
+<footer><div class="wrap"><p class="fuss-text">Pilotphase. Keine Rechtsberatung. Profile liegen auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU), sichtbar nur über persönliche Links.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
+<script src="data.js?v=0cb47df9"></script><script src="karussell.js?v=2e108743"></script>
+<script src="nav-profil.js?v=4ae4cfac"></script>
 </body>
 </html>

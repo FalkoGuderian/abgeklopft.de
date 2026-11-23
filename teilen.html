@@ -6,27 +6,31 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://abgeklopft-api.falko-guderian.workers.dev http://localhost:8787; base-uri 'none'; object-src 'none'">
 <meta name="robots" content="noindex">
 <title>Einreichen · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=11c44e01">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
-<div class="proto">Pilotphase · Ihr Profil liegt auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU) · sichtbar nur über Ihre persönlichen Links</div>
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
+<div class="proto"><span class="proto-voll">Pilotphase · Ihr Profil liegt auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU) · sichtbar nur über Ihre persönlichen Links</span><details class="proto-kurz"><summary>Pilotphase · Profil liegt auf dem Server · <u>Mehr</u></summary><p>Pilotphase · Ihr Profil liegt auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU) · sichtbar nur über Ihre persönlichen Links</p></details></div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav aria-label="Hauptmenü"><a href="index.html">Start</a><a href="teilen.html" aria-current="page">Einreichen</a><a href="gutachter.html">Prüfen</a><a href="abnehmer.html">Abnehmen</a><a href="so-gehts.html">So geht's</a></nav>
 </div></header>
-<main class="wrap" style="padding-top:28px">
-  <h1>Einreichen: Mein Profil</h1>
+<main id="inhalt" tabindex="-1" class="wrap">
+  <h1>Einreichen</h1>
   <div class="result bad fehlerzeile" id="fehler" role="alert" hidden><span id="fehlertext"></span> <button class="btn ghost klein" type="button" id="nochmal" hidden>Erneut versuchen</button></div>
   <div class="result ok fehlerzeile" id="erfolg" role="status" hidden></div>
-  <p class="meta" id="laedt" hidden>Lädt …</p>
+  <div id="laedt" role="status" aria-busy="true" aria-label="Seite wird geladen" hidden>
+    <div class="d-flex gap-3 wrap-an"><span class="platzhalter kachel flex-1 minw-200"></span><span class="platzhalter kachel flex-1 minw-200"></span><span class="platzhalter kachel flex-1 minw-200"></span><span class="platzhalter kachel flex-1 minw-200"></span></div>
+    <div class="card mt-4"><span class="platzhalter kurz"></span><span class="platzhalter"></span><span class="platzhalter mittel"></span></div>
+  </div>
 
   <!-- A: noch kein Profil auf diesem Gerät -->
   <div id="ohne" hidden>
-    <p style="color:var(--muted);max-width:44em">Legen Sie Ihr Profil an, tragen Sie Ihre Arbeitsergebnisse ein und schicken Sie jedem Abnehmer einen eigenen Link. Ohne Link sieht niemand Ihr Profil. Sie brauchen kein Konto und keine E-Mail-Adresse.</p>
+    <p class="c-muted mw-44em">Legen Sie Ihr Profil an, tragen Sie Ihre Arbeitsergebnisse ein und schicken Sie jedem Abnehmer einen eigenen Link. Ohne Link sieht niemand Ihr Profil. Sie brauchen kein Konto und keine E-Mail-Adresse.</p>
     <div class="two">
       <form id="anlegen" autocomplete="off" class="card">
-        <h2 style="margin-top:0">Profil anlegen</h2>
+        <h2 class="mt-0">Profil anlegen</h2>
         <label for="einl">Einladungscode (Pilotphase)</label>
         <input id="einl" required placeholder="PILOT-XXXX-XXXX" autocapitalize="characters" spellcheck="false">
         <label for="part">Das Profil gehört</label>
@@ -44,24 +48,24 @@
           <label for="bversion">Version des Agenten</label><input id="bversion" maxlength="40" placeholder="z. B. 2.3">
           <p class="meta">Ein Agentenprofil ist immer sichtbar als KI-Agent gekennzeichnet. Vertragspartner ist der Betreiber.</p>
         </div>
-        <label style="font-weight:400;margin-top:12px"><input type="checkbox" id="dsok" required style="width:auto"> Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen. Mein Profil wird auf dem Server von abgeklopft.de gespeichert.</label>
+        <label class="wahl"><input type="checkbox" id="dsok" required> Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen. Mein Profil wird auf dem Server von abgeklopft.de gespeichert.</label>
         <div class="row"><button class="btn" type="submit">Profil anlegen</button></div>
       </form>
       <form id="geraet" autocomplete="off" class="card">
-        <h2 style="margin-top:0">Auf diesem Gerät öffnen</h2>
+        <h2 class="mt-0">Auf diesem Gerät öffnen</h2>
         <p class="meta">Sie haben schon ein Profil, zum Beispiel auf einem anderen Gerät? Geben Sie Ihren Wiederherstellungscode ein.</p>
         <label for="wcode">Wiederherstellungscode</label>
-        <input id="wcode" required placeholder="XXXX-XXXX-XXXX-…" autocapitalize="characters" spellcheck="false" style="font-family:var(--mono)">
+        <input id="wcode" required placeholder="XXXX-XXXX-XXXX-…" autocapitalize="characters" spellcheck="false" class="mono">
         <div class="row"><button class="btn ghost" type="submit">Profil öffnen</button></div>
-        <p class="meta" style="margin-top:18px">Erst einmal schauen? Die <a href="profil.html">Beispielprofile</a> sind erfunden und funktionieren ohne Anmeldung.</p>
+        <p class="meta mt-4">Erst einmal schauen? Die <a href="profil.html">Beispielprofile</a> sind erfunden und funktionieren ohne Anmeldung.</p>
       </form>
     </div>
   </div>
 
   <!-- Wiederherstellungscode, nur direkt nach dem Anlegen -->
   <div id="code" hidden>
-    <div class="card" style="max-width:640px">
-      <h2 style="margin-top:0">Ihr Wiederherstellungscode</h2>
+    <div class="card mw-640">
+      <h2 class="mt-0">Ihr Wiederherstellungscode</h2>
       <p>Ihr Profil ist angelegt. Dieser Code ist Ihr Schlüssel. <b>Er wird nur jetzt angezeigt.</b> Schreiben Sie ihn auf oder speichern Sie ihn in Ihrem Passwortmanager.</p>
       <div class="codebox" id="codetext"></div>
       <div class="row"><button class="btn ghost" type="button" id="codekopie">Code kopieren</button></div>
@@ -70,57 +74,27 @@
         <li>Wer den Code hat, kann Ihr Profil ändern und löschen. Geben Sie ihn nicht weiter.</li>
         <li>Verlieren Sie Code und Gerät, kann auch abgeklopft.de das Profil nicht wiederherstellen.</li>
       </ul>
-      <label style="font-weight:400"><input type="checkbox" id="codeok" style="width:auto"> Ich habe den Code aufgeschrieben oder sicher gespeichert.</label>
+      <label class="wahl"><input type="checkbox" id="codeok"> Ich habe den Code aufgeschrieben oder sicher gespeichert.</label>
       <div class="row"><button class="btn" type="button" id="codeweiter" disabled>Weiter zu meinem Profil</button></div>
     </div>
   </div>
 
   <!-- B: eigenes Profil -->
   <div id="mit" hidden>
-    <div class="card profilkarte" id="profil" tabindex="-1" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-      <div class="lt-avatar" id="mav" style="margin:0"></div>
-      <div style="flex:1;min-width:200px">
-        <h2 style="margin:0" id="mname"></h2>
-        <p class="meta" style="margin:4px 0" id="mzeile"></p>
-        <p style="margin:0" id="mart"></p>
-        <p class="meta" style="margin:4px 0 0;overflow-wrap:anywhere" id="madr"></p>
-      </div>
-      <div class="row" style="margin:0"><a class="btn ghost" href="profil.html?vorschau=1" id="vorschau">Vorschau ansehen</a></div>
-    </div>
-    <details id="pbearb" style="margin-top:12px">
-      <summary>Profil bearbeiten</summary>
-      <form id="pform" autocomplete="off">
-        <label for="ename">Name</label><input id="ename" required maxlength="120">
-        <label for="ezeile">Zeile</label><input id="ezeile" maxlength="200">
-        <label for="eort">Ort</label><input id="eort" maxlength="120">
-        <label for="eadr">Ihre Adresse</label>
-        <input id="eadr" maxlength="40" autocapitalize="none" spellcheck="false" style="font-family:var(--mono)" aria-describedby="eadrhilfe">
-        <p class="meta" id="eadrhilfe">Ihre persönlichen Links sehen so aus: <span style="overflow-wrap:anywhere">abgeklopft.de/<b id="eadrvor">ihr-name</b>/firma-x7k2…</span>. 3 bis 30 Zeichen: a–z, 0–9 und Bindestrich, nicht am Anfang oder Ende, kein doppelter Bindestrich. Ä, Ö, Ü und ß werden zu ae, oe, ue und ss. Ihr Profil bleibt trotzdem unsichtbar: Es gibt keine Seite unter <b>abgeklopft.de/<span id="eadrvor2">ihr-name</span></b> allein, nur mit dem vollständigen Link. Bei einer Änderung funktionieren bereits verschickte Links weiter und leiten auf die neue Adresse um.</p>
-        <div id="eagent" hidden>
-          <label for="ebname">Betreiber</label><input id="ebname" maxlength="160">
-          <label for="ebsitz">Sitz des Betreibers</label><input id="ebsitz" maxlength="160">
-          <label for="ebverantw">Verantwortliche Person</label><input id="ebverantw" maxlength="160">
-          <label for="ebversion">Version des Agenten</label><input id="ebversion" maxlength="40">
-        </div>
-        <div class="row"><button class="btn" type="submit">Speichern</button></div>
-      </form>
-    </details>
-
     <nav class="schritte" id="schritte" aria-label="Schritte dieser Seite">
-      <a href="#schritt-1" data-schritt="1"><span class="st"><span class="sn">1</span> Einträge</span><span class="sz" id="sz1">–</span></a>
-      <a href="#schritt-2" data-schritt="2"><span class="st"><span class="sn">2</span> Prüfung beantragen</span><span class="sz" id="sz2">–</span></a>
-      <a href="#schritt-3" data-schritt="3"><span class="st"><span class="sn">3</span> Persönliche Links</span><span class="sz" id="sz3">–</span></a>
-      <a href="#schritt-4" data-schritt="4"><span class="st"><span class="sn">4</span> Bestätigung anfragen</span><span class="sz" id="sz4">–</span></a>
-      <a href="#schritt-5" data-schritt="5"><span class="st"><span class="sn">5</span> Gerät &amp; Löschen</span><span class="sz">&nbsp;</span></a>
+      <a href="#schritt-1" data-schritt="1"><span class="st">Einträge</span> <span class="sz" id="sz1">–</span></a>
+      <a href="#schritt-2" data-schritt="2"><span class="st">Prüfungen</span> <span class="sz" id="sz2">–</span></a>
+      <a href="#schritt-3" data-schritt="3"><span class="st">Links</span> <span class="sz" id="sz3">–</span></a>
+      <a href="#schritt-4" data-schritt="4"><span class="st">Bestätigungen</span> <span class="sz" id="sz4">–</span></a>
     </nav>
 
     <section class="abschnitt schritt-ziel" id="schritt-1" aria-labelledby="h-1">
-      <div class="abschnitt-kopf"><h2 id="h-1"><span class="abschnitt-nr">1<span class="nur-vorlesen"> · </span></span>Einträge</h2><p class="untertitel">Was Sie über sich und Ihre Arbeit eintragen</p></div>
+      <div class="abschnitt-kopf"><h2 id="h-1">Einträge</h2><p class="untertitel">Was Sie über sich und Ihre Arbeit eintragen</p></div>
       <div class="abschnitt-kasten">
       <details class="erklaer"><summary>Mehr dazu</summary>
         <p>Projekte, Produkte, Dienstleistungen, Abschlüsse und Erfahrungen mit Links als Beleg. Alle Einträge sind <span class="badge b1">Eingereicht</span> eigene Angaben. Geprüft oder bestätigt wird ein Eintrag erst durch einen Prüfer.</p></details>
       <div id="eliste"></div>
-      <details id="eneu" style="margin-top:12px">
+      <details id="eneu" class="mt-3">
         <summary id="eneutitel">Eintrag hinzufügen</summary>
         <form id="eform" autocomplete="off">
           <input type="hidden" id="eid">
@@ -133,8 +107,8 @@
               <label for="efaeh">Fähigkeiten (mit Komma getrennt)</label><input id="efaeh" maxlength="600" placeholder="z. B. Python, SQL, Dashboards">
             </div>
             <div>
-              <label for="etext">Beschreibung</label><textarea id="etext" maxlength="2000" style="font-family:inherit;min-height:110px" placeholder="Was war das Ergebnis? Wie groß, für wen, Ihre Rolle?"></textarea>
-              <label for="ebelege">Links als Beleg (je Zeile eine Adresse, höchstens 5)</label><textarea id="ebelege" style="font-family:var(--mono);min-height:70px" placeholder="https://…"></textarea>
+              <label for="etext">Beschreibung</label><textarea id="etext" maxlength="2000" placeholder="Was war das Ergebnis? Wie groß, für wen, Ihre Rolle?" class="font-erbt mh-110"></textarea>
+              <label for="ebelege">Links als Beleg (je Zeile eine Adresse, höchstens 5)</label><textarea id="ebelege" placeholder="https://…" class="mono mh-70"></textarea>
               <p class="meta">Keine Dateien hochladen. Verlinken Sie öffentliche Seiten, etwa Store-Eintrag, Repository oder Projektseite.</p>
             </div>
           </div>
@@ -148,16 +122,16 @@
               <div><label for="pz-ergebnis">Ergebnis (optional)</label><input id="pz-ergebnis" maxlength="200" placeholder="z. B. Gebuchte, freigegebene Rechnung"></div>
             </div>
             <label for="pz-rollen">Rollen (je Zeile eine, höchstens 10; nur Funktionsbezeichnungen, keine Personennamen)</label>
-            <textarea id="pz-rollen" style="font-family:inherit;min-height:60px" placeholder="Erfassung&#10;Freigabe"></textarea>
+            <textarea id="pz-rollen" placeholder="Erfassung&#10;Freigabe" class="font-erbt mh-60"></textarea>
             <label>Kennzahlen (optional, höchstens 10; Angaben der Person, nicht geprüft)</label>
             <div id="pz-kz"></div>
             <div class="row"><button class="btn ghost klein" type="button" id="pz-kz-neu">Kennzahl hinzufügen</button></div>
             <fieldset class="tf-ab"><legend>Nachweisart (mindestens eine)</legend>
-              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="dokumentation"> <span>Verfahrensdokumentation</span></label>
-              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="protokolle"> <span>Protokolle der Vorgänge</span></label>
-              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="beobachtung"> <span>Beobachtung vor Ort</span></label>
-              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="kennzahlen"> <span>Kennzahlen</span></label>
-              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="audit_fremd"> <span>Fremdes Audit</span></label>
+              <label class="wahl"><input type="checkbox" name="pz-nw" value="dokumentation"> <span>Verfahrensdokumentation</span></label>
+              <label class="wahl"><input type="checkbox" name="pz-nw" value="protokolle"> <span>Protokolle der Vorgänge</span></label>
+              <label class="wahl"><input type="checkbox" name="pz-nw" value="beobachtung"> <span>Beobachtung vor Ort</span></label>
+              <label class="wahl"><input type="checkbox" name="pz-nw" value="kennzahlen"> <span>Kennzahlen</span></label>
+              <label class="wahl"><input type="checkbox" name="pz-nw" value="audit_fremd"> <span>Fremdes Audit</span></label>
             </fieldset>
           </div>
           <details class="tf-box" id="tfbox">
@@ -174,16 +148,16 @@
     </section>
 
     <section class="abschnitt schritt-ziel" id="schritt-2" aria-labelledby="h-2">
-      <div class="abschnitt-kopf"><h2 id="h-2"><span class="abschnitt-nr">2<span class="nur-vorlesen"> · </span></span>Prüfung beantragen</h2><p class="untertitel">Stand Ihrer Prüfaufträge und Fristen</p></div>
+      <div class="abschnitt-kopf"><h2 id="h-2">Prüfung beantragen</h2><p class="untertitel">Stand Ihrer Prüfaufträge und Fristen</p></div>
       <div class="abschnitt-kasten">
       <p class="sub">Beantragen Sie für einen Eintrag eine Prüfung und verfolgen Sie hier den Stand. Sie sehen immer, wer gerade am Zug ist, bis wann und was bei Ablauf einer Frist passiert. Angezeigt wird nur der Stand des Auftrags, nie eine Bewertung Ihrer Person.</p>
       <p class="meta" id="pnotiz" role="status" hidden></p>
       <div id="pdialog" class="card" hidden aria-live="polite">
-        <h3 id="pdtitel" style="margin-top:0">Prüfung beantragen</h3>
-        <fieldset class="artwahl" style="border:0;padding:0;margin:0">
-          <legend class="meta" style="padding:0">Wie soll geprüft werden?</legend>
-          <label><input type="radio" name="part" value="manuell" id="part_manuell" checked> <span><b>Ein Prüfer prüft</b> (manuell). Ein zugelassener Prüfer sichtet Ihren Eintrag und den Beleg. Es prüft nie jemand mit Bindung zu Ihnen.</span></label>
-          <label class="gesperrt"><input type="radio" name="part" value="ki" id="part_ki" disabled> <span><b>KI prüft</b> <span class="tag">KI-Prüfung: geplant, noch nicht verfügbar</span></span></label>
+        <h3 id="pdtitel" class="mt-0">Prüfung beantragen</h3>
+        <fieldset class="artwahl b-0 p-0 m-0">
+          <legend class="meta p-0">Wie soll geprüft werden?</legend>
+          <label class="wahl"><input type="radio" name="part" value="manuell" id="part_manuell" checked> <span><b>Ein Prüfer prüft</b> (manuell). Ein zugelassener Prüfer sichtet Ihren Eintrag und den Beleg. Es prüft nie jemand mit Bindung zu Ihnen.</span></label>
+          <label class="wahl gesperrt"><input type="radio" name="part" value="ki" id="part_ki" disabled> <span><b>KI prüft</b> <span class="tag">KI-Prüfung: geplant, noch nicht verfügbar</span></span></label>
         </fieldset>
         <div class="fristkasten">Fristen: Ihr Auftrag wartet bis zu <b>30 Tage</b> auf einen Prüfer. Ein Prüfer beginnt innerhalb von <b>3 Tagen</b> nach der Übernahme, die Prüfung dauert höchstens <b>7 Tage</b>. Auf eine Rückfrage haben Sie <b>14 Tage</b> Zeit. Nach dem Antrag steht bei jedem Schritt, bis wann er dauert.</div>
         <div class="row"><button class="btn" type="button" id="pdsenden">Prüfung beantragen</button><button class="btn ghost" type="button" id="pdabbr">Abbrechen</button></div>
@@ -193,10 +167,11 @@
     </section>
 
     <section class="abschnitt schritt-ziel" id="schritt-3" aria-labelledby="h-3">
-      <div class="abschnitt-kopf"><h2 id="h-3"><span class="abschnitt-nr">3<span class="nur-vorlesen"> · </span></span>Persönliche Links</h2><p class="untertitel">Ein eigener Link je Abnehmer</p></div>
+      <div class="abschnitt-kopf"><h2 id="h-3">Persönliche Links</h2><p class="untertitel">Ein eigener Link je Abnehmer</p></div>
       <div class="abschnitt-kasten">
       <details class="erklaer"><summary>Mehr dazu</summary>
         <p>Ein eigener Link je Abnehmer. Sie wählen die Einträge und die Laufzeit. Sie sehen, wann der Link geöffnet wurde. Der Abnehmer erfährt das vor dem Öffnen. Dass ein Link nicht geöffnet wird, sagt nichts über das Ergebnis.</p></details>
+      <p class="meta" id="madr"></p>
       <form id="lf" autocomplete="off" class="two">
         <div>
           <label for="emp">Abnehmer (Firma, Person oder KI-Agent)</label>
@@ -213,14 +188,14 @@
           <div id="auswahl"></div>
         </div>
       </form>
-      <h3 style="margin-top:24px">Ihre Links</h3>
+      <h3 class="mt-5">Ihre Links</h3>
       <div id="links"></div>
       <p class="meta" id="kmeld" role="status"></p>
       </div>
     </section>
 
     <section class="abschnitt schritt-ziel" id="schritt-4" aria-labelledby="h-4">
-      <div class="abschnitt-kopf"><h2 id="h-4"><span class="abschnitt-nr">4<span class="nur-vorlesen"> · </span></span>Bestätigung anfragen</h2><p class="untertitel">Antworten von Auftraggebern</p></div>
+      <div class="abschnitt-kopf"><h2 id="h-4">Bestätigung anfragen</h2><p class="untertitel">Antworten von Auftraggebern</p></div>
       <div class="abschnitt-kasten">
       <p class="sub">Wer ein Ergebnis abgenommen hat, antwortet über einen Link mit Name, Rolle, Firma und einem Satz. Die Antwort steht dann am Eintrag als „Bestätigung erhalten – noch nicht geprüft“. Zu „Abgenommen“ wird sie erst, wenn ein Prüfer sie geprüft hat. Der Prüfer stellt sicher, dass die Antwort wirklich von dieser Person stammt und sie das Ergebnis tatsächlich abgenommen hat. Sonst könnte sich jeder selbst bestätigen.</p>
       <form id="bf" autocomplete="off" class="two">
@@ -232,24 +207,20 @@
           <div class="row"><button class="btn" type="submit">Anfrage-Link erstellen</button></div>
         </div>
       </form>
-      <div id="anfragen" style="margin-top:16px"></div>
+      <div id="anfragen" class="mt-4"></div>
       <p class="meta">Schicken Sie den Anfrage-Link selbst, am besten an die dienstliche Adresse. abgeklopft.de verschickt in der Pilotphase keine E-Mails.</p>
       </div>
     </section>
-
-    <section class="abschnitt schritt-ziel" id="schritt-5" aria-labelledby="h-5">
-      <div class="abschnitt-kopf"><h2 id="h-5"><span class="abschnitt-nr">5<span class="nur-vorlesen"> · </span></span>Dieses Gerät und Löschen</h2><p class="untertitel">Profil endgültig entfernen</p></div>
-      <div class="two">
-        <div class="card">
-          <h3>Profil löschen</h3>
-          <p class="meta">Löscht Profil, Einträge, Links, Öffnungen und Anfragen endgültig. Alle Ihre Links funktionieren danach nicht mehr.</p>
-          <label for="loeschwort">Zum Bestätigen LÖSCHEN eingeben</label>
-          <input id="loeschwort" autocomplete="off" spellcheck="false">
-          <div class="row"><button class="btn gefahr" type="button" id="loeschen" disabled>Profil endgültig löschen</button></div>
-        </div>
-      </div>
-    </section>
   </div>
+
+  <!-- Profil löschen: nur über das Profilmenü im Hauptmenü (nav-profil.js), Bestätigung per Wort LÖSCHEN -->
+  <dialog id="loeschdialog" class="card dialog-schmal" aria-labelledby="loeschtitel">
+    <h2 id="loeschtitel" class="mt-0">Profil löschen</h2>
+    <p class="meta">Löscht Profil, Einträge, Links, Öffnungen und Anfragen endgültig. Alle Ihre Links funktionieren danach nicht mehr.</p>
+    <label for="loeschwort">Zum Bestätigen LÖSCHEN eingeben</label>
+    <input id="loeschwort" autocomplete="off" spellcheck="false">
+    <div class="row"><button class="btn gefahr" type="button" id="loeschen" disabled>Profil endgültig löschen</button><button class="btn ghost" type="button" id="loeschabbr">Abbrechen</button></div>
+  </dialog>
 
   <section id="skills">
     <h2>Für Betreiber von KI-Agenten</h2>
@@ -257,8 +228,8 @@
     <p class="meta">Installation und Prüfskript: <a href="https://github.com/FalkoGuderian/abgeklopft-skills">github.com/FalkoGuderian/abgeklopft-skills</a>. Ein Agentenprofil legt der Betreiber hier an, mit einem Einladungscode von kontakt@abgeklopft.de.</p>
   </section>
 </main>
-<footer><div class="wrap">Pilotphase: Einladungscode von kontakt@abgeklopft.de · Ihre Angaben werden verschlüsselt übertragen und in der EU gespeichert.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
-<script src="data.js"></script><script src="app.js"></script><script src="nav-profil.js"></script>
+<footer><div class="wrap"><p class="fuss-text">Pilotphase: Einladungscode von kontakt@abgeklopft.de · Ihre Angaben werden verschlüsselt übertragen und in der EU gespeichert.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
+<script src="data.js?v=0cb47df9"></script><script src="app.js?v=ba1da2e1"></script><script src="nav-profil.js?v=4ae4cfac"></script>
 <script>
 const $ = id => document.getElementById(id);
 const basis = location.href.replace(/[#?].*$/, "").replace(/[^/]*$/, "");
@@ -351,28 +322,20 @@ const titelVon = id => ((stand.eintraege.find(e => e.id === id) || {}).titel) ||
 function zeichnen() {
   const p = stand.profil, ag = p.art === "ki-agent";
   AKProfilMenue.name(p.name);
-  $("mav").textContent = kuerzelVon(p.name); $("mav").classList.toggle("agent", ag);
-  $("mname").textContent = p.name;
-  $("mzeile").textContent = [p.zeile, p.ort].filter(Boolean).join(" · ");
-  $("mart").innerHTML = ag
-    ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Betreiber: ${esc(p.betreiber.name)}, ${esc(p.betreiber.sitz)} · Verantwortlich: ${esc(p.betreiber.verantwortlich)} · Version ${esc(p.agent_version)}</span>`
-    : `<span class="tag art-mensch">Person</span>`;
-  $("ename").value = p.name; $("ezeile").value = p.zeile; $("eort").value = p.ort;
-  $("eadr").value = p.adresse || ""; $("eadrvor").textContent = $("eadrvor2").textContent = p.adresse || "ihr-name";
-  $("madr").innerHTML = p.adresse ? `Ihre Adresse: abgeklopft.de/<b>${esc(p.adresse)}</b> (Links: abgeklopft.de/${esc(p.adresse)}/<i>empfänger-kennung</i>)` : "Noch keine Adresse. Sie wird beim nächsten Link aus Ihrem Namen abgeleitet, oder tragen Sie unter „Profil bearbeiten“ eine ein.";
-  $("eagent").hidden = !ag;
-  if (ag) { $("ebname").value = p.betreiber.name; $("ebsitz").value = p.betreiber.sitz; $("ebverantw").value = p.betreiber.verantwortlich; $("ebversion").value = p.agent_version; }
+  $("madr").innerHTML = p.adresse
+    ? `Ihre Adresse: <b>abgeklopft.de/${esc(p.adresse)}</b>. Ihre Links bestehen aus dieser Adresse und einer Kennung je Empfänger. Name, Adresse und Art ändern Sie unter <a href="mein-profil.html">Mein Profil</a>.`
+    : `Sie haben noch keine Adresse. Sie wird beim Erstellen des ersten Links aus Ihrem Namen abgeleitet. Eine eigene tragen Sie unter <a href="mein-profil.html">Mein Profil</a> ein.`;
 
   // Einträge
   const E = stand.eintraege;
   $("eliste").innerHTML = E.length ? E.map(e => `<div class="eintrag-zeile">
-      <div style="flex:1;min-width:200px"><span class="badge b1">${STUFEN[1].siegel}</span> <b>${esc(e.titel)}</b> <span class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + (e.kategorie === "Prozess" ? "Beobachtungszeitraum " : "") + esc(e.zeitraum) : ""}</span>${e.teile && e.gesamt ? `<br><span class="meta">${e.teile.length} Teile (${e.teile.filter(t => t.pflicht !== false).length} Pflicht) · Gesamtstufe S${esc(e.gesamt.stufe)}${e.gesamt.abgeleitet ? " (abgeleitet)" : ""}</span>` : ""}
+      <div class="flex-1 minw-200"><span class="badge b1">${STUFEN[1].siegel}</span> <b>${esc(e.titel)}</b> <span class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + (e.kategorie === "Prozess" ? "Beobachtungszeitraum " : "") + esc(e.zeitraum) : ""}</span>${e.teile && e.gesamt ? `<br><span class="meta">${e.teile.length} Teile (${e.teile.filter(t => t.pflicht !== false).length} Pflicht) · Gesamtstufe S${esc(e.gesamt.stufe)}${e.gesamt.abgeleitet ? " (abgeleitet)" : ""}</span>` : ""}
         ${e.bestaetigungen.filter(b => b.status === "erhalten").map(b => `<br><span class="meta">Bestätigung erhalten – noch nicht geprüft: ${esc(ANTWORT_TEXT[b.antwort])} von ${esc(b.name)}</span>`).join("")}</div>
       <div class="knoepfe">${pruefKnopf(e)}<button class="btn ghost klein" type="button" data-bearb="${esc(e.id)}">bearbeiten</button><button class="btn ghost klein" type="button" data-eweg="${esc(e.id)}">löschen</button></div>
     </div>`).join("") : `<p class="meta">Noch keine Einträge. Fügen Sie Ihren ersten Eintrag hinzu.</p>`;
   if (!E.length) $("eneu").open = true;
   $("auswahl").innerHTML = E.length ? E.map(e =>
-    `<label style="font-weight:400"><input type="checkbox" class="aw" value="${esc(e.id)}" checked style="width:auto"> ${esc(e.titel)}</label>`).join("")
+    `<label class="wahl"><input type="checkbox" class="aw" value="${esc(e.id)}" checked> <span>${esc(e.titel)}</span></label>`).join("")
     : `<p class="meta">Zuerst einen Eintrag anlegen.</p>`;
   $("bein").innerHTML = E.map(e => `<option value="${esc(e.id)}">${esc(e.titel)}</option>`).join("");
 
@@ -383,9 +346,9 @@ function zeichnen() {
       const json = auf.filter(o => o.art === "json").length;
       const aktiv = x.status === "gueltig";
       const status = x.status === "widerrufen" ? '<span class="exp">widerrufen</span>' : x.status === "abgelaufen" ? '<span class="exp">abgelaufen</span>' : "gültig bis " + esc(x.gueltig_bis);
-      return `<div class="eintrag-zeile"><div style="flex:1;min-width:200px">
+      return `<div class="eintrag-zeile"><div class="flex-1 minw-200">
           ${x.empfaenger_art === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}<b>${esc(x.empfaenger)}</b> <span class="meta">· ${x.auswahl.length} Einträge · ${status}</span>
-          ${aktiv && lesbarerLink(x) ? `<br><span class="meta" style="overflow-wrap:anywhere"><b>Link:</b> <span style="font-family:var(--mono)">${esc(lesbarerLink(x).replace(/^https?:\/\//, ""))}</span></span>` : ""}
+          ${aktiv && lesbarerLink(x) ? `<br><span class="meta umbruch"><b>Link:</b> <span class="mono">${esc(lesbarerLink(x).replace(/^https?:\/\//, ""))}</span></span>` : ""}
           <br><span class="meta">Geöffnet: ${auf.length ? auf.length + "×" + (json ? ` (davon ${json}× maschinenlesbar)` : "") + ", zuletzt " + esc(datumDe(auf[auf.length - 1].zeit)) : "noch nicht"}</span>
           ${an.length ? `<br><span class="meta">Angesehen: ${an.map(id => esc(titelVon(id))).join(", ")}</span>` : ""}</div>
         <div class="knoepfe">${aktiv ? `<a class="btn ghost klein" href="${esc(lesbarerLink(x) || "profil.html?l=" + x.id)}" target="_blank" rel="noopener">öffnen</a><button class="btn ghost klein" type="button" data-kopie="${esc(x.id)}">kopieren</button>${lesbarerLink(x) ? `<button class="btn ghost klein" type="button" data-ausweich="${esc(x.id)}" title="Alter Link mit geheimer Kennung, falls der lesbare nicht öffnet">Ausweichlink</button>` : ""}${x.empfaenger_art === "ki-agent" ? `<button class="btn ghost klein" type="button" data-json="${esc(x.id)}">Für KI-Agenten kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-widerruf="${esc(x.id)}">widerrufen</button>` : `<button class="btn ghost klein" type="button" data-lweg="${esc(x.id)}">entfernen</button>`}</div></div>`;
@@ -393,13 +356,13 @@ function zeichnen() {
 
   // Anfragen
   const A = stand.anfragen, ST = { angefragt: "wartet auf Antwort" };
-  $("anfragen").innerHTML = A.length ? A.map(a => `<div class="eintrag-zeile"><div style="flex:1;min-width:200px">
+  $("anfragen").innerHTML = A.length ? A.map(a => `<div class="eintrag-zeile"><div class="flex-1 minw-200">
       <b>${esc(titelVon(a.eintrag))}</b> <span class="meta">· an ${esc(a.an)} · ${esc(a.angefragt)}</span><br>
       ${a.status === "angefragt" ? `<span class="meta">${ST.angefragt}</span>` : `<b>${esc(ANTWORT_TEXT[a.antwort])}</b> · ${a.von === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(a.name)}, ${esc(a.rolle)}, ${esc(a.firma)}${a.verantwortlich ? ", verantwortlich: " + esc(a.verantwortlich) : ""}${a.kommentar ? '<br><span class="meta">„' + esc(a.kommentar) + '“</span>' : ""}<br><span class="meta">noch nicht geprüft${a.antwort === "nein" ? " · sehen nur Sie" : ""}</span>`}</div>
       <div class="knoepfe">${a.status === "angefragt" ? `<button class="btn ghost klein" type="button" data-akopie="${esc(a.id)}">Link kopieren</button>` : ""}<button class="btn ghost klein" type="button" data-aweg="${esc(a.id)}">löschen</button></div></div>`).join("")
     : `<p class="meta">Noch keine Anfragen.</p>`;
   auftraegeZeichnen();
-  kennzahlen(); profilAnker();
+  kennzahlen();
 }
 
 // ---------- Prüfaufträge: nur Zustand, Fristen und Verlauf, nie eine Wertung der Person ----------
@@ -442,38 +405,38 @@ function zeitleiste(a) {
     const erreicht = z in erst;
     if (!erreicht && !a.offen) continue;
     const jetzt = a.offen && a.zustand === z;
-    li.push(`<li class="${jetzt ? "jetzt" : erreicht ? "erledigt" : "ausstehend"}"><b>${NAME[z]}</b>${erreicht ? ` <span class="meta" style="display:inline">· ${esc(datumDe(erst[z]))}</span>` : ""}${jetzt ? fristZeile(a) : ""}</li>`);
+    li.push(`<li class="${jetzt ? "jetzt" : erreicht ? "erledigt" : "ausstehend"}"><b>${NAME[z]}</b>${erreicht ? ` <span class="meta d-inline">· ${esc(datumDe(erst[z]))}</span>` : ""}${jetzt ? fristZeile(a) : ""}</li>`);
   }
-  if (a.offen) li.push(`<li class="ausstehend"><b>Ergebnis</b> <span class="meta" style="display:inline">· Geprüft oder Abgelehnt</span></li>`);
-  else li.push(`<li class="erledigt"><b>${esc(a.zustand_anzeige)}</b> <span class="meta" style="display:inline">· ${esc(datumDe(a.abgeschlossen))}</span>${a.grund && GRUND_TEXT[a.grund] ? `<span class="meta">${esc(GRUND_TEXT[a.grund])}</span>` : ""}${a.ergebnis_kennung ? `<span class="meta">Prüfbericht ${esc(a.ergebnis_kennung)}</span>` : ""}</li>`);
+  if (a.offen) li.push(`<li class="ausstehend"><b>Ergebnis</b> <span class="meta d-inline">· Geprüft oder Abgelehnt</span></li>`);
+  else li.push(`<li class="erledigt"><b>${esc(a.zustand_anzeige)}</b> <span class="meta d-inline">· ${esc(datumDe(a.abgeschlossen))}</span>${a.grund && GRUND_TEXT[a.grund] ? `<span class="meta">${esc(GRUND_TEXT[a.grund])}</span>` : ""}${a.ergebnis_kennung ? `<span class="meta">Prüfbericht ${esc(a.ergebnis_kennung)}</span>` : ""}</li>`);
   return `<ol class="zl">${li.join("")}</ol>`;
 }
 function hinweise(a) {
   const z = (a.ereignisse || []).filter(v => HINWEIS_TEXT[v.code]).slice(-4);
-  return z.length ? `<ul class="hinweise" style="margin:8px 0 0;padding-left:18px">${z.map(v => `<li class="meta" style="color:var(--ink)">${esc(datumDe(v.zeit))}: ${esc(HINWEIS_TEXT[v.code])}${v.akteur === "system" ? " (automatisch)" : ""}</li>`).join("")}</ul>` : "";
+  return z.length ? `<ul class="hinweise m-2-0-0 pl-4">${z.map(v => `<li class="meta c-ink">${esc(datumDe(v.zeit))}: ${esc(HINWEIS_TEXT[v.code])}${v.akteur === "system" ? " (automatisch)" : ""}</li>`).join("")}</ul>` : "";
 }
 function fristZeile(a) {
   const f = a.naechste_frist;
   const wer = a.am_zug ? `Am Zug: <b>${esc(AM_ZUG[a.am_zug] || a.am_zug)}</b>.` : "";
   const bis = f && f.bis ? ` ${esc(FRIST_NAME[f.name] || "Frist")} bis <b>${esc(fristDatum(f.bis))}</b>.` : "";
   const folge = f && ABLAUF_TEXT[f.bei_ablauf] ? ` Wenn die Frist abläuft: ${esc(ABLAUF_TEXT[f.bei_ablauf])}` : "";
-  return `<span class="meta" style="color:var(--ink)">${wer}${bis}${folge}</span>`;
+  return `<span class="meta c-ink">${wer}${bis}${folge}</span>`;
 }
 function auftragHtml(a) {
   const arttext = a.art === "manuell" ? "Ein Prüfer prüft" : a.art === "ki" ? "KI prüft" : "Prüfart noch nicht gewählt";
   const aktiv = a.offen;
   const rueck = a.zustand === "rueckfrage" && a.rueckfrage ? `<div class="rueckfragekasten"><b>Rückfrage${a.rueckfrage.code === "eintrag_geaendert" ? " (Eintrag geändert)" : ""}</b>
-      <p style="margin:6px 0">${esc(a.rueckfrage.frage)}</p>
+      <p class="m-2-0">${esc(a.rueckfrage.frage)}</p>
       <form data-antwort="${esc(a.id)}" autocomplete="off"><label for="ant-${esc(a.id)}">Ihre Antwort (höchstens 500 Zeichen)</label>
       <textarea id="ant-${esc(a.id)}" maxlength="500" required></textarea>
       <div class="row"><button class="btn" type="submit">Antworten</button></div></form></div>` : "";
   const art = aktiv && (a.zustand === "eingereicht" || a.zustand === "art_gewaehlt") && a.art === null
-    ? `<div class="row" style="margin-top:8px"><button class="btn klein" type="button" data-artwahl="${esc(a.id)}">Prüfart wählen: Ein Prüfer prüft</button></div>` : "";
+    ? `<div class="row mt-2"><button class="btn klein" type="button" data-artwahl="${esc(a.id)}">Prüfart wählen: Ein Prüfer prüft</button></div>` : "";
   return `<div class="auftrag" id="auftrag-${esc(a.id)}">
     <div class="auftrag-kopf"><div><h3>${esc(a.eintrag.titel)}</h3><span class="meta">${esc(arttext)} · beantragt ${esc(datumDe(a.erstellt))}</span></div>
       <span class="zustand ${aktiv ? "jetzt" : "zu"}">${esc(a.zustand_anzeige)}</span></div>
     ${zeitleiste(a)}${hinweise(a)}${art}${rueck}
-    ${aktiv ? `<div class="row" style="margin-top:6px"><button class="btn ghost klein" type="button" data-zurueck="${esc(a.id)}">Auftrag zurückziehen</button></div>` : ""}
+    ${aktiv ? `<div class="row mt-2"><button class="btn ghost klein" type="button" data-zurueck="${esc(a.id)}">Auftrag zurückziehen</button></div>` : ""}
   </div>`;
 }
 function auftraegeZeichnen() {
@@ -485,7 +448,7 @@ function auftraegeZeichnen() {
   notiz.hidden = true;
   const offen = auftr.filter(a => a.offen), zu = auftr.filter(a => !a.offen);
   box.innerHTML = (offen.length ? offen.map(auftragHtml).join("") : `<p class="meta">Kein Prüfauftrag offen. Wählen Sie bei einem Eintrag „Prüfung beantragen“.</p>`)
-    + (zu.length ? `<details style="margin-top:14px"><summary>Abgeschlossene Aufträge (${zu.length})</summary>${zu.map(auftragHtml).join("")}</details>` : "");
+    + (zu.length ? `<details class="mt-4"><summary>Abgeschlossene Aufträge (${zu.length})</summary>${zu.map(auftragHtml).join("")}</details>` : "");
 }
 // Dialog „Prüfung beantragen“
 let pdEintrag = null;
@@ -528,19 +491,6 @@ $("auftraege").addEventListener("submit", e => {
   });
 });
 
-// Profil bearbeiten
-$("pform").addEventListener("submit", e => {
-  e.preventDefault(); still();
-  const body = { name: $("ename").value.trim(), zeile: $("ezeile").value.trim(), ort: $("eort").value.trim() };
-  const adr = $("eadr").value.trim();
-  if (adr !== (stand.profil.adresse || "")) body.adresse = adr;
-  if (stand.profil.art === "ki-agent") Object.assign(body, { betreiber: { name: $("ebname").value.trim(), sitz: $("ebsitz").value.trim(), verantwortlich: $("ebverantw").value.trim() }, agent_version: $("ebversion").value.trim() });
-  mitSperre(e.submitter, async () => {
-    try { stand = await api("PATCH", "/v1/profile/" + konto.id, body, konto.schluessel); zeichnen(); erfolg("adresse" in body ? "Profil gespeichert. Ihre Adresse ist jetzt abgeklopft.de/" + stand.profil.adresse + "." : "Profil gespeichert."); }
-    catch (err) { fehler(err.code === "vergeben" ? "Diese Adresse ist vergeben. Bitte wählen Sie eine andere." : err); }
-  });
-});
-
 // ---------- Teile eines Eintrags (D3) ----------
 const TEIL_TYPEN = [["produkt", "Produkt"], ["prozess", "Prozess"], ["dienstleistung", "Dienstleistung"], ["dokument", "Dokument"], ["daten", "Daten"], ["abschluss", "Abschluss"], ["sonstiges", "Sonstiges"]];
 const TEIL_BEZ = [["zeitlich|nach_ende", "zeitlich: nach Ende von"], ["zeitlich|nach_start", "zeitlich: nach Start von"], ["zeitlich|gleichzeitig", "zeitlich: gleichzeitig mit"],
@@ -573,14 +523,14 @@ function tZeichnen() {
   $("tfliste").innerHTML = tModell.map((t, i) => `<fieldset class="tf-teil" data-i="${i}"><legend class="meta">Teil ${i + 1}</legend>
     <div class="two">
       <div><label for="tt${i}">Titel</label><input id="tt${i}" data-f="titel" maxlength="120" value="${esc(t.titel)}" placeholder="z. B. Datenmodell">
-        <label for="ti${i}">Id (a–z, 0–9, Bindestrich)</label><input id="ti${i}" data-f="id" maxlength="24" value="${esc(t.id)}" style="font-family:var(--mono)"></div>
+        <label for="ti${i}">Id (a–z, 0–9, Bindestrich)</label><input id="ti${i}" data-f="id" maxlength="24" value="${esc(t.id)}" class="mono"></div>
       <div><label for="ty${i}">Typ</label><select id="ty${i}" data-f="typ">${TEIL_TYPEN.map(([v, n]) => `<option value="${v}"${v === t.typ ? " selected" : ""}>${n}</option>`).join("")}</select>
         <label for="to${i}">Ort (optional)</label><input id="to${i}" data-f="ort" maxlength="80" value="${esc(t.ort)}" placeholder="z. B. Leitwarte"></div>
     </div>
-    <label class="tf-abzeile"><input type="checkbox" data-f="pflicht"${t.pflicht ? " checked" : ""}> <span>Pflichtteil</span></label>
+    <label class="wahl"><input type="checkbox" data-f="pflicht"${t.pflicht ? " checked" : ""}> <span>Pflichtteil</span></label>
     ${t.pflicht ? "" : `<p class="meta">Optional: dieser Teil senkt die Gesamtstufe nicht. Der Prüfer kann ihn ablehnen.</p>`}
     ${tModell.length > 1 ? `<fieldset class="tf-ab"><legend>Abhängig von (Mehrfachauswahl)</legend>${tModell.filter(a => a !== t).map(a => `<div class="tf-abzeile">
-        <input type="checkbox" data-ab="${esc(a.id)}" id="ta${i}_${tModell.indexOf(a)}"${a.id in t.ab ? " checked" : ""}> <label for="ta${i}_${tModell.indexOf(a)}" data-abl="${esc(a.id)}" style="margin:0;font-weight:400">${esc(a.titel || a.id)}</label>
+        <label class="wahl"><input type="checkbox" data-ab="${esc(a.id)}" id="ta${i}_${tModell.indexOf(a)}"${a.id in t.ab ? " checked" : ""}> <span data-abl="${esc(a.id)}">${esc(a.titel || a.id)}</span></label>
         ${a.id in t.ab ? `<select data-bez="${esc(a.id)}" aria-label="Beziehung zu ${esc(a.titel || a.id)}">${TEIL_BEZ.map(([v, n]) => `<option value="${v}"${v === t.ab[a.id] ? " selected" : ""}>${n}</option>`).join("")}</select>` : ""}</div>`).join("")}</fieldset>` : ""}
     <div class="row"><button class="btn ghost klein" type="button" data-weg="${i}">Teil entfernen</button></div></fieldset>`).join("");
 }
@@ -826,7 +776,7 @@ function kennzahlen() {
   const gepr = E.filter(e => st(e) === 2).length, abg = E.filter(e => st(e) === 3).length;
   const offenA = auftr === null ? "–" : auftr.filter(a => a.offen).length;
   const offenB = stand.anfragen.filter(a => a.status === "angefragt").length;
-  z("sz1", `<b>${E.length}</b> ${E.length === 1 ? "Eintrag" : "Einträge"}`);
+  z("sz1", `<b>${E.length}</b> angelegt`);
   z("sz2", `<b>${gepr}</b> Geprüft · ${offenA} offen`);
   z("sz3", `<b>${stand.links.filter(x => x.status === "gueltig").length}</b> aktiv`);
   z("sz4", `<b>${abg}</b> Abgenommen · ${offenB} offen`);
@@ -834,7 +784,7 @@ function kennzahlen() {
 }
 (function () {
   const nav = $("schritte"), kopf = document.querySelector("header.top");
-  const abschnitte = [1, 2, 3, 4, 5].map(n => $("schritt-" + n));
+  const abschnitte = [1, 2, 3, 4].map(n => $("schritt-" + n));
   const kopfH = () => (kopf && getComputedStyle(kopf).position === "sticky") ? kopf.offsetHeight : 0;
   const setzeKopf = () => document.documentElement.style.setProperty("--kopfhoehe", kopfH() + "px");
   setzeKopf(); window.addEventListener("resize", setzeKopf);
@@ -859,44 +809,56 @@ function kennzahlen() {
     const unten = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
     let n = 1;
     abschnitte.forEach((s, i) => { if (s.getBoundingClientRect().top <= grenze) n = i + 1; });
-    aktuell(fest || (unten ? 5 : n));
+    aktuell(fest || (unten ? 4 : n));
   }
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver(neuBerechnen, { rootMargin: "-90px 0px -45% 0px", threshold: [0, 0.01, 1] });
     abschnitte.forEach(s => io.observe(s));
     const ende = document.createElement("div"); ende.setAttribute("aria-hidden", "true"); ende.style.height = "1px";
-    abschnitte[4].after(ende); io.observe(ende);
+    abschnitte[3].after(ende); io.observe(ende);
   } else window.addEventListener("scroll", neuBerechnen, { passive: true });
   nav.addEventListener("click", e => { const a = e.target.closest("a[data-schritt]"); if (a) { fest = +a.dataset.schritt; aktuell(fest); } });
-  window.addEventListener("hashchange", () => { profilAnker(true); });
   window.schrittNeu = neuBerechnen; neuBerechnen();
 })();
-// teilen.html#profil: Profilkarte mit Bearbeiten-Bereich zeigen
-let profilAnkerErledigt = false;
-function profilAnker(erzwingen) {
-  if (location.hash !== "#profil" || $("mit").hidden) return;
-  if (profilAnkerErledigt && erzwingen !== true) return;
-  profilAnkerErledigt = true;
-  $("pbearb").open = true;
-  $("profil").scrollIntoView({ block: "start" });
-  $("profil").focus({ preventScroll: true });
-}
+// Alte Lesezeichen teilen.html#profil führen zur Seite „Mein Profil“
+if (location.hash === "#profil") location.replace("mein-profil.html");
 
 // Abmelden, Löschen
 // Die Abmelden-Funktion liegt im Profilmenü des Hauptmenüs (nav-profil.js, Abfrage "Ohne Code kein Zurück. Abmelden?")
 AKProfilMenue.beiAbmelden(() => {
   kontoWeg(); konto = null; stand = null; AKProfilMenue.name(null); zeige("ohne"); erfolg("Auf diesem Gerät abgemeldet. Ihr Profil bleibt bestehen.");
 });
+// Profil löschen: Dialog, geöffnet über das Profilmenü (nav-profil.js ruft AKProfilLoeschen) oder per teilen.html?loeschen=1
+const loeschDialog = $("loeschdialog");
+function loeschAuf() {
+  if (!konto || !stand || $("mit").hidden) return;
+  $("loeschwort").value = ""; $("loeschen").disabled = true;
+  if (!loeschDialog.open) loeschDialog.showModal();
+  $("loeschwort").focus();
+}
+function loeschZu() { if (loeschDialog.open) loeschDialog.close(); }
+loeschDialog.addEventListener("close", () => { $("loeschwort").value = ""; $("loeschen").disabled = true; const k = document.getElementById("profilknopf"); if (k) k.focus(); });
+$("loeschabbr").addEventListener("click", loeschZu);
+window.AKProfilLoeschen = loeschAuf;
 $("loeschwort").addEventListener("input", () => { $("loeschen").disabled = $("loeschwort").value.trim().toUpperCase() !== "LÖSCHEN"; });
 $("loeschen").addEventListener("click", e => mitSperre(e.currentTarget, async () => {
   try {
     await api("DELETE", "/v1/profile/" + konto.id, undefined, konto.schluessel);
     kontoWeg(); konto = null; stand = null; AKProfilMenue.name(null); $("loeschwort").value = "";
-    zeige("ohne"); erfolg("Ihr Profil ist gelöscht, mit allen Einträgen, Links, Öffnungen und Anfragen.");
-  } catch (err) { fehler(err); }
+    loeschZu(); zeige("ohne"); erfolg("Ihr Profil ist gelöscht, mit allen Einträgen, Links, Öffnungen und Anfragen.");
+  } catch (err) { loeschZu(); fehler(err); }
 }));
+// teilen.html?loeschen=1 (vom Profilmenü anderer Seiten): Dialog öffnen, sobald das Profil geladen ist, Parameter danach entfernen
+let loeschParam = new URLSearchParams(location.search).get("loeschen") === "1";
+function loeschParamPruefen() {
+  if (!loeschParam) return;
+  if (!konto || !stand || $("mit").hidden) return;
+  loeschParam = false;
+  try { const u = new URL(location.href); u.searchParams.delete("loeschen"); history.replaceState(null, "", u.pathname + u.search + u.hash); } catch (e) { /* ignorieren */ }
+  loeschAuf();
+}
 
-laden();
+laden().then(loeschParamPruefen, loeschParamPruefen);
 window.addEventListener("focus", () => { if (konto && stand && !$("mit").hidden && !document.querySelector("#mit details[open]")) laden().catch(() => {}); });
 </script>
 </body>

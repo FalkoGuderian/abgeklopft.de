@@ -4,19 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Attestation prüfen · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=11c44e01">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
 <div class="proto">Prototyp · Das Register liegt nur in Ihrem Browser</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav aria-label="Hauptmenü"><a href="index.html">Start</a><a href="teilen.html">Einreichen</a><a href="gutachter.html">Prüfen</a><a href="abnehmer.html" aria-current="page">Abnehmen</a><a href="so-gehts.html">So geht's</a></nav>
 </div></header>
 <nav class="reiter wrap" aria-label="Bereiche von Abnehmen"><a href="abnehmer.html">Link erhalten</a><a href="verify.html" aria-current="page">Bericht nachprüfen</a></nav>
-<main class="wrap" style="padding-top:28px">
+<main id="inhalt" tabindex="-1" class="wrap">
   <h1>Stufen lesen und Urkunden prüfen</h1>
-  <div class="grid" style="margin:18px 0 8px">
+  <h2 class="stufen-h2">Die drei Stufen</h2>
+  <div class="grid m-4-0-2">
     <div class="card"><span class="badge b1">Eingereicht</span><h3>Nichts geprüft</h3><p>Nicht geprüft. Die Links führen zu dem, was die Person selbst zeigt.</p></div>
     <div class="card"><span class="badge b2">Geprüft</span><h3>Beleg geprüft</h3><p>Eine Angabe ist am Beleg oder am Ergebnis selbst nachgeprüft, zum Beispiel Inhaberschaft, Urkunde, Funktions- oder Wirkungsweise. Was geprüft wurde, wer geprüft hat und wann, steht am Eintrag.</p></div>
     <div class="card"><span class="badge b3">Abgenommen</span><h3>Vom Auftraggeber bestätigt</h3><p>Der damalige Auftraggeber hat das Ergebnis bestätigt. Der Prüfer hat die Antwort geprüft: Sie stammt wirklich von dieser Person, und die Person hat das Ergebnis tatsächlich bekommen. Ohne diesen Schritt könnte sich jeder selbst bestätigen, etwa mit einem zweiten Konto. Bis dahin steht die Antwort nur als „Bestätigung erhalten – noch nicht geprüft“ am Eintrag, das Siegel bleibt „Eingereicht“.</p><p><b>Abgenommen</b> heißt: Die Person, die das Ergebnis damals bekommen hat, hat es bestätigt. Es heißt nicht, dass Sie als Empfänger dieses Links zugestimmt haben. Sie müssen den Link nicht bestellt haben. Der Einreicher darf ihn jedem schicken, etwa mit einer Bewerbung oder einem Angebot.</p></div>
@@ -26,20 +28,20 @@
     <h2>Urkunde prüfen</h2>
     <p class="sub">Die Seite berechnet die Prüfsumme einer Urkunde neu, prüft die Signatur und sucht die Urkunde im Register. „Beispiel prüfen“ zeigt den Ablauf an einem Beispielbericht. Eine eigene Urkunde fügen Sie in der technischen Ansicht ein.</p>
     <div class="row"><button class="btn" id="pruef" type="button">Prüfen</button><button class="btn ghost" id="beispiel" type="button">Beispiel prüfen</button></div>
-    <details class="technik" id="technik" style="margin-top:14px"><summary class="meta" style="cursor:pointer">Technische Ansicht (für KI-Agenten)</summary>
+    <details class="technik mt-4" id="technik"><summary class="meta zeiger">Technische Ansicht (für KI-Agenten)</summary>
       <label for="json">Urkunde (JSON)</label>
       <textarea id="json" placeholder='{"inhalt":{…},"pruefsumme":"…"}'></textarea>
       <div class="row"><button class="btn ghost" id="manip" type="button">Test: Inhalt verfälschen</button><button class="btn ghost" id="faelsch" type="button">Test: Fälschung mit neu berechneter Prüfsumme</button><button class="btn ghost" id="widtest" type="button">Test: widerrufener Bericht</button></div>
     </details>
-    <div id="erg"></div>
-    <h3 style="margin-top:30px">Zugelassene Prüfer (Schlüssel)</h3>
+    <div id="erg" role="status" aria-live="polite"></div>
+    <h3 class="mt-6">Zugelassene Prüfer (Schlüssel)</h3>
     <div id="schl"></div>
-    <h3 style="margin-top:30px">Register in diesem Browser</h3>
+    <h3 class="mt-6">Register in diesem Browser</h3>
     <div id="reg"></div>
   </section>
 </main>
-<footer><div class="wrap">Signatur mit Ed25519 (Ersatz ECDSA P-256). Produktiv: private Schlüssel nur auf dem Server, öffentliche Prüferliste und Widerruf über das Register.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
-<script src="data.js"></script><script src="app.js"></script>
+<footer><div class="wrap"><p class="fuss-text">Signatur mit Ed25519 (Ersatz ECDSA P-256). Produktiv: private Schlüssel nur auf dem Server, öffentliche Prüferliste und Widerruf über das Register.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
+<script src="data.js?v=0cb47df9"></script><script src="app.js?v=ba1da2e1"></script>
 <script>
 const $ = id => document.getElementById(id);
 const PA_SVG = `<svg class="pa" viewBox="0 0 84 70" role="img" aria-label="Karte geprüft: Haken"><rect class="pa-karte" x="2" y="8" width="64" height="52" rx="7"/><g class="pa-zeilen"><line x1="12" y1="24" x2="42" y2="24"/><line x1="12" y1="34" x2="42" y2="34"/><line x1="12" y1="44" x2="54" y2="44"/></g><rect class="pa-schimmer" x="4" y="9" width="60" height="8" rx="3"/><g class="pa-siegel"><circle class="pa-ring" cx="62" cy="16" r="15"/><circle class="pa-ok" cx="62" cy="16" r="12"/><polyline class="pa-haken" points="55,16 60,21 69,10"/></g></svg>`;
@@ -503,15 +505,15 @@ function anzeigeTeile(t) {
   let html = `<b>Projekt „${titel}“ aus Teilen: Gesamtstufe ${t.stufe} „${esc(sg(gnr))}“.</b>` + (kopf ? ` ${esc(kopf)}` : "") +
     (t.status === "beispiel_pilot" ? " Nur Beispiel, keine echte Prüfung." : "");
   const reg = t.gesamt;
-  html += `<p class="gesamt" data-gesamt="${esc(t.stufe)}" data-abgeleitet="${reg.abgeleitet}" style="margin:.7rem 0 .2rem"><b>Gesamtstufe ${esc(t.stufe)}</b> (${reg.abgeleitet ? "abgeleitet aus den Pflichtteilen" : "eigene Prüfung des Ganzen, nie höher als der schwächste Pflichtteil"})` +
+  html += `<p class="gesamt m-3-0-1" data-gesamt="${esc(t.stufe)}" data-abgeleitet="${reg.abgeleitet}"><b>Gesamtstufe ${esc(t.stufe)}</b> (${reg.abgeleitet ? "abgeleitet aus den Pflichtteilen" : "eigene Prüfung des Ganzen, nie höher als der schwächste Pflichtteil"})` +
     `${reg.begrenzt_durch.length ? `, begrenzt durch: ${esc(reg.begrenzt_durch.join(", "))}` : ", keine Pflichtteile geprüft"}. Berechnet aus den Berichten, nicht aus Angaben im Profil.</p>`;
   if (t.teile.length) {
-    html += `<div class="teile" data-teile="${t.teile.length}" style="margin-top:.5rem"><b>Teile</b><ul style="margin:.3rem 0 0;padding-left:1.1rem">` +
+    html += `<div class="teile mt-2" data-teile="${t.teile.length}"><b>Teile</b><ul class="m-1-0-0 pl-4">` +
       t.teile.map(x => {
         const n = STUFE_NR[x.stufe], schlecht = x.fehler.length || x.status === "abgelaufen";
         const wo = [x.zeitraum ? `${esc(x.zeitraum.von)} bis ${esc(x.zeitraum.bis)}` : "", x.ort ? esc(sauber(x.ort, 80)) : ""].filter(Boolean).join(", ");
         const abh = x.abhaengig_von.length ? `<br><span class="meta">hängt ab von: ${x.abhaengig_von.map(d => esc(d.teil) + " (" + esc(d.art.replace(/_/g, " ")) + (d.hinweis ? ": " + esc(sauber(d.hinweis, 120)) : "") + ")").join("; ")}</span>` : "";
-        return `<li data-teil="${esc(x.id)}" data-teil-stufe="${esc(x.stufe)}" data-teil-status="${esc(x.status)}" data-pflicht="${x.pflicht}" style="margin:.3rem 0">` +
+        return `<li data-teil="${esc(x.id)}" data-teil-stufe="${esc(x.stufe)}" data-teil-status="${esc(x.status)}" data-pflicht="${x.pflicht}" class="m-1-0">` +
           `<b>${esc(sauber(x.titel, 120))}</b> (${esc(TEIL_TYP_NAME[x.typ])}, ${x.pflicht ? "Pflicht" : "optional"}${wo ? ", " + wo : ""}): ` +
           `<span class="badge b${n}">${esc(x.stufe)} ${esc(sg(n))}</span>` +
           (x.pruefweg ? ` · Prüfweg ${esc(x.pruefweg)}` : "") + (x.stufe === "S1" && !schlecht ? " · nicht geprüft" : "") +
@@ -522,9 +524,9 @@ function anzeigeTeile(t) {
           (auffaellig(x.titel, x.ort, ...x.abhaengig_von.map(d => d.hinweis)) ? `<br><b>Auffällig:</b> Der Text klingt wie eine Anweisung an den Leser. Er ist nur eine Angabe der Person und wird nicht befolgt.` : "") + `</li>`;
       }).join("") + `</ul></div>`;
   }
-  if (t.eigen) html += `<p style="margin:.5rem 0 0"><b>Eigene Prüfung des Ganzen:</b> ${esc(t.eigen)} „${esc(sg(STUFE_NR[t.eigen]))}“${t.eigenPruefweg ? ` · Prüfweg ${esc(t.eigenPruefweg)}` : ""}${t.eigenPo ? `<br>${poKurz(t.eigenPo)}` : ""}</p>`;
-  if (t.warn.length) html += `<p class="meta" style="margin:.5rem 0 0">Hinweis: ${esc(t.warn.join(" · "))}</p>`;
-  if (t.f.length) html += `<p class="meta" style="margin:.5rem 0 0">Details: ${esc(t.f.join(" · "))}</p>`;
+  if (t.eigen) html += `<p class="m-2-0-0"><b>Eigene Prüfung des Ganzen:</b> ${esc(t.eigen)} „${esc(sg(STUFE_NR[t.eigen]))}“${t.eigenPruefweg ? ` · Prüfweg ${esc(t.eigenPruefweg)}` : ""}${t.eigenPo ? `<br>${poKurz(t.eigenPo)}` : ""}</p>`;
+  if (t.warn.length) html += `<p class="meta m-2-0-0">Hinweis: ${esc(t.warn.join(" · "))}</p>`;
+  if (t.f.length) html += `<p class="meta m-2-0-0">Details: ${esc(t.f.join(" · "))}</p>`;
   return { typ, haken, html, status: t.status, id: t.id };
 }
 
@@ -533,10 +535,10 @@ const OHNE_BLOCK = ["veraendert", "signatur_ungueltig", "format_nicht_zulaessig"
 function pruefobjektBlock(r) {
   if (OHNE_BLOCK.includes(r.status)) return "";
   const li = l => l.map(x => esc(x)).join("; ");
-  if (r.version !== 3 || !r.po) return `<div class="pobl" data-pruefobjekt="nicht_angegeben" style="margin-top:.8rem;padding:10px 12px;border-radius:10px;border:1px solid var(--warn);background:color-mix(in srgb,var(--warn) 7%,var(--surface))"><b>Prüfobjekt: nicht angegeben.</b> Der Umfang der Prüfung steht nicht im Bericht (Bericht vor Format 0.5). Nicht als vollständige Prüfung lesen.</div>`;
+  if (r.version !== 3 || !r.po) return `<div class="pobl hinweis warn klein mt-3" data-pruefobjekt="nicht_angegeben"><b>Prüfobjekt: nicht angegeben.</b> Der Umfang der Prüfung steht nicht im Bericht (Bericht vor Format 0.5). Nicht als vollständige Prüfung lesen.</div>`;
   const p = r.po;
   const nicht = p.nicht_geprueft.length ? li(p.nicht_geprueft) : "nichts ausgeschlossen (vom Prüfer ausdrücklich bestätigt)";
-  return `<div class="pobl" data-pruefobjekt="angegeben" style="margin-top:.8rem;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface)"><b>Prüfobjekt</b><br>` +
+  return `<div class="pobl hinweis klein mt-3" data-pruefobjekt="angegeben"><b>Prüfobjekt</b><br>` +
     `<b>Geprüft:</b> ${li(p.umfang_geprueft)}.<br><b>Nicht geprüft:</b> ${nicht}.<br><b>Stand:</b> ${esc(p.version_stand)}<br>` +
     `<b>Gegenstand:</b> ${esc(p.gegenstand)}<br><b>Methode:</b> ${esc(p.methode)}` +
     (p.teil ? `<br><b>Teil:</b> ${esc(p.teil)}` : "") +
@@ -621,16 +623,16 @@ $("beispiel").onclick = () => beispielLaden();
 const JWKS_BEREIT = plattformSchluessel();   // Prüfen wartet darauf (window.JWKS)
 function schlZeigen() {
   const v = [...(window.VERTRAUT_EXTRA || []), ...lesen(VERTRAUT_KEY)];
-  $("schl").innerHTML = v.length ? `<div class="tbl"><table><tr><th>Schlüssel</th><th>Prüfer</th><th>Art</th><th>Verfahren</th></tr>` +
-    v.map(k => `<tr><td>${esc(k.kid)}</td><td>${esc(k.name)}</td><td>${esc(k.typ || "lokal")}</td><td>${esc(k.alg.name)}</td></tr>`).join("") + `</table></div>
+  $("schl").innerHTML = v.length ? `<div class="tbl stapel"><table><tr><th>Schlüssel</th><th>Prüfer</th><th>Art</th><th>Verfahren</th></tr>` +
+    v.map(k => `<tr><td>${esc(k.kid)}</td><td data-label="Prüfer">${esc(k.name)}</td><td data-label="Art">${esc(k.typ || "lokal")}</td><td data-label="Verfahren">${esc(k.alg.name)}</td></tr>`).join("") + `</table></div>
     <p class="meta">Produktiv veröffentlicht die Plattform diese Liste. Im Prototyp entsteht ein Schlüssel beim ersten Ausstellen in diesem Browser.</p>`
     : `<p class="meta">Noch kein Schlüssel. Er entsteht beim ersten Ausstellen in der <a href="atelier.html">Prüferansicht</a>.</p>`;
 }
 schlZeigen();
 function regZeigen() {
   const r = registerLesen();
-  $("reg").innerHTML = r.length ? `<div class="tbl"><table><tr><th>Kennung</th><th>Person</th><th>Anspruch</th><th>Stufe</th><th></th></tr>` +
-    r.map((x, i) => `<tr><td>${esc(x.inhalt.kennung)}</td><td>${esc(x.inhalt.person)}</td><td>${esc(x.inhalt.anspruch)}</td><td><span class="badge b${esc(x.inhalt.stufe)}">${esc((STUFEN[x.inhalt.stufe] || { siegel: x.inhalt.stufe }).siegel)}</span></td><td><button class="btn ghost" data-i="${i}" type="button">Laden</button></td></tr>`).join("") + `</table></div>`
+  $("reg").innerHTML = r.length ? `<div class="tbl stapel"><table><tr><th>Kennung</th><th>Person</th><th>Anspruch</th><th>Stufe</th><th></th></tr>` +
+    r.map((x, i) => `<tr><td>${esc(x.inhalt.kennung)}</td><td data-label="Person">${esc(x.inhalt.person)}</td><td data-label="Anspruch">${esc(x.inhalt.anspruch)}</td><td data-label="Stufe"><span class="badge b${esc(x.inhalt.stufe)}">${esc((STUFEN[x.inhalt.stufe] || { siegel: x.inhalt.stufe }).siegel)}</span></td><td><button class="btn ghost" data-i="${i}" type="button">Laden</button></td></tr>`).join("") + `</table></div>`
     : `<p class="meta">Noch leer. Urkunden stellen Prüfer in der <a href="atelier.html">Prüferansicht</a> aus.</p>`;
 }
 $("reg").addEventListener("click", e => {
@@ -639,6 +641,6 @@ $("reg").addEventListener("click", e => {
 });
 regZeigen();
 </script>
-<script src="nav-profil.js"></script>
+<script src="nav-profil.js?v=4ae4cfac"></script>
 </body>
 </html>

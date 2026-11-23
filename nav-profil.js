@@ -1,14 +1,23 @@
 /* abgeklopft.de – Profil-Symbol im Hauptmenü (gemeinsam für alle Seiten mit Hauptmenü).
-   Zeigt rechts neben "So geht's" ein Symbol mit kleinem Menü (Mein Profil, Abmelden), solange auf DIESEM Gerät ein Einreicher-Profil
+   Zeigt rechts neben "So geht's" ein Symbol mit kleinem Menü (Mein Profil, Abmelden, Profil löschen), solange auf DIESEM Gerät ein Einreicher-Profil
    angemeldet ist. Die Prüfung ist rein lokal (localStorage): nichts geht an Dritte oder an den Server.
    Seiten mit eigener Anmeldung (pruefer.html) setzen vorher window.AK_PROFIL_MANUELL = true und steuern das Symbol selbst:
-     AKProfilMenue.setzen({ label, name, abmelden, frage, profilLink })   AKProfilMenue.entfernen()
+     AKProfilMenue.setzen({ label, name, abmelden, frage, profilLink, loeschen })   AKProfilMenue.entfernen()
    Einreicher-Seiten können mit AKProfilMenue.beiAbmelden(fn) eigene Aufräumarbeit hinterlegen und mit AKProfilMenue.pruefen() neu prüfen. */
 (function () {
   "use strict";
   var KONTO_KEY = "ak_konto_v1", NAME_KEY = "ak_konto_name_v1";
   var nav = document.querySelector('nav[aria-label="Hauptmenü"]');
   if (!nav) return;
+  // Handy-Menü: einzeilige Leiste. Solange rechts noch Punkte verborgen sind, trägt sie die Klasse .quer (Fortsetzungs-Hinweis, siehe style.css)
+  function quer() {
+    var rest = nav.scrollWidth - nav.clientWidth - nav.scrollLeft;
+    nav.classList.toggle("quer", nav.scrollWidth > nav.clientWidth + 1 && rest > 2);
+  }
+  nav.addEventListener("scroll", quer, { passive: true });
+  window.addEventListener("resize", quer);
+  window.addEventListener("load", quer);
+  quer();
   // Abnehmeransicht (persönlicher Link, Vorschau, lesbarer Link): Menü ist ausgeblendet, dort auch kein Profil-Symbol
   var q = new URLSearchParams(location.search);
   if (/\/profil\.html$/.test(location.pathname) && (q.get("l") || q.get("vorschau") === "1")) return;
@@ -43,22 +52,37 @@
   }
   function aktuell() {
     if (!knopf) return;
-    var teilen = /\/teilen\.html$/.test(location.pathname) && location.hash === "#profil";
-    if (teilen) knopf.setAttribute("aria-current", "page"); else knopf.removeAttribute("aria-current");
+    var seite = /\/mein-profil(\.html)?$/.test(location.pathname);
+    if (seite) knopf.setAttribute("aria-current", "page"); else knopf.removeAttribute("aria-current");
+    var pl = menue && menue.querySelector("#pm-profil");
+    if (pl) { if (seite) pl.setAttribute("aria-current", "page"); else pl.removeAttribute("aria-current"); }
   }
+  // Desktop: Symbol hinter dem Menü; Handy (≤ 760 px): vor dem Menü, damit Tab-Reihenfolge und Anordnung (Logo, Profil, Menü) übereinstimmen
+  var klein = window.matchMedia ? window.matchMedia("(max-width: 760px)") : null;
+  function platzieren() {
+    if (!wrap) return;
+    var kopf = nav.parentNode;
+    if (klein && klein.matches) kopf.insertBefore(wrap, nav); else kopf.insertBefore(wrap, nav.nextSibling);
+    quer();
+  }
+  if (klein) { if (klein.addEventListener) klein.addEventListener("change", platzieren); else if (klein.addListener) klein.addListener(platzieren); }
   function bauen(o) {
     entfernen();
     zustand = o; abmeldeFn = o.abmelden;
     wrap = el("span", { class: "profil-wrap" });
     knopf = el("button", { type: "button", class: "profilknopf", id: "profilknopf", "aria-label": o.label || "Mein Profil", title: o.label || "Mein Profil", "aria-haspopup": "menu", "aria-expanded": "false", "aria-controls": "profilmenue" });
     knopf.innerHTML = SVG;
-    wrap.appendChild(knopf); nav.appendChild(wrap);
+    wrap.appendChild(knopf); platzieren();
     menue = el("div", { class: "profilmenue", id: "profilmenue", role: "menu", "aria-label": o.label || "Mein Profil" });
     menue.hidden = true;
     menue.appendChild(el("div", { class: "profilmenue-name", id: "profilmenue-name" }, o.name || o.label || "Mein Profil"));
     if (o.profilLink) { var a = el("a", { href: o.profilLink, role: "menuitem", id: "pm-profil" }, o.profilText || "Mein Profil ansehen und bearbeiten"); menue.appendChild(a); }
     var b = el("button", { type: "button", role: "menuitem", id: "pm-abmelden", title: o.hinweis || "" }, "Abmelden");
     menue.appendChild(b);
+    if (o.loeschen) {
+      var l = el("button", { type: "button", role: "menuitem", id: "pm-loeschen", class: "loeschen" }, "Profil löschen …");
+      menue.appendChild(l);
+    }
     document.body.appendChild(menue);
 
     knopf.addEventListener("click", function () { if (menue.hidden) auf(); else zu(true); });
@@ -74,6 +98,12 @@
     });
     menue.addEventListener("click", function (e) {
       var t = e.target.closest("a"); if (t) { zu(false); return; }
+      if (e.target.closest("#pm-loeschen")) {
+        // Löschen läuft in einem Bestätigungsdialog auf teilen.html (Wort LÖSCHEN); auf anderen Seiten dorthin wechseln
+        zu(false);
+        if (typeof window.AKProfilLoeschen === "function") window.AKProfilLoeschen(); else location.href = "/teilen.html?loeschen=1";
+        return;
+      }
       var ab = e.target.closest("#pm-abmelden"); if (!ab) return;
       // Zweistufig wie überall auf der Seite: erst fragen (Text im Knopf), dann ausführen
       if (o.frage && !ab.dataset.scharf) {
@@ -104,7 +134,7 @@
   function einreicher() {
     var name = lesen(NAME_KEY);
     bauen({
-      label: "Mein Profil", name: name || "Mein Profil", profilLink: "/teilen.html#profil",
+      label: "Mein Profil", loeschen: true, name: name || "Mein Profil", profilLink: "/mein-profil.html",
       frage: "Ohne Code kein Zurück. Abmelden?", hinweis: "Der Schlüssel wird von diesem Gerät entfernt. Ihr Profil bleibt bestehen. Zurück kommen Sie nur mit dem Wiederherstellungscode.",
       abmelden: function () {
         if (eigeneAbmeldung) { eigeneAbmeldung(); }

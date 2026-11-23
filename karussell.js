@@ -46,14 +46,15 @@
   box.innerHTML = '<span class="band" aria-hidden="true">Fiktives Beispiel</span><p class="nur-vorlesen">Fiktives Beispiel</p><div class="folien">' + BEISPIELE.map(folieHtml).join("") + "</div>" +
     '<div class="punkte">' + BEISPIELE.map(function (b, i) {
       return '<button type="button" class="punkt" data-i="' + i + '" aria-label="' + b.punkt + '"></button>';
-    }).join("") + "</div>" +
+    }).join("") + '<button type="button" class="pause" aria-pressed="false" aria-label="Wechsel anhalten"><span aria-hidden="true">❚❚</span></button></div>' +
     '<p class="nur-vorlesen" aria-live="polite" id="vorschau-ansage"></p>';
 
   var folien = [].slice.call(box.querySelectorAll(".folie"));
   var punkte = [].slice.call(box.querySelectorAll(".punkt"));
   var ansage = document.getElementById("vorschau-ansage");
   var ruhig = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var aktiv = 0, timer = null, pausen = {}, beruehrtBis = 0;
+  var aktiv = 0, timer = null, pausen = {}, beruehrtBis = 0, angehalten = false, wechsel = 0;
+  var pauseKnopf = box.querySelector(".pause");
 
   function zeige(i, vonHand) {
     aktiv = (i + folien.length) % folien.length;
@@ -69,14 +70,28 @@
   }
   function pausiert() {
     for (var k in pausen) if (pausen[k]) return true;
-    return Date.now() < beruehrtBis || document.hidden;
+    return angehalten || Date.now() < beruehrtBis || document.hidden;
   }
   function takt() {
     clearInterval(timer);
     if (ruhig) return;
-    timer = setInterval(function () { if (!pausiert()) zeige(aktiv + 1, false); }, 6000);
+    timer = setInterval(function () {
+      if (pausiert()) return;
+      zeige(aktiv + 1, false);
+      // WCAG 2.2.2: nach einem vollen Durchlauf bleibt das Karussell stehen; „Weiter“ startet es wieder
+      if (++wechsel >= folien.length) anhalten(true);
+    }, 6000);
   }
-  function vonHand(i) { zeige(i, true); takt(); }
+  function anhalten(an) {
+    angehalten = an; wechsel = 0;
+    pauseKnopf.setAttribute("aria-pressed", String(an));
+    pauseKnopf.setAttribute("aria-label", an ? "Wechsel fortsetzen" : "Wechsel anhalten");
+    pauseKnopf.firstChild.textContent = an ? "▶" : "❚❚";
+    if (an) clearInterval(timer); else takt();
+  }
+  pauseKnopf.addEventListener("click", function () { anhalten(!angehalten); });
+  if (ruhig) { angehalten = true; pauseKnopf.setAttribute("aria-pressed", "true"); pauseKnopf.setAttribute("aria-label", "Wechsel fortsetzen"); pauseKnopf.firstChild.textContent = "▶"; }
+  function vonHand(i) { zeige(i, true); if (!angehalten) takt(); }
 
   punkte.forEach(function (p) { p.addEventListener("click", function () { vonHand(Number(p.dataset.i)); }); });
   box.addEventListener("mouseenter", function () { pausen.maus = true; });

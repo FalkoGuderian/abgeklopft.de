@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://abgeklopft-api.falko-guderian.workers.dev http://localhost:8787; base-uri 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Profil · abgeklopft.de</title>
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=11c44e01">
 <link rel="alternate" type="application/json" href="/alex.json" title="Nachweise maschinenlesbar" id="jsonlink">
 <link rel="help" type="text/plain" href="/llms.txt" title="Anleitung für KI-Agenten">
 <script>
@@ -23,21 +23,21 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
 <div class="proto" id="proto">Beispiele · Personen, Agenten und Firmen sind fiktiv</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="/index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav id="hauptnav" aria-label="Hauptmenü"><a href="/index.html" aria-current="page">Start</a><a href="/teilen.html">Einreichen</a><a href="/gutachter.html">Prüfen</a><a href="/abnehmer.html">Abnehmen</a><a href="/so-gehts.html">So geht's</a></nav>
 </div></header>
 <nav class="reiter wrap" id="reiterleiste" aria-label="Bereiche von Start"><a href="/index.html">Übersicht</a><a href="/profil.html" aria-current="page">Beispiele</a></nav>
-<main class="wrap">
-  <noscript><div class="note" style="margin-top:20px">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="/alex.json">abgeklopft.de/alex.json</a> (Person) und <a href="/belegleser.json">abgeklopft.de/belegleser.json</a> (KI-Agent). Persönliche Links <code>profil.html?l=&lt;kennung&gt;</code> gibt es als JSON unter <code>https://abgeklopft-api.falko-guderian.workers.dev/v1/l/&lt;kennung&gt;.json</code>. Eine Anleitung für KI-Agenten steht in <a href="/llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
+<main id="inhalt" tabindex="-1" class="wrap">
+  <noscript><div class="note mt-5">Diese Seite braucht JavaScript. Dieselben Nachweise gibt es maschinenlesbar mit signierten Prüfberichten unter <a href="/alex.json">abgeklopft.de/alex.json</a> (Person) und <a href="/belegleser.json">abgeklopft.de/belegleser.json</a> (KI-Agent). Persönliche Links <code>profil.html?l=&lt;kennung&gt;</code> gibt es als JSON unter <code>https://abgeklopft-api.falko-guderian.workers.dev/v1/l/&lt;kennung&gt;.json</code>. Eine Anleitung für KI-Agenten steht in <a href="/llms.txt">abgeklopft.de/llms.txt</a>.</div></noscript>
   <nav class="profilwahl" id="wahl" aria-label="Beispielprofile"></nav>
-  <div id="vorab"></div>
+  <div id="vorab" role="status" aria-live="polite"></div>
   <div id="profilteil">
     <div class="lt">
-      <p class="meta" id="padr" style="margin:0 0 8px"></p>
+      <p class="meta m-0-0-2" id="padr"></p>
       <div class="lt-avatar" id="av"></div>
-      <h1 id="pn"></h1>
       <p class="zeile" id="pz"></p>
       <p class="meta" id="po"></p>
       <p class="artzeile" id="part"></p>
@@ -52,8 +52,8 @@
     </div>
   </div>
 </main>
-<footer><div class="wrap" style="text-align:center">Geprüft mit <a href="/index.html">abgeklopft.de</a> · <a href="/verify.html">Wie lese ich die Stufen?</a> · <a href="/alex.json" id="jsonfuss">Für KI-Agenten</a><span class="rechtlich"> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></span></div></footer>
-<script src="/data.js"></script><script src="/app.js"></script>
+<footer><div class="wrap mitte"><ul class="fuss"><li><a href="/index.html">Geprüft mit abgeklopft.de</a></li><li><a href="/verify.html">Wie lese ich die Stufen?</a></li><li><a href="/alex.json" id="jsonfuss">Für KI-Agenten</a></li><li><a href="/impressum.html">Impressum</a></li><li><a href="/datenschutz.html">Datenschutz</a></li></ul></div></footer>
+<script src="/data.js?v=0cb47df9"></script><script src="/app.js?v=ba1da2e1"></script>
 <script>
 const $ = id => document.getElementById(id);
 const q = new URLSearchParams(location.search);
@@ -73,7 +73,9 @@ function kopf(p, adresse, beispiel) {
   $("profilteil").classList.toggle("mock", !!beispiel);
   if (!$("profilteil").querySelector(".band")) { const b = document.createElement("span"); b.className = "band"; b.setAttribute("aria-hidden", "true"); b.textContent = "Fiktives Beispiel"; b.hidden = true; $("profilteil").prepend(b); }
   $("profilteil").querySelector(".band").hidden = !beispiel;
-  $("av").textContent = p.kuerzel || kuerzelVon(p.name); $("pn").textContent = beispiel ? "Nachweise für " + kurz : p.name;
+  // genau eine H1 je Modus: erst hier erzeugen (Beispiel, Link nach dem Öffnen, Vorschau), nie leer im Quelltext
+  let h1 = $("pn"); if (!h1) { h1 = document.createElement("h1"); h1.id = "pn"; $("av").after(h1); }
+  $("av").textContent = p.kuerzel || kuerzelVon(p.name); h1.textContent = beispiel ? "Nachweise für " + kurz : p.name;
   $("pz").textContent = p.zeile || ""; $("po").textContent = p.ort || "";
   $("padr").textContent = beispiel ? "" : (adresse || ""); $("padr").hidden = !!beispiel;
   $("av").classList.toggle("agent", ag);
@@ -88,7 +90,7 @@ function betreiberKasten(b, version, hinweis, siegel) {
     <dt>Betreiber</dt><dd>${esc(b.name)}, ${esc(b.sitz)} ${siegel || ""}</dd>
     <dt>Verantwortlich</dt><dd>${esc(b.verantwortlich)}</dd>
     <dt>Version</dt><dd>${esc(version)}</dd></dl>
-    ${hinweis ? `<p class="meta" style="margin:6px 0 0">${esc(hinweis)}</p>` : ""}`;
+    ${hinweis ? `<p class="meta m-2-0-0">${esc(hinweis)}</p>` : ""}`;
 }
 function zusammenfassung(liste, stufe) {
   const n = s => liste.filter(p => stufe(p) === s).length;
@@ -117,15 +119,15 @@ if (linkId || vorschau || lesbar) {
 
 if (vorschau) {
   const k = kontoLesen();
-  if (!k) $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">Auf diesem Gerät ist kein Profil geöffnet. <a href="/teilen.html">Zum Einreichen</a></div>`;
+  if (!k) $("vorab").innerHTML = `<h1 class="meldung-h1">Vorschau nicht verfügbar</h1><div class="result bad mt-5">Auf diesem Gerät ist kein Profil geöffnet. <a href="/teilen.html">Zum Einreichen</a></div>`;
   else api("GET", "/v1/profile/" + k.id, undefined, k.schluessel).then(d => {
-    $("vorab").innerHTML = `<div class="note" style="margin-top:20px">Vorschau mit allen Einträgen. Ein Abnehmer sieht nur die Einträge, die Sie für seinen Link wählen. Diese Vorschau zählt nicht als Öffnung. <a href="/teilen.html">Zurück zu Mein Profil</a></div>`;
+    $("vorab").innerHTML = `<div class="note mt-5">Vorschau mit allen Einträgen. Ein Abnehmer sieht nur die Einträge, die Sie für seinen Link wählen. Diese Vorschau zählt nicht als Öffnung. <a href="/teilen.html">Zurück zu Mein Profil</a></div>`;
     serverProfil(d, null);
-  }, e => { $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">${esc(e.message)} <a href="/teilen.html">Zum Einreichen</a></div>`; });
+  }, e => { $("vorab").innerHTML = `<h1 class="meldung-h1">Vorschau nicht verfügbar</h1><div class="result bad mt-5">${esc(e.message)} <a href="/teilen.html">Zum Einreichen</a></div>`; });
 } else if (linkId || lesbar) {
   const jsonUrl = API + linkPfad + ".json";
   $("jsonlink").href = $("jsonfuss").href = jsonUrl;
-  const tot = m => { $("vorab").innerHTML = `<div class="result bad" style="margin-top:20px">${m}</div>`; };
+  const tot = m => { $("vorab").innerHTML = `<h1 class="meldung-h1">Profil nicht verfügbar</h1><div class="result bad mt-5">${m}</div>`; };
   const linkFehler = e => {
     if (e.status === 410) tot(`${esc(e.message)} Bitte fragen Sie die Person nach einem neuen Link.`);
     else if (e.status === 404) tot("Dieser Link ist unbekannt. Bitte prüfen Sie, ob er vollständig kopiert wurde.");
@@ -136,12 +138,12 @@ if (vorschau) {
     if (lesbar && info.umbenannt && info.adresse_aktuell) { try { history.replaceState(null, "", "/" + info.adresse_aktuell + "/" + pm[2]); } catch {} }
     const ag = info.inhaber.art === "ki-agent";
     const wer = ag ? `der Betreiber des KI-Agenten <b>${esc(info.inhaber.name)}</b>${info.inhaber.betreiber ? " (" + esc(info.inhaber.betreiber) + ")" : ""}` : `<b>${esc(info.inhaber.name)}</b>`;
-    $("vorab").innerHTML = `<div class="card" style="margin-top:24px;max-width:640px">
-      <h1 style="margin-top:0;font-size:1.6rem">${ag ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(info.inhaber.name)}</h1>
+    $("vorab").innerHTML = `<div class="card mt-5 mw-640">
+      <h1 class="mt-0 fs-xl">${ag ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(info.inhaber.name)}</h1>
       <p>Persönlicher Link für <b>${esc(info.fuer)}</b>, gültig bis ${esc(info.gueltig_bis)}.</p>
       <div class="note"><b>Bevor Sie öffnen:</b> Wenn Sie das Profil öffnen, sieht ${wer}, wann dieser Link geöffnet wurde und welche Einträge angesehen wurden. Gespeichert wird nur das, keine IP-Adresse und kein Name. Mehr dazu im <a href="/datenschutz.html">Datenschutz</a>.</div>
       <div class="row"><button class="btn" type="button" id="oeffnen">Profil öffnen</button></div>
-      <details class="technik"><summary class="meta" style="cursor:pointer">Technische Ansicht (für KI-Agenten)</summary><p class="meta">Dieselbe Auswahl als JSON unter <code>${esc(jsonUrl)}</code>. Auch dieser Abruf wird angezeigt.</p></details>
+      <details class="technik"><summary class="meta zeiger">Technische Ansicht (für KI-Agenten)</summary><p class="meta">Dieselbe Auswahl als JSON unter <code>${esc(jsonUrl)}</code>. Auch dieser Abruf wird angezeigt.</p></details>
     </div>`;
     $("oeffnen").addEventListener("click", e => {
       e.target.disabled = true;
@@ -171,6 +173,6 @@ if (vorschau) {
   zusammenfassung(PORTFOLIO, stufeVon);
 }
 </script>
-<script src="/nav-profil.js"></script>
+<script src="/nav-profil.js?v=4ae4cfac"></script>
 </body>
 </html>

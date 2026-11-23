@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://abgeklopft-api.falko-guderian.workers.dev http://localhost:8787; base-uri 'none'; object-src 'none'">
+<meta name="robots" content="noindex">
+<title>Mein Profil · abgeklopft.de</title>
+<link rel="stylesheet" href="style.css?v=11c44e01">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
+</head>
+<body>
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
+<div class="proto"><span class="proto-voll">Pilotphase · Ihr Profil liegt auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU) · sichtbar nur über Ihre persönlichen Links</span><details class="proto-kurz"><summary>Pilotphase · Profil liegt auf dem Server · <u>Mehr</u></summary><p>Pilotphase · Ihr Profil liegt auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU) · sichtbar nur über Ihre persönlichen Links</p></details></div>
+<header class="top"><div class="wrap">
+  <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
+  <nav aria-label="Hauptmenü"><a href="index.html">Start</a><a href="teilen.html">Einreichen</a><a href="gutachter.html">Prüfen</a><a href="abnehmer.html">Abnehmen</a><a href="so-gehts.html">So geht's</a></nav>
+</div></header>
+<main id="inhalt" tabindex="-1" class="wrap">
+  <h1>Mein Profil</h1>
+  <div class="result bad fehlerzeile" id="fehler" role="alert" hidden><span id="fehlertext"></span> <button class="btn ghost klein" type="button" id="nochmal" hidden>Erneut versuchen</button></div>
+  <div class="result ok fehlerzeile" id="erfolg" role="status" hidden></div>
+
+  <!-- Ladezustand: Platzhalter in Endgröße -->
+  <div id="laedt" role="status" aria-busy="true" aria-label="Profil wird geladen" hidden>
+    <div class="card d-flex gap-4 ai-center">
+      <span class="platzhalter avatar"></span>
+      <div class="flex-1"><span class="platzhalter mittel"></span><span class="platzhalter kurz"></span><span class="platzhalter kurz"></span></div>
+    </div>
+    <div class="card mt-4"><span class="platzhalter kurz"></span><span class="platzhalter"></span><span class="platzhalter mittel"></span></div>
+    <div class="card mt-4"><span class="platzhalter kurz"></span><span class="platzhalter kachel"></span><span class="platzhalter kachel"></span></div>
+  </div>
+
+  <!-- Ohne Profil auf diesem Gerät -->
+  <div id="ohne" hidden>
+    <div class="hinweis info">
+      <p class="m-0"><b>Auf diesem Gerät ist kein Profil angemeldet.</b> Legen Sie auf der Seite „Einreichen“ ein Profil an oder öffnen Sie ein vorhandenes Profil mit Ihrem Wiederherstellungscode.</p>
+      <div class="row"><a class="btn" href="teilen.html">Profil anlegen oder öffnen</a></div>
+    </div>
+  </div>
+
+  <!-- Eigenes Profil -->
+  <div id="mit" hidden>
+    <div class="card profilkarte d-flex gap-4 ai-center wrap-an" id="profil">
+      <div class="lt-avatar m-0" id="mav"></div>
+      <div id="mkopf" class="flex-1 minw-200">
+        <h2 class="mname" id="mname"></h2>
+        <p class="meta m-1-0" id="mzeile"></p>
+        <p id="mart" class="m-0"></p>
+      </div>
+      <div class="row m-0"><a class="btn ghost" href="profil.html?vorschau=1" id="vorschau">Vorschau ansehen</a></div>
+    </div>
+
+    <section class="abschnitt" aria-labelledby="h-adresse">
+      <div class="abschnitt-kopf"><h2 id="h-adresse">Ihre Adresse</h2></div>
+      <div class="abschnitt-kasten">
+        <div class="d-flex gap-3 ai-center wrap-an">
+          <span class="mono umbruch flex-1 minw-200" id="madr"></span>
+          <button class="btn ghost klein" type="button" id="adrkopie" hidden>Kopieren</button>
+        </div>
+        <p class="meta" id="kmeld" role="status"></p>
+        <p class="mw-44em">Ein persönlicher Link besteht aus Ihrer Adresse und einer Kennung für jeden Empfänger, zum Beispiel <span class="umbruch">abgeklopft.de/<b id="adrvor">ihre-adresse</b>/firma-x7k2</span>. Ihr Profil bleibt unsichtbar. Unter der Adresse allein gibt es keine Seite. Sehen kann es nur, wer einen vollständigen Link von Ihnen bekommt. Wie Sie Links erstellen, steht in <a href="teilen.html#schritt-3">Schritt 3 auf der Seite „Einreichen“</a>.</p>
+      </div>
+    </section>
+
+    <section class="abschnitt" aria-labelledby="h-bearb">
+      <div class="abschnitt-kopf"><h2 id="h-bearb">Profil bearbeiten</h2></div>
+      <div class="abschnitt-kasten">
+        <form id="pform" autocomplete="off">
+          <label for="ename">Name</label><input id="ename" required maxlength="120">
+          <label for="ezeile">Zeile</label><input id="ezeile" maxlength="200">
+          <label for="eort">Ort</label><input id="eort" maxlength="120">
+          <label for="eadr">Ihre Adresse</label>
+          <input id="eadr" maxlength="40" autocapitalize="none" spellcheck="false" aria-describedby="eadrhilfe" class="mono">
+          <p class="meta" id="eadrhilfe">Erlaubt sind 3 bis 30 Zeichen: a bis z, 0 bis 9 und Bindestrich. Der Bindestrich steht nicht am Anfang oder Ende und kommt nicht doppelt vor. Ä, Ö, Ü und ß werden zu ae, oe, ue und ss. Bei einer Änderung funktionieren bereits verschickte Links weiter und leiten auf die neue Adresse um.</p>
+          <div id="eagent" hidden>
+            <label for="ebname">Betreiber</label><input id="ebname" maxlength="160">
+            <label for="ebsitz">Sitz des Betreibers</label><input id="ebsitz" maxlength="160">
+            <label for="ebverantw">Verantwortliche Person</label><input id="ebverantw" maxlength="160">
+            <label for="ebversion">Version des Agenten</label><input id="ebversion" maxlength="40">
+          </div>
+          <div class="row"><button class="btn" type="submit">Speichern</button></div>
+        </form>
+      </div>
+    </section>
+
+    <p class="meta mt-5">Abmelden und Profil löschen finden Sie im Profilmenü oben rechts.</p>
+  </div>
+</main>
+<footer><div class="wrap"><p class="fuss-text">Pilotphase: Einladungscode von kontakt@abgeklopft.de · Ihre Angaben werden verschlüsselt übertragen und in der EU gespeichert.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
+<script src="data.js?v=0cb47df9"></script><script src="app.js?v=ba1da2e1"></script><script src="nav-profil.js?v=4ae4cfac"></script>
+<script>
+const $ = id => document.getElementById(id);
+let konto = kontoLesen(), stand = null, nochmalFn = null;
+
+function fehler(e, nochmal) {
+  $("erfolg").hidden = true;
+  $("fehlertext").textContent = e instanceof ApiFehler || e instanceof Error ? e.message : String(e);
+  $("fehler").hidden = false;
+  nochmalFn = nochmal || null; $("nochmal").hidden = !nochmal;
+  $("fehler").scrollIntoView({ block: "nearest" });
+}
+function erfolg(t) { $("fehler").hidden = true; $("erfolg").textContent = t; $("erfolg").hidden = false; }
+function still() { $("fehler").hidden = true; $("erfolg").hidden = true; }
+$("nochmal").addEventListener("click", () => { const f = nochmalFn; still(); if (f) f(); });
+async function mitSperre(knopf, fn) {
+  const alt = knopf && knopf.disabled; if (knopf) knopf.disabled = true;
+  try { return await fn(); } finally { if (knopf) knopf.disabled = alt; }
+}
+function zeige(was) { for (const id of ["laedt", "ohne", "mit"]) $(id).hidden = id !== was; }
+
+async function laden() {
+  still();
+  if (!konto) { zeige("ohne"); return; }
+  zeige("laedt");
+  try {
+    stand = await api("GET", "/v1/profile/" + konto.id, undefined, konto.schluessel);
+    zeige("mit"); zeichnen();
+  } catch (err) {
+    if (err.status === 403) {
+      kontoWeg(); konto = null; AKProfilMenue.name(null); zeige("ohne");
+      fehler("Das Profil auf diesem Gerät gibt es nicht mehr oder der Schlüssel stimmt nicht. Öffnen Sie es auf der Seite „Einreichen“ mit Ihrem Wiederherstellungscode.");
+    } else { zeige("ohne"); fehler(err, laden); }
+  }
+}
+function zeichnen() {
+  const p = stand.profil, ag = p.art === "ki-agent";
+  AKProfilMenue.name(p.name);
+  $("mav").textContent = kuerzelVon(p.name); $("mav").classList.toggle("agent", ag);
+  $("mname").textContent = p.name;
+  $("mzeile").textContent = [p.zeile, p.ort].filter(Boolean).join(" · ");
+  $("mart").innerHTML = ag
+    ? `<span class="tag art-agent">KI-Agent</span> <span class="meta">Betreiber: ${esc(p.betreiber.name)}, ${esc(p.betreiber.sitz)} · Verantwortlich: ${esc(p.betreiber.verantwortlich)} · Version ${esc(p.agent_version)}</span>`
+    : `<span class="tag art-mensch">Person</span>`;
+  $("ename").value = p.name; $("ezeile").value = p.zeile; $("eort").value = p.ort;
+  $("eadr").value = p.adresse || "";
+  $("adrvor").textContent = p.adresse || "ihre-adresse";
+  if (p.adresse) { $("madr").textContent = "abgeklopft.de/" + p.adresse; $("adrkopie").hidden = false; }
+  else { $("madr").textContent = "Noch keine Adresse. Sie wird beim nächsten Link aus Ihrem Namen abgeleitet. Sie können unten auch selbst eine eintragen."; $("adrkopie").hidden = true; }
+  $("eagent").hidden = !ag;
+  if (ag) { $("ebname").value = p.betreiber.name; $("ebsitz").value = p.betreiber.sitz; $("ebverantw").value = p.betreiber.verantwortlich; $("ebversion").value = p.agent_version; }
+}
+
+$("adrkopie").addEventListener("click", async () => {
+  const t = "abgeklopft.de/" + stand.profil.adresse;
+  try { await navigator.clipboard.writeText(t); $("kmeld").textContent = "Adresse kopiert."; }
+  catch { $("kmeld").textContent = "Kopieren nicht möglich. Adresse: " + t; }
+});
+
+$("pform").addEventListener("submit", e => {
+  e.preventDefault(); still();
+  const body = { name: $("ename").value.trim(), zeile: $("ezeile").value.trim(), ort: $("eort").value.trim() };
+  const adr = $("eadr").value.trim();
+  if (adr !== (stand.profil.adresse || "")) body.adresse = adr;
+  if (stand.profil.art === "ki-agent") Object.assign(body, { betreiber: { name: $("ebname").value.trim(), sitz: $("ebsitz").value.trim(), verantwortlich: $("ebverantw").value.trim() }, agent_version: $("ebversion").value.trim() });
+  mitSperre(e.submitter, async () => {
+    try { stand = await api("PATCH", "/v1/profile/" + konto.id, body, konto.schluessel); zeichnen(); erfolg("adresse" in body ? "Profil gespeichert. Ihre Adresse ist jetzt abgeklopft.de/" + stand.profil.adresse + "." : "Profil gespeichert."); }
+    catch (err) { fehler(err.code === "vergeben" ? "Diese Adresse ist vergeben. Bitte wählen Sie eine andere." : err); }
+  });
+});
+
+// Abmelden liegt im Profilmenü (nav-profil.js); danach Zustand „ohne“ mit Link auf teilen.html
+AKProfilMenue.beiAbmelden(() => {
+  kontoWeg(); konto = null; stand = null; AKProfilMenue.name(null); zeige("ohne"); erfolg("Auf diesem Gerät abgemeldet. Ihr Profil bleibt bestehen.");
+});
+laden();
+</script>
+</body>
+</html>

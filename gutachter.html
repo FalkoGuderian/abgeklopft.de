@@ -4,19 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Prüfer werden · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=11c44e01">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
 <div class="proto">Prototyp · Vergütung und Regeln sind Annahmen</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav aria-label="Hauptmenü"><a href="index.html">Start</a><a href="teilen.html">Einreichen</a><a href="gutachter.html" aria-current="page">Prüfen</a><a href="abnehmer.html">Abnehmen</a><a href="so-gehts.html">So geht's</a></nav>
 </div></header>
 <nav class="reiter wrap" aria-label="Bereiche von Prüfen"><a href="gutachter.html" aria-current="page">Prüfer werden</a><a href="pruefer.html">Login</a></nav>
-<main class="wrap" style="padding-top:28px;max-width:860px">
+<main id="inhalt" tabindex="-1" class="wrap mittel">
   <h1>Prüfer werden</h1>
-  <p style="color:var(--muted);font-size:1.1rem">Ein Siegel ist nur so stark wie die Person, die prüft. Vieles prüft die Plattform automatisch, und Auftraggeber bestätigen selbst. Für Belege und Fachgespräche suchen wir Fachleute mit nachweisbarer Praxis. <a href="atelier.html">Zur Prüferansicht (Prototyp)</a></p>
+  <p class="c-muted fs-l">Ein Siegel ist nur so stark wie die Person, die prüft. Vieles prüft die Plattform automatisch, und Auftraggeber bestätigen selbst. Für Belege und Fachgespräche suchen wir Fachleute mit nachweisbarer Praxis. <a href="atelier.html">Zur Prüferansicht (Prototyp)</a></p>
   <nav class="schritte" data-schritte aria-label="Inhalt dieser Seite">
     <a href="#g-suchen"><span class="st">Wen wir suchen</span></a>
     <a href="#g-rollen"><span class="st">Drei Rollen</span></a>
@@ -35,11 +36,11 @@
   </section>
 
   <section id="g-rollen" class="schritt-ziel"><h2>Drei Rollen</h2>
-    <div class="tbl"><table>
+    <div class="tbl stapel"><table>
       <tr><th>Rolle</th><th>Aufgabe</th><th>Zugang</th><th>Vergütung (Annahme)</th></tr>
-      <tr><td><span class="badge b2">Geprüft</span> Belegprüfer</td><td>Belege einsehen, abgleichen, Ergebnis begründen. Ca. 20 Minuten je Anspruch.</td><td>Bewerbung, eigene Praxis im Feld, Probeprüfung</td><td>Anteil an der Gebühr, Höhe im Gespräch</td></tr>
-      <tr><td><span class="badge b3">Abgenommen</span> Gutachter für KI-Agenten</td><td>Probeaufgabe auswählen und auswerten: unbekannte Aufgaben aus einem festen Satz, Protokoll des Agenten nach Raster lesen, schriftliche Begründung. Gilt für eine Version.</td><td>Praxis im Fachgebiet der Aufgaben und Erfahrung mit KI-Systemen</td><td>Anteil an der Gebühr, Höhe im Gespräch</td></tr>
-      <tr><td><span class="badge b3">Abgenommen</span> Gutachter</td><td>45-Minuten-Fachgespräch per Video nach Bewertungsraster, schriftliche Begründung. Kein Reiseaufwand, Sie arbeiten von Ihrem Standort aus. Ca. 75 Minuten mit Vor- und Nachbereitung.</td><td>Eigene bestätigte Ergebnisse im Feld oder gleichwertiger Nachweis. Die ersten Gutachter werden direkt eingeladen.</td><td>Anteil an der Gebühr, Höhe im Gespräch</td></tr>
+      <tr><td><span class="badge b2">Geprüft</span> Belegprüfer</td><td data-label="Aufgabe">Belege einsehen, abgleichen, Ergebnis begründen. Ca. 20 Minuten je Anspruch.</td><td data-label="Zugang">Bewerbung, eigene Praxis im Feld, Probeprüfung</td><td data-label="Vergütung (Annahme)">Anteil an der Gebühr, Höhe im Gespräch</td></tr>
+      <tr><td><span class="badge b3">Abgenommen</span> Gutachter für KI-Agenten</td><td data-label="Aufgabe">Probeaufgabe auswählen und auswerten: unbekannte Aufgaben aus einem festen Satz, Protokoll des Agenten nach Raster lesen, schriftliche Begründung. Gilt für eine Version.</td><td data-label="Zugang">Praxis im Fachgebiet der Aufgaben und Erfahrung mit KI-Systemen</td><td data-label="Vergütung (Annahme)">Anteil an der Gebühr, Höhe im Gespräch</td></tr>
+      <tr><td><span class="badge b3">Abgenommen</span> Gutachter</td><td data-label="Aufgabe">45-Minuten-Fachgespräch per Video nach Bewertungsraster, schriftliche Begründung. Kein Reiseaufwand, Sie arbeiten von Ihrem Standort aus. Ca. 75 Minuten mit Vor- und Nachbereitung.</td><td data-label="Zugang">Eigene bestätigte Ergebnisse im Feld oder gleichwertiger Nachweis. Die ersten Gutachter werden direkt eingeladen.</td><td data-label="Vergütung (Annahme)">Anteil an der Gebühr, Höhe im Gespräch</td></tr>
     </table></div>
     <p class="meta">In der Pilotphase gibt es noch keine festen Beträge. Wir klären Aufwand und Vergütung mit den ersten Gutachtern gemeinsam.</p>
   </section>
@@ -57,13 +58,13 @@
   </section>
 
   <section id="g-raster" class="schritt-ziel"><h2>Beispiel-Bewertungsraster Fachgespräch (0 bis 3 Punkte je Kriterium)</h2>
-    <div class="tbl"><table>
+    <div class="tbl stapel"><table>
       <tr><th>Kriterium</th><th>Frage</th></tr>
-      <tr><td>Echtheit</td><td>Hat die Person die Arbeit selbst gemacht? Kann sie Entscheidungen und Fehler erklären?</td></tr>
-      <tr><td>Tiefe</td><td>Versteht sie Grenzen und Alternativen, nicht nur die Anwendung?</td></tr>
-      <tr><td>Wirkung</td><td>Gibt es ein nachprüfbares Ergebnis (Nutzer, Auftrag, Veröffentlichung)?</td></tr>
-      <tr><td>Aktualität</td><td>Entspricht das Wissen dem heutigen Stand?</td></tr>
-      <tr><td>Vermittlung</td><td>Kann sie es einem Fachfremden verständlich erklären?</td></tr>
+      <tr><td>Echtheit</td><td data-label="Frage">Hat die Person die Arbeit selbst gemacht? Kann sie Entscheidungen und Fehler erklären?</td></tr>
+      <tr><td>Tiefe</td><td data-label="Frage">Versteht sie Grenzen und Alternativen, nicht nur die Anwendung?</td></tr>
+      <tr><td>Wirkung</td><td data-label="Frage">Gibt es ein nachprüfbares Ergebnis (Nutzer, Auftrag, Veröffentlichung)?</td></tr>
+      <tr><td>Aktualität</td><td data-label="Frage">Entspricht das Wissen dem heutigen Stand?</td></tr>
+      <tr><td>Vermittlung</td><td data-label="Frage">Kann sie es einem Fachfremden verständlich erklären?</td></tr>
     </table></div>
     <p class="meta">Bestanden ab 11 von 15 Punkten und keinem Kriterium mit 0. Auch diese Schwelle ist eine Annahme und müsste an echten Prüfungen kalibriert werden.</p>
   </section>
@@ -80,15 +81,15 @@
       <label for="ge">E-Mail</label><input id="ge" type="email" maxlength="200" required autocapitalize="none" spellcheck="false">
       <label for="gf">Fachgebiet</label><input id="gf" maxlength="200" required placeholder="z. B. Generative KI in der Verwaltung">
       <label for="gv">Kurzvita (höchstens 1000 Zeichen)</label><textarea id="gv" maxlength="1000" rows="6" required></textarea>
-      <div style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label for="gw">Bitte leer lassen</label><input id="gw" tabindex="-1" autocomplete="off"></div>
-      <label class="check" style="display:flex;gap:10px;align-items:flex-start;margin-top:12px"><input type="checkbox" id="gd" style="margin-top:4px;width:auto;flex:none"><span>Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen.</span></label>
-      <div style="margin-top:14px"><button class="btn" type="submit" id="gb">Bewerbung absenden</button></div>
+      <div aria-hidden="true" class="honigtopf"><label for="gw">Bitte leer lassen</label><input id="gw" tabindex="-1" autocomplete="off"></div>
+      <label class="wahl"><input type="checkbox" id="gd"><span>Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen.</span></label>
+      <div class="mt-4"><button class="btn" type="submit" id="gb">Bewerbung absenden</button></div>
     </form>
     <div id="gerg" role="status" aria-live="polite"></div>
   </section>
 </main>
-<footer><div class="wrap">Vergütung und Regeln sind Annahmen. Produktiv bräuchte es Identitätsprüfung, Vertrag, Verschwiegenheit und Datenschutzvereinbarung.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
-<script src="data.js"></script><script src="app.js"></script>
+<footer><div class="wrap"><p class="fuss-text">Vergütung und Regeln sind Annahmen. Produktiv bräuchte es Identitätsprüfung, Vertrag, Verschwiegenheit und Datenschutzvereinbarung.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
+<script src="data.js?v=0cb47df9"></script><script src="app.js?v=ba1da2e1"></script>
 <script>
 "use strict";
 const BEW_API = location.protocol === "http:" && location.hostname === "localhost"
@@ -113,6 +114,6 @@ document.getElementById("g").addEventListener("submit", async e => {
   knopf.disabled = false;
 });
 </script>
-<script src="nav-profil.js"></script><script src="schritte.js"></script>
+<script src="nav-profil.js?v=4ae4cfac"></script><script src="schritte.js?v=e0d8ca70"></script>
 </body>
 </html>

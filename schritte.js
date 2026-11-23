@@ -31,6 +31,10 @@
   }
   ["wheel", "touchmove", "keydown"].forEach(function (ev) { window.addEventListener(ev, function () { fest = -1; }, { passive: true }); });
   nav.addEventListener("click", function (e) { var a = e.target.closest("a"); if (a) { fest = links.indexOf(a); aktuell(fest); } });
+  // Fortsetzungs-Hinweis (T11): .quer, solange rechts noch Kacheln verborgen sind
+  function quer() { var rest = nav.scrollWidth - nav.clientWidth - nav.scrollLeft; nav.classList.toggle("quer", nav.scrollWidth > nav.clientWidth + 1 && rest > 2); }
+  nav.addEventListener("scroll", quer, { passive: true }); window.addEventListener("load", quer);
+  window.addEventListener("resize", quer); quer();
   setzeKopf(); window.addEventListener("resize", function () { setzeKopf(); neu(); });
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(neu, { rootMargin: "-90px 0px -45% 0px", threshold: [0, 0.01, 1] });

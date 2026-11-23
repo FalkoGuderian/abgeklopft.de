@@ -4,19 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Abnehmen · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=11c44e01">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
 <div class="proto">Prototyp · Verfahren sind Annahmen</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
   <nav aria-label="Hauptmenü"><a href="index.html">Start</a><a href="teilen.html">Einreichen</a><a href="gutachter.html">Prüfen</a><a href="abnehmer.html" aria-current="page">Abnehmen</a><a href="so-gehts.html">So geht's</a></nav>
 </div></header>
 <nav class="reiter wrap" aria-label="Bereiche von Abnehmen"><a href="abnehmer.html" aria-current="page">Link erhalten</a><a href="verify.html">Bericht nachprüfen</a></nav>
-<main class="wrap" style="padding-top:28px;max-width:860px">
+<main id="inhalt" tabindex="-1" class="wrap mittel">
   <h1>Sie haben einen Link bekommen</h1>
-  <p style="color:var(--muted);font-size:1.1rem">Ein Einreicher (Bewerberin, Auftragnehmer oder Betreiber eines KI-Agenten) hat Ihnen Arbeitsergebnisse geschickt. Jeder Eintrag zeigt, ob und wie er geprüft ist. Für Sie kostenlos, ohne Konto. Sie können den Link selbst lesen oder Ihren eigenen KI-Agenten lesen lassen.</p>
+  <p class="c-muted fs-l">Ein Einreicher (Bewerberin, Auftragnehmer oder Betreiber eines KI-Agenten) hat Ihnen Arbeitsergebnisse geschickt. Jeder Eintrag zeigt, ob und wie er geprüft ist. Für Sie kostenlos, ohne Konto. Sie können den Link selbst lesen oder Ihren eigenen KI-Agenten lesen lassen.</p>
   <nav class="schritte" data-schritte aria-label="Inhalt dieser Seite">
     <a href="#a-lesen"><span class="st">So lesen</span></a>
     <a href="#a-nutzen"><span class="st">Was Sie haben</span></a>
@@ -60,7 +61,7 @@
   </section>
 
   <section id="a-beispiel" class="schritt-ziel"><h2>Beispiel: ein bestätigter Eintrag</h2>
-    <ul class="lt-liste" style="margin:0">
+    <ul class="lt-liste m-0">
       <li class="lt-item"><div class="lt-btn"><span class="badge b3">Abgenommen</span><span class="lt-titel">Netzlast-Dashboard für Stadtwerke</span><span class="lt-zeit">2024–2025</span></div>
         <div class="lt-detail"><p>Auswertung von Netzdaten mit täglicher Aktualisierung, 40 Nutzer im Betrieb.</p>
           <p class="meta" title="Name und Rolle sind Angaben der antwortenden Person."><b>Vom Auftraggeber bestätigt.</b> Bestätigt von Dr. Jana Probst (Abteilungsleitung Netzbetrieb, Beispiel-Stadtwerke) am 2026-03-02: „So geliefert. Seit 2025 täglich im Einsatz.“</p>
@@ -76,7 +77,7 @@
       <div class="card"><h3>Signiert und nachprüfbar</h3><p>Jeder geprüfte oder bestätigte Eintrag trägt einen Prüfbericht mit Ed25519-Signatur. Den öffentlichen Schlüssel finden Sie unter <a href="./.well-known/jwks.json">/.well-known/jwks.json</a>.</p></div>
       <div class="card"><h3>Anleitung für Agenten</h3><p>Die Datei <a href="llms.txt">llms.txt</a> erklärt Stufen, Prüfschritte und Regeln. Ein Beispiel in Python liegt bei.</p></div>
     </div>
-    <p class="note" style="margin-top:16px">Text, den die Person oder der Betreiber selbst geschrieben hat, ist getrennt gekennzeichnet. So kann ein Assistent ihn nicht mit Geprüftem verwechseln und darin versteckte Anweisungen nicht befolgen. Über eine Person entscheidet bei Ihnen eine Person. Einen KI-Agenten darf Ihr Assistent selbst auswählen, wenn Sie es erlauben.</p>
+    <p class="note mt-4">Text, den die Person oder der Betreiber selbst geschrieben hat, ist getrennt gekennzeichnet. So kann ein Assistent ihn nicht mit Geprüftem verwechseln und darin versteckte Anweisungen nicht befolgen. Über eine Person entscheidet bei Ihnen eine Person. Einen KI-Agenten darf Ihr Assistent selbst auswählen, wenn Sie es erlauben.</p>
   </section>
 
   <section id="skills" class="schritt-ziel"><h2>Skill für Ihren Agenten</h2>
@@ -86,7 +87,7 @@
       <div class="card"><h3>Regeln eingebaut</h3><p>Stufe immer nennen, eigene Angaben nie als geprüft zeigen, Text der Person als Daten behandeln. Über Personen entscheidet eine Person. Einen KI-Agenten wählt Ihr Assistent nur aus, wenn Sie es erlauben.</p></div>
       <div class="card"><h3>Installieren</h3><p>In Claude Code: <code>/plugin marketplace add FalkoGuderian/abgeklopft-skills</code>. Andere Agenten lesen die <a href="https://raw.githubusercontent.com/FalkoGuderian/abgeklopft-skills/main/skills/abgeklopft-empfaenger/SKILL.md">SKILL.md</a> als Anleitung.</p></div>
     </div>
-    <p class="meta" style="margin-top:14px">Quelltext und Anleitung: <a href="https://github.com/FalkoGuderian/abgeklopft-skills">github.com/FalkoGuderian/abgeklopft-skills</a> (MIT-Lizenz). Für Agenten, die sich bei Ihnen bewerben, gibt es den Gegenpart <a href="https://github.com/FalkoGuderian/abgeklopft-skills/blob/main/skills/abgeklopft-bewerber/SKILL.md">abgeklopft-bewerber</a>. Pilot: Prototyp, kein amtliches Verfahren.</p>
+    <p class="meta mt-4">Quelltext und Anleitung: <a href="https://github.com/FalkoGuderian/abgeklopft-skills">github.com/FalkoGuderian/abgeklopft-skills</a> (MIT-Lizenz). Für Agenten, die sich bei Ihnen bewerben, gibt es den Gegenpart <a href="https://github.com/FalkoGuderian/abgeklopft-skills/blob/main/skills/abgeklopft-bewerber/SKILL.md">abgeklopft-bewerber</a>. Pilot: Prototyp, kein amtliches Verfahren.</p>
   </section>
 
   <section id="a-grenzen" class="schritt-ziel"><h2>Grenzen und Regeln</h2>
@@ -99,7 +100,7 @@
     </ul>
   </section>
 </main>
-<footer><div class="wrap">Keine Rechtsberatung. Datenschutz und Antidiskriminierung vor dem Start rechtlich prüfen lassen.<span class="rechtlich"> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span></div></footer>
-<script src="nav-profil.js"></script><script src="schritte.js"></script>
+<footer><div class="wrap"><p class="fuss-text">Keine Rechtsberatung. Datenschutz und Antidiskriminierung vor dem Start rechtlich prüfen lassen.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
+<script src="nav-profil.js?v=4ae4cfac"></script><script src="schritte.js?v=e0d8ca70"></script>
 </body>
 </html>

@@ -7,61 +7,29 @@
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <title>Prüferbereich · Login · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css">
-<style>
-  .pb h2{margin:0 0 6px;font-size:1.2rem}
-  .pb section.card{margin:18px 0}
-  .pb .zeile{display:flex;gap:12px;flex-wrap:wrap}
-  .pb .zeile > div{flex:1 1 200px;min-width:0}
-  .pb .knoepfe{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-  .pb pre{background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;max-height:340px;font:.78rem/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
-  #bew-liste input[type=checkbox]{width:auto;flex:none}
-  .pb .kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0;font-size:.92rem}
-  .pb .kv dt{color:var(--muted)} .pb .kv dd{margin:0;overflow-wrap:anywhere}
-  .pb label.check{font-weight:400;display:flex;gap:10px;align-items:flex-start;margin:10px 0}
-  .pb label.check input{width:auto;margin-top:4px;flex:none}
-  .pb table{width:100%;border-collapse:collapse;font-size:.82rem}
-  .pb th,.pb td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);overflow-wrap:anywhere;vertical-align:top}
-  .pb .tabelle{overflow-x:auto}
-  .pb [hidden]{display:none!important}
-  .pb .zaehler{display:block;font-size:.78rem;color:var(--muted);margin-top:3px;text-align:right}
-  .pb .zaehler.ueber{color:var(--bad);font-weight:600}
-  .pb .po-std{border:1px solid var(--line);background:var(--sunk);border-radius:10px;padding:8px 12px;margin:6px 0 8px;font-size:.9rem}
-  .pb .po-std ul{margin:4px 0 0;padding-left:1.2em}
-  .pb .po-klartext{background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:12px 0}
-  .pb .po-klartext p{margin:4px 0;color:var(--ink)} .pb .po-klartext ul{margin:2px 0 6px;padding-left:1.2em}
-  .pb #po-offen{margin:10px 0 0}
-  .pb .reiter-leiste{display:flex;gap:4px 6px;flex-wrap:wrap;margin:22px 0 4px;border-bottom:1px solid var(--line)}
-  .pb .reiter-leiste button{background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:10px 12px 9px;font:600 .92rem/1.2 var(--text);color:var(--muted);cursor:pointer;border-radius:0}
-  .pb .reiter-leiste button:hover{color:var(--ink)}
-  .pb .reiter-leiste button[aria-selected=true]{color:var(--brand);border-bottom-color:var(--brand)}
-  .pb .auftrag{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;margin:12px 0}
-  .pb .auftrag h3{margin:0 0 2px;font-size:1.02rem;overflow-wrap:anywhere}
-  .pb .auftrag .meta{margin:2px 0}
-  .pb .zustand{display:inline-block;font:650 .76rem/1 var(--text);padding:5px 9px;border-radius:7px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);margin-right:6px}
-  .pb .zustand.faellig{border-color:var(--bad);color:var(--bad)}
-  .pb .kontext{border-left:4px solid var(--brand);background:var(--sunk);border-radius:8px;padding:12px 14px;margin:0 0 14px}
-  .pb .kontext.frei{border-left-color:var(--signal)}
-  .pb textarea{width:100%;min-height:90px;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);box-sizing:border-box}
-  .pb .stufe{font:700 .8rem/1 var(--mono);padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--sunk)}
-.teile-liste{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
-.teile-liste li{border:1px solid var(--line);border-radius:10px;padding:6px 10px}
-.teile-liste .t-stufe{font-weight:700}
-.offen-hinweis{margin-top:6px}
-</style>
+<link rel="stylesheet" href="style.css?v=11c44e01">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body class="pb">
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
 <div class="proto">Prüferbereich · nur für zugelassene Prüfer</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="/index.html">abge<span>klopft</span><small class="claim">Prüferbereich</small></a>
   <nav aria-label="Hauptmenü"><a href="/index.html">Start</a><a href="/teilen.html">Einreichen</a><a href="/gutachter.html" aria-current="page">Prüfen</a><a href="/abnehmer.html">Abnehmen</a><a href="/so-gehts.html">So geht's</a></nav>
 </div></header>
 <nav class="reiter wrap" aria-label="Bereiche von Prüfen"><a href="/gutachter.html">Prüfer werden</a><a href="/pruefer.html" aria-current="page">Login</a></nav>
-<main class="wrap" style="padding-top:24px;padding-bottom:40px;max-width:760px">
-  <h1 style="margin-top:0">Prüferbereich</h1>
+<main id="inhalt" tabindex="-1" class="wrap schmal">
+  <h1 class="mt-0">Prüferbereich</h1>
   <p class="meta">Hier holen Sie sich Prüfaufträge aus der Warteschlange, prüfen die Einträge und stellen sie auf „Geprüft“. Ihr Schlüssel bleibt nur im Arbeitsspeicher dieser Seite: Er wird nirgends gespeichert und verschwindet beim Neuladen oder Abmelden. Der Server setzt den Inhalt des Berichts selbst zusammen, hier wählen Sie nur aus.</p>
   <div id="serverhinweis" class="note" hidden></div>
+
+  <div class="reiter-leiste" role="tablist" hidden aria-label="Bereiche des Prüferbereichs" id="reiter">
+    <button type="button" role="tab" id="t-warte" aria-selected="true" aria-controls="p-warte">Warteschlange</button>
+    <button type="button" role="tab" id="t-meine" aria-selected="false" aria-controls="p-meine">Meine Aufträge</button>
+    <button type="button" role="tab" id="t-frei" aria-selected="false" aria-controls="p-pruefen" hidden>Ohne Auftrag (Admin)</button>
+    <button type="button" role="tab" id="t-prot" aria-selected="false" aria-controls="p-prot">Protokoll</button>
+    <button type="button" role="tab" id="t-verw" aria-selected="false" aria-controls="s-verwaltung" hidden>Verwaltung</button>
+  </div>
 
   <!-- 1. Anmelden -->
   <section class="card" id="s-anmelden">
@@ -78,19 +46,11 @@
   </section>
 
   <div id="hauptteil" hidden>
-    <div class="reiter-leiste" role="tablist" aria-label="Bereiche des Prüferbereichs" id="reiter">
-      <button type="button" role="tab" id="t-warte" aria-selected="true" aria-controls="p-warte">Warteschlange</button>
-      <button type="button" role="tab" id="t-meine" aria-selected="false" aria-controls="p-meine">Meine Aufträge</button>
-      <button type="button" role="tab" id="t-frei" aria-selected="false" aria-controls="p-pruefen" hidden>Ohne Auftrag (Admin)</button>
-      <button type="button" role="tab" id="t-prot" aria-selected="false" aria-controls="p-prot">Protokoll</button>
-      <button type="button" role="tab" id="t-verw" aria-selected="false" aria-controls="s-verwaltung" hidden>Verwaltung</button>
-    </div>
-
     <!-- Warteschlange -->
     <section class="card" id="p-warte" role="tabpanel" aria-labelledby="t-warte">
       <h2>Warteschlange</h2>
       <p class="meta">Aufträge, die ein Prüfer übernehmen kann. Sie sehen Name und Adresse des Einreichers, damit Sie Bindungen erkennen. Ihr eigenes Profil und Profile mit eingetragener Bindung erscheinen hier nie. Mit „Übernehmen“ erklären Sie, dass Sie keine Bindung zum Einreicher haben.</p>
-      <div class="knoepfe" style="margin-top:8px"><button class="btn ghost" type="button" id="b-warte-neu">Aktualisieren</button><span class="meta" id="w-kapazitaet" style="align-self:center"></span></div>
+      <div class="knoepfe mt-2"><button class="btn ghost" type="button" id="b-warte-neu">Aktualisieren</button><span class="meta as-center" id="w-kapazitaet"></span></div>
       <div id="m-warte" role="status" aria-live="polite"></div>
       <div id="l-warte"></div>
     </section>
@@ -99,7 +59,7 @@
     <section class="card" id="p-meine" role="tabpanel" aria-labelledby="t-meine" hidden>
       <h2>Meine Aufträge</h2>
       <p class="meta">Aufträge, die Ihnen zugewiesen sind oder waren. Geprüft wird nur aus einem Auftrag heraus.</p>
-      <div class="knoepfe" style="margin-top:8px"><button class="btn ghost" type="button" id="b-meine-neu">Aktualisieren</button></div>
+      <div class="knoepfe mt-2"><button class="btn ghost" type="button" id="b-meine-neu">Aktualisieren</button></div>
       <div id="m-meine" role="status" aria-live="polite"></div>
       <div id="l-meine"></div>
     </section>
@@ -116,7 +76,7 @@
           <button class="btn ghost" type="button" id="b-abgeben" hidden>Zurück in die Warteschlange</button>
           <button class="btn ghost" type="button" id="b-zurueck">Zu „Meine Aufträge“</button>
         </div>
-        <div id="a-fragebox" hidden style="margin-top:14px">
+        <div id="a-fragebox" hidden class="mt-4">
           <label for="a-frage">Rückfrage an den Einreicher (höchstens 500 Zeichen)</label>
           <textarea id="a-frage" maxlength="500"></textarea>
           <div class="knoepfe"><button class="btn ghost" type="button" id="b-frage">Rückfrage stellen</button></div>
@@ -136,7 +96,7 @@
       </div>
       <div id="m-eintrag" role="status" aria-live="polite"></div>
       <div id="ansicht" hidden>
-        <h3 id="e-titel" style="margin:18px 0 4px"></h3>
+        <h3 id="e-titel" class="m-4-0-1"></h3>
         <p class="meta" id="e-meta"></p>
         <dl class="kv">
           <dt>Profil</dt><dd id="e-profil"></dd>
@@ -147,19 +107,19 @@
           <dt>Stufe heute</dt><dd id="e-stufe"></dd>
         </dl>
         <div id="e-prozess-box" hidden>
-          <h3 style="margin:16px 0 4px">Prozess</h3>
+          <h3 class="m-4-0-1">Prozess</h3>
           <p class="meta">Ein Prozess-Siegel sagt etwas über einen Zeitraum, nicht über die Qualität des Prozesses. Die Kennzahlen sind Angaben der Person.</p>
           <dl class="kv" id="e-prozess"></dl>
         </div>
         <div id="e-teile-box" hidden>
-          <h3 style="margin:16px 0 4px">Teile</h3>
+          <h3 class="m-4-0-1">Teile</h3>
           <p class="meta" id="e-gesamt"></p>
           <ul class="teile-liste" id="e-teile"></ul>
         </div>
-        <h3 style="margin:16px 0 4px">Bestätigungsantworten</h3>
+        <h3 class="m-4-0-1">Bestätigungsantworten</h3>
         <div id="e-anfragen"></div>
         <div id="e-bericht" hidden>
-          <h3 style="margin:16px 0 4px">Vorhandener Prüfbericht</h3>
+          <h3 class="m-4-0-1">Vorhandener Prüfbericht</h3>
           <dl class="kv"><dt>Kennung</dt><dd id="b-kennung"></dd><dt>Stufe</dt><dd id="b-stufe"></dd><dt>Prüfweg</dt><dd id="b-weg"></dd><dt>Ausgestellt</dt><dd id="b-ausgestellt"></dd><dt>Gültig bis</dt><dd id="b-bis"></dd><dt>Prüfsumme</dt><dd id="b-summe"></dd><dt>Prüfobjekt</dt><dd id="b-po"></dd><dt>Vermerk</dt><dd id="b-vermerk"></dd></dl>
         </div>
       </div>
@@ -182,7 +142,7 @@
         <label>Bestätigungen für diesen Bericht (nur „ja“ und „teilweise“)</label>
         <div id="bestaetigungen-liste"></div>
       </div>
-      <h2 style="margin-top:26px">Prüfobjekt</h2>
+      <h2 class="mt-5">Prüfobjekt</h2>
       <p class="meta">Pflicht für jeden Bericht. Es steht unter der Signatur und sagt dem Leser, was das Siegel umfasst und was nicht. Jeder Punkt steht in einer eigenen Zeile.</p>
       <div class="zeile">
         <div><label for="po-gegenstand">Gegenstand (was genau wurde geprüft?)</label><input id="po-gegenstand" autocomplete="off"><span class="zaehler" id="z-gegenstand"></span></div>
@@ -193,11 +153,11 @@
       <label for="po-nicht">Was wurde ausdrücklich NICHT geprüft?</label>
       <div class="po-std" id="po-std" hidden><b>Gilt immer (nicht entfernbar):</b><ul id="po-std-liste"></ul></div>
       <textarea id="po-nicht" rows="3"></textarea><span class="zaehler" id="z-nicht"></span>
-      <label class="check" id="po-nichts-zeile" hidden><input type="checkbox" id="po-nichts"><span>Nichts ausgeschlossen (ausdrücklich bestätigen)</span></label>
+      <label class="wahl" id="po-nichts-zeile" hidden><input type="checkbox" id="po-nichts"><span>Nichts ausgeschlossen (ausdrücklich bestätigen)</span></label>
       <label for="po-methode">Methode (wie wurde geprüft?)</label>
       <textarea id="po-methode" rows="3"></textarea><span class="zaehler" id="z-methode"></span>
       <p class="meta" id="po-hinweis"></p>
-      <div class="knoepfe" style="margin-top:8px"><button class="btn ghost" type="button" id="b-vorlage">Vorlage einsetzen</button></div>
+      <div class="knoepfe mt-2"><button class="btn ghost" type="button" id="b-vorlage">Vorlage einsetzen</button></div>
       <div id="m-po" role="status" aria-live="polite"></div>
       <label for="vermerk">Vermerk (optional, höchstens 200 Zeichen, steht nicht unter der Signatur)</label>
       <input id="vermerk" maxlength="200">
@@ -210,13 +170,13 @@
         <div class="po-klartext" id="v-po"></div>
         <dl class="kv"><dt>Kennung</dt><dd id="v-kennung"></dd><dt>Prüfsumme</dt><dd id="v-summe"></dd><dt>Signierschlüssel</dt><dd id="v-kid"></dd></dl>
         <details open><summary>Inhalt des Berichts</summary><pre id="v-inhalt"></pre></details>
-        <div id="ersetzen-zeile" hidden><label class="check"><input type="checkbox" id="ersetzen"><span>Der Eintrag hat schon einen Prüfbericht. Ich will ihn durch diesen ersetzen.</span></label></div>
-        <label class="check"><input type="checkbox" id="bestaetigt"><span>Ich habe Inhalt, Belege und Stufe geprüft und signiere diesen Bericht.</span></label>
+        <div id="ersetzen-zeile" hidden><label class="wahl"><input type="checkbox" id="ersetzen"><span>Der Eintrag hat schon einen Prüfbericht. Ich will ihn durch diesen ersetzen.</span></label></div>
+        <label class="wahl"><input type="checkbox" id="bestaetigt"><span>Ich habe Inhalt, Belege und Stufe geprüft und signiere diesen Bericht.</span></label>
         <div class="knoepfe">
           <button class="btn" type="button" id="b-signieren" disabled>Signieren</button>
           <button class="btn ghost" type="button" id="b-ablehnen">Ablehnen (nur Protokoll)</button>
         </div>
-        <div id="grund-zeile" hidden style="margin-top:10px"><label for="a-grund">Grund der Ablehnung (sieht der Einreicher)</label><select id="a-grund"><option value="nicht_nachweisbar">Die Angabe ließ sich nicht nachweisen</option><option value="beleg_fehlt">Der Beleg fehlt oder war nicht erreichbar</option></select></div>
+        <div id="grund-zeile" hidden class="mt-3"><label for="a-grund">Grund der Ablehnung (sieht der Einreicher)</label><select id="a-grund"><option value="nicht_nachweisbar">Die Angabe ließ sich nicht nachweisen</option><option value="beleg_fehlt">Der Beleg fehlt oder war nicht erreichbar</option></select></div>
         <div id="m-signieren" role="status" aria-live="polite"></div>
       </div>
     </section>
@@ -228,7 +188,7 @@
       <p class="meta">Der Eintrag fällt sofort auf S1 zurück. Die öffentliche Widerrufsliste (Format abgeklopft-widerruf/2) auf der Webseite ändert sich dadurch nicht von selbst: Kennung und Prüfsumme gehören danach in widerruf_eingabe.json, dann signiert widerruf_signieren.mjs die Liste neu (siehe Hinweis nach dem Widerruf).</p>
       <label for="w-grund">Grund (kurz, höchstens 200 Zeichen, wird nicht gespeichert)</label>
       <input id="w-grund" maxlength="200">
-      <label class="check"><input type="checkbox" id="w-bestaetigt"><span>Ich will den vorhandenen Prüfbericht widerrufen.</span></label>
+      <label class="wahl"><input type="checkbox" id="w-bestaetigt"><span>Ich will den vorhandenen Prüfbericht widerrufen.</span></label>
       <div class="knoepfe"><button class="btn gefahr" type="button" id="b-widerruf" disabled>Widerrufen</button></div>
       <div id="m-widerruf" role="status" aria-live="polite"></div>
     </section>
@@ -238,33 +198,33 @@
     <section class="card" id="p-prot" role="tabpanel" aria-labelledby="t-prot" hidden>
       <h2>Protokoll</h2>
       <p class="meta">Jede Signatur, Ablehnung und jeder Widerruf steht in einer Kette mit Prüfsummen. Der Server rechnet sie bei jedem Abruf nach.</p>
-      <div class="knoepfe" style="margin-top:8px"><button class="btn ghost" type="button" id="b-protokoll">Protokoll anzeigen</button></div>
+      <div class="knoepfe mt-2"><button class="btn ghost" type="button" id="b-protokoll">Protokoll anzeigen</button></div>
       <div id="m-protokoll" role="status" aria-live="polite"></div>
       <div class="tabelle"><table id="t-protokoll" hidden><thead><tr><th>Nr.</th><th>Zeit</th><th>Aktion</th><th>Auftrag</th><th>Kennung</th><th>Prüfsumme</th></tr></thead><tbody></tbody></table></div>
     </section>
     <!-- Verwaltung (nur Administratoren) -->
     <section class="card" id="s-verwaltung" role="tabpanel" aria-labelledby="t-verw" hidden>
       <h2>Verwaltung</h2>
-      <h3 style="margin:10px 0 4px">Bewerbungen</h3>
-      <div class="knoepfe" style="margin-top:6px"><button class="btn ghost" type="button" id="b-bew-neu">Aktualisieren</button></div>
+      <h3 class="m-3-0-1">Bewerbungen</h3>
+      <div class="knoepfe mt-2"><button class="btn ghost" type="button" id="b-bew-neu">Aktualisieren</button></div>
       <div id="m-bew" role="status" aria-live="polite"></div>
       <div id="bew-liste"></div>
       <div id="neuer-schluessel" hidden class="result warn">
         <b>Neuer Prüfer-Schlüssel für <span id="ns-name"></span></b>
-        <p class="meta" style="margin:6px 0">Der Schlüssel wird nur jetzt angezeigt. Bitte persönlich übergeben. Er ist nirgends gespeichert.</p>
-        <div id="ns-wert" style="font:700 1.25rem/1.4 var(--mono);letter-spacing:.06em;overflow-wrap:anywhere;margin:8px 0"></div>
-        <div class="knoepfe" style="margin-top:8px"><button class="btn" type="button" id="b-ns-kopieren">Kopieren</button><button class="btn ghost" type="button" id="b-ns-weg">Ausblenden</button></div>
+        <p class="meta m-2-0">Der Schlüssel wird nur jetzt angezeigt. Bitte persönlich übergeben. Er ist nirgends gespeichert.</p>
+        <div id="ns-wert" class="code-gross"></div>
+        <div class="knoepfe mt-2"><button class="btn" type="button" id="b-ns-kopieren">Kopieren</button><button class="btn ghost" type="button" id="b-ns-weg">Ausblenden</button></div>
         <div id="m-ns" role="status" aria-live="polite"></div>
       </div>
-      <h3 style="margin:22px 0 4px">Prüfer</h3>
+      <h3 class="m-5-0-1">Prüfer</h3>
       <div id="m-prl" role="status" aria-live="polite"></div>
       <div id="t-pruefer" hidden></div>
     </section>
 
   </div>
 </main>
-<footer><div class="wrap">Interne Seite, nicht für die Öffentlichkeit · <a href="index.html">Startseite</a></div></footer>
-<script>window.AK_PROFIL_MANUELL = true;</script><script src="nav-profil.js"></script>
+<footer><div class="wrap"><p class="fuss-text">Interne Seite, nicht für die Öffentlichkeit</p><ul class="fuss"><li><a href="index.html">Startseite</a></li></ul></div></footer>
+<script>window.AK_PROFIL_MANUELL = true;</script><script src="nav-profil.js?v=4ae4cfac"></script>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
@@ -292,10 +252,20 @@ const EREIGNIS = { beantragt: "Beantragt", art_gewaehlt: "Prüfart gewählt", ar
 const TABS = { "t-warte": "p-warte", "t-meine": "p-meine", "t-frei": "p-pruefen", "t-prot": "p-prot", "t-verw": "s-verwaltung" };
 function zeige(tabId, panelId) {
   const ziel = panelId || TABS[tabId];
-  for (const [t, p] of Object.entries(TABS)) { $(t).setAttribute("aria-selected", String(t === tabId)); $(p).hidden = p !== ziel; }
+  for (const [t, p] of Object.entries(TABS)) { $(t).setAttribute("aria-selected", String(t === tabId)); $(t).tabIndex = t === tabId ? 0 : -1; $(p).hidden = p !== ziel; }
   if (ziel !== "p-pruefen") $("p-pruefen").hidden = true;
   else $("p-pruefen").hidden = false;
 }
+
+// Reiter per Tastatur (T18): ←/→ wechseln, Pos1/Ende springen; Fokus folgt, der Reiter wird wie bei Klick geöffnet
+$("reiter").addEventListener("keydown", e => {
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+  const tabs = [...$("reiter").querySelectorAll('[role="tab"]')].filter(t => !t.hidden);
+  const i = tabs.indexOf(document.activeElement); if (i < 0) return;
+  e.preventDefault();
+  const n = e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (i + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+  tabs[n].focus(); tabs[n].click();
+});
 
 function el(tag, text, attrs) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
 function meldung(id, art, text) {
@@ -325,7 +295,7 @@ function abmelden() {
   $("t-frei").hidden = true; $("t-verw").hidden = true; $("l-warte").replaceChildren(); $("l-meine").replaceChildren(); $("w-kapazitaet").textContent = "";
   $("a-leiste").hidden = true; $("f-frei").hidden = true; $("a-fragebox").hidden = true; $("a-frage").value = "";
   zeige("t-warte");
-  $("schluessel").value = ""; $("angemeldet").hidden = true; AKProfilMenue.entfernen(); $("hauptteil").hidden = true; $("f-anmelden").hidden = false;
+  $("schluessel").value = ""; $("angemeldet").hidden = true; AKProfilMenue.entfernen(); $("hauptteil").hidden = true; $("reiter").hidden = true; $("f-anmelden").hidden = false; $("inhalt").className = "wrap schmal";
   verwaltungLeeren();
   $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true; $("t-protokoll").hidden = true;
   for (const id of ["m-anmelden", "m-eintrag", "m-auswahl", "m-signieren", "m-widerruf", "m-protokoll", "m-warte", "m-meine", "m-auftrag"]) meldung(id);
@@ -341,7 +311,7 @@ $("f-anmelden").addEventListener("submit", async ev => {
     const j = await api("GET", "/v1/pruefer/ich");
     meineId = j.pruefer.id; $("a-name").textContent = j.pruefer.name;
     $("a-kid").textContent = j.signierschluessel ? j.signierschluessel.kid + " (" + (j.signierschluessel.modus === "pilot" ? "Pilot-Testschlüssel, Berichte tragen „beispiel“" : j.signierschluessel.modus) + ")" : "keiner eingerichtet, Signieren nicht möglich";
-    $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; AKProfilMenue.setzen({ label: "Prüferbereich", name: j.pruefer.name, abmelden: abmelden }); $("hauptteil").hidden = false;
+    $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; AKProfilMenue.setzen({ label: "Prüferbereich", name: j.pruefer.name, abmelden: abmelden }); $("hauptteil").hidden = false; $("reiter").hidden = false; $("inhalt").className = "wrap mittel";
     meldung("m-anmelden", "ok", "Angemeldet.");
     $("t-frei").hidden = j.admin !== true; $("t-verw").hidden = j.admin !== true;
     zeige("t-warte"); warteLaden();
@@ -372,7 +342,7 @@ function ansichtFuellen(j) {
   const af = $("e-anfragen"); af.replaceChildren();
   if (!j.anfragen.length) af.appendChild(el("p", "Keine Bestätigungsanfragen.", { class: "meta" }));
   for (const a of j.anfragen) {
-    const k = el("div", undefined, { class: "result", style: "margin-top:8px" });
+    const k = el("div", undefined, { class: "result mt-2" });
     k.appendChild(el("b", "An " + a.an + " (" + a.angefragt + "): " + (STATUS[a.status] || a.status)));
     if (a.status !== "angefragt") {
       k.appendChild(el("div", a.name + ", " + a.rolle + ", " + a.firma + " · als " + (a.von === "ki-agent" ? "KI-Agent" : "Person") + (a.verantwortlich ? ", verantwortlich: " + a.verantwortlich : "") + " · " + a.datum, { class: "meta" }));
@@ -395,7 +365,7 @@ function ansichtFuellen(j) {
   const waehlbar = j.anfragen.filter(a => a.waehlbar);
   if (!waehlbar.length) bl.appendChild(el("p", "Es gibt keine Antwort „ja“ oder „teilweise“. Ohne sie ist nur S2 möglich.", { class: "meta" }));
   for (const a of waehlbar) {
-    const l = el("label", undefined, { class: "check" }), c = el("input", undefined, { type: "checkbox", value: a.ref, name: "best" });
+    const l = el("label", undefined, { class: "wahl" }), c = el("input", undefined, { type: "checkbox", value: a.ref, name: "best" });
     l.appendChild(c); l.appendChild(el("span", a.name + " (" + a.firma + "): " + STATUS[a.status]));
     bl.appendChild(l);
   }
@@ -706,7 +676,7 @@ async function warteLaden() {
     for (const q of j.warteschlange) {
       const k = kopf(q);
       k.appendChild(el("div", alter(q.alter_tage) + " · läuft ab nach dem " + q.liegt_bis, { class: "meta" }));
-      const lb = el("label", undefined, { class: "check" }), cb = el("input", undefined, { type: "checkbox" });
+      const lb = el("label", undefined, { class: "wahl" }), cb = el("input", undefined, { type: "checkbox" });
       lb.appendChild(cb); lb.appendChild(el("span", "Ich habe keine Bindung zum Einreicher."));
       k.appendChild(lb);
       const z = el("div", undefined, { class: "knoepfe" }); z.style.marginTop = "8px";
@@ -777,7 +747,7 @@ function auftragAnzeigen(a) {
   zeile("Verlauf", (a.ereignisse || []).map(v => (v.zeit || "").slice(0, 10) + " " + (EREIGNIS[v.code] || v.code)).join(" · "));
   const rf = $("a-rueckfragen"); rf.replaceChildren();
   for (const r of a.rueckfragen || []) {
-    const d = el("div", undefined, { class: "result", style: "margin-top:8px" });
+    const d = el("div", undefined, { class: "result mt-2" });
     d.appendChild(el("b", "Rückfrage (" + String(r.gefragt).slice(0, 10) + ")"));
     d.appendChild(el("div", r.frage, { class: "mehrzeilig" }));
     d.appendChild(el("div", r.antwort ? "Antwort: " + r.antwort : r.beantwortet ? "Nicht beantwortet (der Auftrag wurde zurückgegeben)." : "Noch keine Antwort des Einreichers.", { class: "meta" }));
@@ -844,7 +814,7 @@ function bewKarte(b) {
   const v = el("div", b.vita); v.style.cssText = "white-space:pre-wrap;margin:8px 0;overflow-wrap:anywhere"; k.appendChild(v);
   const z = el("div", undefined, { class: "knoepfe" }); z.style.marginTop = "8px";
   if (b.status === "offen") {
-    const l = el("label", undefined, { class: "check" }), ok = el("input", undefined, { type: "checkbox" });
+    const l = el("label", undefined, { class: "wahl" }), ok = el("input", undefined, { type: "checkbox" });
     l.appendChild(ok); l.appendChild(el("span", "Ich nehme diese Person als Prüfer an."));
     k.appendChild(l);
     const an = el("button", "Annehmen", { class: "btn", type: "button" }); an.disabled = true;
