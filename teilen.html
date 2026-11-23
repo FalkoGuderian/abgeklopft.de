@@ -118,9 +118,9 @@
           <div class="two">
             <div>
               <label for="ekat">Art</label>
-              <select id="ekat"><option>Erfahrung</option><option>Projekt</option><option>Produkt</option><option>Dienstleistung</option><option>Abschluss</option><option>Zertifikat</option><option>Fähigkeit</option></select>
+              <select id="ekat"><option>Erfahrung</option><option>Projekt</option><option>Produkt</option><option>Dienstleistung</option><option>Abschluss</option><option>Zertifikat</option><option>Fähigkeit</option><option>Prozess</option></select>
               <label for="etitel">Titel</label><input id="etitel" required maxlength="160" placeholder="z. B. Netzlast-Dashboard für Stadtwerke">
-              <label for="ezeit">Zeitraum</label><input id="ezeit" maxlength="60" placeholder="z. B. 2024–2025">
+              <label for="ezeit" id="ezeitl">Zeitraum</label><input id="ezeit" maxlength="60" placeholder="z. B. 2024–2025">
               <label for="efaeh">Fähigkeiten (mit Komma getrennt)</label><input id="efaeh" maxlength="600" placeholder="z. B. Python, SQL, Dashboards">
             </div>
             <div>
@@ -129,6 +129,35 @@
               <p class="meta">Keine Dateien hochladen. Verlinken Sie öffentliche Seiten, etwa Store-Eintrag, Repository oder Projektseite.</p>
             </div>
           </div>
+          <div class="pz-box" id="pzbox" hidden>
+            <h3>Prozess</h3>
+            <p class="meta"><b>Ein Prozess-Siegel sagt etwas über einen Zeitraum, nicht über die Qualität des Prozesses.</b> Tragen Sie oben den Beobachtungszeitraum ein: Von wann bis wann wurde nach diesem Verfahren gearbeitet?</p>
+            <div id="pzwarn" class="tf-warn" hidden><b>Berichte entfallen.</b> Dieser Eintrag hat schon Prüfberichte. Ändern Sie die Prozessdaten oder den Eintrag, entfallen die Berichte und müssen neu ausgestellt werden.</div>
+            <label for="pz-ziel">Ziel des Prozesses (Pflicht, höchstens 200 Zeichen)</label><input id="pz-ziel" maxlength="200" placeholder="z. B. Keine Rechnung wird ohne zwei unabhängige Prüfungen bezahlt.">
+            <div class="two">
+              <div><label for="pz-ausloeser">Auslöser (optional)</label><input id="pz-ausloeser" maxlength="200" placeholder="z. B. Rechnung geht ein"></div>
+              <div><label for="pz-ergebnis">Ergebnis (optional)</label><input id="pz-ergebnis" maxlength="200" placeholder="z. B. Gebuchte, freigegebene Rechnung"></div>
+            </div>
+            <label for="pz-rollen">Rollen (je Zeile eine, höchstens 10; nur Funktionsbezeichnungen, keine Personennamen)</label>
+            <textarea id="pz-rollen" style="font-family:inherit;min-height:60px" placeholder="Erfassung&#10;Freigabe"></textarea>
+            <label>Kennzahlen (optional, höchstens 10; Angaben der Person, nicht geprüft)</label>
+            <div id="pz-kz"></div>
+            <div class="row"><button class="btn ghost klein" type="button" id="pz-kz-neu">Kennzahl hinzufügen</button></div>
+            <fieldset class="tf-ab"><legend>Nachweisart (mindestens eine)</legend>
+              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="dokumentation"> <span>Verfahrensdokumentation</span></label>
+              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="protokolle"> <span>Protokolle der Vorgänge</span></label>
+              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="beobachtung"> <span>Beobachtung vor Ort</span></label>
+              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="kennzahlen"> <span>Kennzahlen</span></label>
+              <label class="tf-abzeile"><input type="checkbox" name="pz-nw" value="audit_fremd"> <span>Fremdes Audit</span></label>
+            </fieldset>
+          </div>
+          <details class="tf-box" id="tfbox">
+            <summary><b>Teile (optional)</b></summary>
+            <p class="meta">Ein größeres Projekt lässt sich in Teile gliedern (bis 12), die einzeln geprüft werden. <b>Gesamtstufe = niedrigste Stufe der Pflichtteile.</b> Optionale Teile senken die Gesamtstufe nicht; der Prüfer kann einen Teil ablehnen. Ein Teil ohne gültigen Prüfbericht zählt als „Eingereicht“ (S1).</p>
+            <div id="tfwarn" class="tf-warn" hidden><b>Berichte entfallen.</b> Dieser Eintrag hat schon Prüfberichte. Ändern Sie den Eintrag oder seine Teile, entfallen die betroffenen Berichte und müssen neu ausgestellt werden: bei einer Änderung am Eintrag selbst alle, bei geänderten oder entfernten Teilen die Berichte dieser Teile und der Bericht des Ganzen.</div>
+            <div id="tfliste"></div>
+            <div class="row"><button class="btn ghost klein" type="button" id="tfneu">Teil hinzufügen</button> <span class="meta" id="tfzaehler"></span></div>
+          </details>
           <div class="row"><button class="btn" type="submit" id="esenden">Eintrag speichern</button><button class="btn ghost" type="button" id="eabbr" hidden>Abbrechen</button></div>
         </form>
       </details>
@@ -319,7 +348,7 @@ function zeichnen() {
   // Einträge
   const E = stand.eintraege;
   $("eliste").innerHTML = E.length ? E.map(e => `<div class="eintrag-zeile">
-      <div style="flex:1;min-width:200px"><span class="badge b1">${STUFEN[1].siegel}</span> <b>${esc(e.titel)}</b> <span class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + esc(e.zeitraum) : ""}</span>
+      <div style="flex:1;min-width:200px"><span class="badge b1">${STUFEN[1].siegel}</span> <b>${esc(e.titel)}</b> <span class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + (e.kategorie === "Prozess" ? "Beobachtungszeitraum " : "") + esc(e.zeitraum) : ""}</span>${e.teile && e.gesamt ? `<br><span class="meta">${e.teile.length} Teile (${e.teile.filter(t => t.pflicht !== false).length} Pflicht) · Gesamtstufe S${esc(e.gesamt.stufe)}${e.gesamt.abgeleitet ? " (abgeleitet)" : ""}</span>` : ""}
         ${e.bestaetigungen.filter(b => b.status === "erhalten").map(b => `<br><span class="meta">Bestätigung erhalten – noch nicht geprüft: ${esc(ANTWORT_TEXT[b.antwort])} von ${esc(b.name)}</span>`).join("")}</div>
       <div class="knoepfe">${pruefKnopf(e)}<button class="btn ghost klein" type="button" data-bearb="${esc(e.id)}">bearbeiten</button><button class="btn ghost klein" type="button" data-eweg="${esc(e.id)}">löschen</button></div>
     </div>`).join("") : `<p class="meta">Noch keine Einträge. Fügen Sie Ihren ersten Eintrag hinzu.</p>`;
@@ -493,9 +522,189 @@ $("pform").addEventListener("submit", e => {
   });
 });
 
+// ---------- Teile eines Eintrags (D3) ----------
+const TEIL_TYPEN = [["produkt", "Produkt"], ["prozess", "Prozess"], ["dienstleistung", "Dienstleistung"], ["dokument", "Dokument"], ["abschluss", "Abschluss"], ["sonstiges", "Sonstiges"]];
+const TEIL_BEZ = [["zeitlich|nach_ende", "zeitlich: nach Ende von"], ["zeitlich|nach_start", "zeitlich: nach Start von"], ["zeitlich|gleichzeitig", "zeitlich: gleichzeitig mit"],
+  ["raeumlich|gleicher_ort", "räumlich: am gleichen Ort wie"], ["raeumlich|anderer_ort", "räumlich: an einem anderen Ort als"],
+  ["logisch|setzt_voraus", "logisch: setzt voraus"], ["logisch|nutzt", "logisch: nutzt"], ["logisch|ersetzt", "logisch: ersetzt"], ["logisch|ist_variante_von", "logisch: ist Variante von"]];
+let tModell = [];            // [{ id, titel, typ, pflicht, ort, ab: { <teilId>: "beziehung|art" }, hinweise, zeitraum, manuell }]
+let tHatteTeile = false;     // der bearbeitete Eintrag hatte beim Laden schon Teile
+function teilIdVon(titel) {
+  const t = String(titel).toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return t.slice(0, 24).replace(/-+$/, "");
+}
+function teilIdFrei(basis, selbst) {
+  const b = basis || "teil"; let n = 1, id = b;
+  while (tModell.some(t => t !== selbst && t.id === id)) { n++; const z = "-" + n; id = b.slice(0, 24 - z.length).replace(/-+$/, "") + z; }
+  return id;
+}
+function tModellAusEintrag(x) {
+  tHatteTeile = !!(x && x.teile && x.teile.length);
+  tModell = ((x && x.teile) || []).map(t => ({ id: t.id, titel: t.titel, typ: t.typ, pflicht: t.pflicht !== false, ort: t.ort || "", zeitraum: t.zeitraum,
+    ab: Object.fromEntries((t.abhaengig_von || []).map(d => [d.teil, d.beziehung + "|" + d.art])),
+    hinweise: Object.fromEntries((t.abhaengig_von || []).filter(d => d.hinweis).map(d => [d.teil, d.hinweis])), manuell: true }));
+  tZeichnen();
+  const hatBericht = !!(x && (x.pruefbericht || (x.teile || []).some(t => t.pruefbericht) || (x.gesamt && x.gesamt.stufe > 1)));
+  $("tfwarn").hidden = !hatBericht;
+  if (tModell.length) $("tfbox").open = true;
+}
+function tZeichnen() {
+  $("tfzaehler").textContent = tModell.length ? tModell.length + " von 12 Teilen" : "Keine Teile: der Eintrag wird als Ganzes geprüft.";
+  $("tfneu").disabled = tModell.length >= 12;
+  $("tfliste").innerHTML = tModell.map((t, i) => `<fieldset class="tf-teil" data-i="${i}"><legend class="meta">Teil ${i + 1}</legend>
+    <div class="two">
+      <div><label for="tt${i}">Titel</label><input id="tt${i}" data-f="titel" maxlength="120" value="${esc(t.titel)}" placeholder="z. B. Datenmodell">
+        <label for="ti${i}">Id (a–z, 0–9, Bindestrich)</label><input id="ti${i}" data-f="id" maxlength="24" value="${esc(t.id)}" style="font-family:var(--mono)"></div>
+      <div><label for="ty${i}">Typ</label><select id="ty${i}" data-f="typ">${TEIL_TYPEN.map(([v, n]) => `<option value="${v}"${v === t.typ ? " selected" : ""}>${n}</option>`).join("")}</select>
+        <label for="to${i}">Ort (optional)</label><input id="to${i}" data-f="ort" maxlength="80" value="${esc(t.ort)}" placeholder="z. B. Leitwarte"></div>
+    </div>
+    <label class="tf-abzeile"><input type="checkbox" data-f="pflicht"${t.pflicht ? " checked" : ""}> <span>Pflichtteil</span></label>
+    ${t.pflicht ? "" : `<p class="meta">Optional: dieser Teil senkt die Gesamtstufe nicht. Der Prüfer kann ihn ablehnen.</p>`}
+    ${tModell.length > 1 ? `<fieldset class="tf-ab"><legend>Abhängig von (Mehrfachauswahl)</legend>${tModell.filter(a => a !== t).map(a => `<div class="tf-abzeile">
+        <input type="checkbox" data-ab="${esc(a.id)}" id="ta${i}_${tModell.indexOf(a)}"${a.id in t.ab ? " checked" : ""}> <label for="ta${i}_${tModell.indexOf(a)}" data-abl="${esc(a.id)}" style="margin:0;font-weight:400">${esc(a.titel || a.id)}</label>
+        ${a.id in t.ab ? `<select data-bez="${esc(a.id)}" aria-label="Beziehung zu ${esc(a.titel || a.id)}">${TEIL_BEZ.map(([v, n]) => `<option value="${v}"${v === t.ab[a.id] ? " selected" : ""}>${n}</option>`).join("")}</select>` : ""}</div>`).join("")}</fieldset>` : ""}
+    <div class="row"><button class="btn ghost klein" type="button" data-weg="${i}">Teil entfernen</button></div></fieldset>`).join("");
+}
+$("tfneu").addEventListener("click", () => {
+  if (tModell.length >= 12) return;
+  tModell.push({ id: teilIdFrei("teil"), titel: "", typ: "produkt", pflicht: true, ort: "", ab: {}, hinweise: {}, manuell: false });
+  tZeichnen(); const f = $("tfliste").querySelector(".tf-teil:last-child [data-f=titel]"); if (f) f.focus();
+});
+$("tfliste").addEventListener("input", e => {
+  const f = e.target.dataset.f; if (!f || f === "pflicht" || f === "typ") return;
+  const t = tModell[+e.target.closest(".tf-teil").dataset.i];
+  if (f === "titel") {
+    t.titel = e.target.value;
+    if (!t.manuell) { const alt = t.id; t.id = teilIdFrei(teilIdVon(t.titel), t); tIdUmbenennen(alt, t.id); const ide = e.target.closest(".tf-teil").querySelector("[data-f=id]"); if (ide) ide.value = t.id; }
+    tBeschriftung(t);
+  } else if (f === "id") { const alt = t.id; t.id = e.target.value.trim(); t.manuell = true; tIdUmbenennen(alt, t.id); tBeschriftung(t); }
+  else if (f === "ort") t.ort = e.target.value;
+});
+// Beim Tippen wird nichts neu gezeichnet (sonst geht der Fokus verloren): Verweise und Beschriftungen werden an Ort und Stelle angepasst
+function tIdUmbenennen(alt, neu) {
+  if (alt === neu) return;
+  // Verweise gehören dem Teil, dessen Id sie nennen: bei doppelter Id (alt noch bei einem anderen Teil, oder neu schon vergeben) nichts umhängen
+  if (tModell.some(x => x.id === alt) || tModell.filter(x => x.id === neu).length > 1) return;
+  for (const x of tModell) for (const m of [x.ab, x.hinweise]) if (alt in m) { m[neu] = m[alt]; delete m[alt]; }
+  for (const el of $("tfliste").querySelectorAll("[data-ab],[data-bez],[data-abl]")) for (const a of ["data-ab", "data-bez", "data-abl"]) if (el.getAttribute(a) === alt) el.setAttribute(a, neu);
+}
+function tBeschriftung(t) {
+  for (const l of $("tfliste").querySelectorAll("[data-abl]")) if (l.getAttribute("data-abl") === t.id) l.textContent = t.titel || t.id;
+}
+$("tfliste").addEventListener("change", e => {
+  const el = e.target, fs = el.closest(".tf-teil"); if (!fs) return;
+  const t = tModell[+fs.dataset.i];
+  if (el.dataset.f === "pflicht") { t.pflicht = el.checked; tZeichnen(); }
+  else if (el.dataset.f === "typ") t.typ = el.value;
+  else if (el.dataset.ab) { if (el.checked) t.ab[el.dataset.ab] = "logisch|setzt_voraus"; else delete t.ab[el.dataset.ab]; tZeichnen(); }
+  else if (el.dataset.bez) t.ab[el.dataset.bez] = el.value;
+});
+tZeichnen();
+$("tfliste").addEventListener("click", e => {
+  const w = e.target.closest("[data-weg]"); if (!w) return;
+  const t = tModell[+w.dataset.weg];
+  tModell.splice(+w.dataset.weg, 1);
+  for (const x of tModell) { delete x.ab[t.id]; delete x.hinweise[t.id]; }
+  tZeichnen();
+});
+// Teile aus dem Formular in die Form der API: { fehler } (Text) oder { teile } (undefined = Feld weglassen, null = alle entfernen)
+function teileFuerApi() {
+  if (!tModell.length) return { teile: tHatteTeile ? null : undefined };
+  const ids = new Set();
+  for (const [i, t] of tModell.entries()) {
+    const n = "Teil " + (i + 1) + ": ";
+    if (!t.titel.trim()) return { fehler: n + "Bitte einen Titel eintragen oder den Teil entfernen." };
+    if (t.titel.trim().length > 120) return { fehler: n + "Der Titel ist länger als 120 Zeichen." };
+    if (!/^[a-z0-9-]{1,24}$/.test(t.id)) return { fehler: n + "Die Id darf nur a–z, 0–9 und Bindestrich enthalten (1 bis 24 Zeichen)." };
+    if (ids.has(t.id)) return { fehler: n + "Die Id „" + t.id + "“ kommt doppelt vor." };
+    ids.add(t.id);
+    if (t.ort.trim().length > 80) return { fehler: n + "Der Ort ist länger als 80 Zeichen." };
+  }
+  return { teile: tModell.map(t => {
+    const o = { id: t.id, titel: t.titel.trim(), typ: t.typ, pflicht: t.pflicht };
+    if (t.ort.trim()) o.ort = t.ort.trim();
+    if (t.zeitraum) o.zeitraum = t.zeitraum;
+    o.abhaengig_von = Object.entries(t.ab).filter(([k]) => ids.has(k) && k !== t.id).map(([k, v]) => { const [beziehung, art] = v.split("|"); return { teil: k, beziehung, art, ...(t.hinweise[k] ? { hinweis: t.hinweise[k] } : {}) }; });
+    return o;
+  }) };
+}
+function teileFehlerText(err) {
+  if (err && err.code === "teile_zyklus") return "Die Abhängigkeiten der Teile bilden einen Kreis (ein Teil hängt am Ende von sich selbst ab). Bitte entfernen Sie eine Abhängigkeit. " + (err.message || "");
+  if (err && err.code === "teile_ungueltig") return "Die Teile sind nicht gültig. " + (err.message || "");
+  return err;
+}
+
+// ---------- Prozess (D4) ----------
+const PZ_MAX_KZ = 10;
+let pzKz = [];   // [{ name, wert, einheit, zeitraum, quelle }]
+let pzHatte = false;
+const istProzess = () => $("ekat").value === "Prozess";
+function pzUmschalten() {
+  const p = istProzess();
+  $("pzbox").hidden = !p;
+  $("ezeitl").textContent = p ? "Beobachtungszeitraum (Pflicht)" : "Zeitraum";
+  $("ezeit").required = p; $("ezeit").placeholder = p ? "z. B. 2025-01 bis 2025-12" : "z. B. 2024–2025";
+}
+function pzZeichnen() {
+  $("pz-kz-neu").disabled = pzKz.length >= PZ_MAX_KZ;
+  $("pz-kz").innerHTML = pzKz.map((k, i) => `<fieldset class="tf-teil pz-kz" data-i="${i}"><legend class="meta">Kennzahl ${i + 1}</legend>
+    <div class="two"><div><label for="pk-n${i}">Name (Pflicht)</label><input id="pk-n${i}" data-f="name" maxlength="60" value="${esc(k.name)}" placeholder="z. B. Durchlaufzeit">
+      <label for="pk-e${i}">Einheit</label><input id="pk-e${i}" data-f="einheit" maxlength="40" value="${esc(k.einheit)}" placeholder="z. B. Tage (Median)"></div>
+      <div><label for="pk-w${i}">Wert (Pflicht, Zahl oder Text)</label><input id="pk-w${i}" data-f="wert" maxlength="40" value="${esc(k.wert)}" placeholder="z. B. 4,2">
+      <label for="pk-z${i}">Zeitraum</label><input id="pk-z${i}" data-f="zeitraum" maxlength="40" value="${esc(k.zeitraum)}" placeholder="z. B. 2025"></div></div>
+    <label for="pk-q${i}">Quelle</label><input id="pk-q${i}" data-f="quelle" maxlength="80" value="${esc(k.quelle)}" placeholder="z. B. Workflow-Protokoll">
+    <div class="row"><button class="btn ghost klein" type="button" data-pzweg="${i}">Kennzahl entfernen</button></div></fieldset>`).join("");
+}
+$("pz-kz-neu").addEventListener("click", () => { if (pzKz.length < PZ_MAX_KZ) { pzKz.push({ name: "", wert: "", einheit: "", zeitraum: "", quelle: "" }); pzZeichnen(); } });
+$("pz-kz").addEventListener("input", e => { const f = e.target.dataset.f; if (f) pzKz[+e.target.closest(".pz-kz").dataset.i][f] = e.target.value; });
+$("pz-kz").addEventListener("click", e => { const w = e.target.closest("[data-pzweg]"); if (w) { pzKz.splice(+w.dataset.pzweg, 1); pzZeichnen(); } });
+$("ekat").addEventListener("change", pzUmschalten);
+function pzAusEintrag(x) {
+  const p = (x && x.prozess) || {};
+  pzHatte = !!(x && x.prozess);
+  $("pz-ziel").value = p.ziel || ""; $("pz-ausloeser").value = p.ausloeser || ""; $("pz-ergebnis").value = p.ergebnis || "";
+  $("pz-rollen").value = (p.rollen || []).join("\n");
+  pzKz = (p.kennzahlen || []).map(k => ({ name: k.name, wert: String(k.wert), einheit: k.einheit || "", zeitraum: k.zeitraum || "", quelle: k.quelle || "" }));
+  for (const c of document.getElementsByName("pz-nw")) c.checked = (p.nachweisart || []).includes(c.value);
+  pzZeichnen(); pzUmschalten();
+  $("pzwarn").hidden = !(x && x.kategorie === "Prozess" && (x.pruefbericht || (x.teile || []).some(t => t.pruefbericht)));
+}
+// Prozessdaten in die Form der API; { fehler } oder { prozess } (undefined = Feld weglassen)
+function prozessFuerApi() {
+  if (!istProzess()) return { prozess: undefined };
+  const ziel = $("pz-ziel").value.trim();
+  if (!$("ezeit").value.trim()) return { fehler: "Bitte tragen Sie den Beobachtungszeitraum ein (von wann bis wann wurde nach dem Verfahren gearbeitet)." };
+  if (!ziel) return { fehler: "Bitte tragen Sie das Ziel des Prozesses ein." };
+  const rollen = $("pz-rollen").value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  if (rollen.length > 10) return { fehler: "Höchstens 10 Rollen." };
+  if (rollen.some(r => r.length > 80)) return { fehler: "Eine Rolle ist länger als 80 Zeichen." };
+  const nw = [...document.getElementsByName("pz-nw")].filter(c => c.checked).map(c => c.value);
+  if (!nw.length) return { fehler: "Bitte wählen Sie mindestens eine Nachweisart." };
+  const kz = [];
+  for (const [i, k] of pzKz.entries()) {
+    if (!k.name.trim() || !String(k.wert).trim()) return { fehler: "Kennzahl " + (i + 1) + ": Name und Wert sind Pflicht (oder die Kennzahl entfernen)." };
+    const w = String(k.wert).trim(), o = { name: k.name.trim(), wert: /^-?\d+([.,]\d+)?$/.test(w) ? Number(w.replace(",", ".")) : w };
+    for (const f of ["einheit", "zeitraum", "quelle"]) if (k[f].trim()) o[f] = k[f].trim();
+    kz.push(o);
+  }
+  const o = { ziel };
+  for (const [f, id] of [["ausloeser", "pz-ausloeser"], ["ergebnis", "pz-ergebnis"]]) if ($(id).value.trim()) o[f] = $(id).value.trim();
+  if (rollen.length) o.rollen = rollen;
+  if (kz.length) o.kennzahlen = kz;
+  o.nachweisart = nw;
+  return { prozess: o };
+}
+function prozessFehlerText(err) {
+  if (err && err.code === "prozess_ungueltig") return "Die Prozessdaten sind nicht gültig. " + (err.message || "");
+  if (err && err.code === "unbekanntes_feld") return "Die Prozessdaten enthalten ein unbekanntes Feld. " + (err.message || "");
+  return teileFehlerText(err);
+}
+pzZeichnen(); pzUmschalten();
+
 // Einträge anlegen / bearbeiten / löschen
 function eFormLeeren() {
   $("eid").value = ""; $("eform").reset(); $("eneutitel").textContent = "Eintrag hinzufügen"; $("eabbr").hidden = true;
+  tModellAusEintrag(null); pzAusEintrag(null);
 }
 $("eabbr").addEventListener("click", () => { eFormLeeren(); $("eneu").open = false; });
 $("eform").addEventListener("submit", e => {
@@ -504,13 +713,20 @@ $("eform").addEventListener("submit", e => {
   if (belege.length > 5) { fehler("Höchstens 5 Links als Beleg."); return; }
   const body = { kategorie: $("ekat").value, titel: $("etitel").value.trim(), zeitraum: $("ezeit").value.trim(), text: $("etext").value.trim(),
     faehigkeiten: $("efaeh").value.split(",").map(s => s.trim()).filter(Boolean).slice(0, 12), belege };
+  const pr = prozessFuerApi();
+  if (pr.fehler) { fehler(pr.fehler); return; }
+  if (pr.prozess !== undefined) body.prozess = pr.prozess;
+  else if (pzHatte) body.prozess = null;
+  const tr = teileFuerApi();
+  if (tr.fehler) { fehler(tr.fehler); return; }
+  if (tr.teile !== undefined) body.teile = tr.teile;
   const id = $("eid").value;
   mitSperre(e.submitter, async () => {
     try {
       await api(id ? "PATCH" : "POST", `/v1/profile/${konto.id}/eintraege${id ? "/" + id : ""}`, body, konto.schluessel);
       eFormLeeren(); $("eneu").open = false;
       await laden(); erfolg(id ? "Eintrag geändert." : "Eintrag gespeichert. Als Nächstes: einen persönlichen Link erstellen.");
-    } catch (err) { fehler(err); }
+    } catch (err) { fehler(prozessFehlerText(err)); }
   });
 });
 $("eliste").addEventListener("click", e => {
@@ -519,6 +735,7 @@ $("eliste").addEventListener("click", e => {
     const x = stand.eintraege.find(y => y.id === b.dataset.bearb); if (!x) return;
     $("eid").value = x.id; $("ekat").value = x.kategorie; $("etitel").value = x.titel; $("ezeit").value = x.zeitraum;
     $("etext").value = x.text; $("efaeh").value = x.faehigkeiten.join(", "); $("ebelege").value = x.belege.join("\n");
+    tModellAusEintrag(x); pzAusEintrag(x);
     $("eneutitel").textContent = "Eintrag bearbeiten"; $("eabbr").hidden = false; $("eneu").open = true;
     $("eneu").scrollIntoView({ block: "start" });
   }

@@ -161,9 +161,83 @@ function bestaetigungHtml(b) {
   if (b.status === "angefragt") return `<p class="meta">Bestätigung angefragt am ${esc(b.angefragt)}${b.an ? " bei " + esc(b.an) : ""}.</p>`;
   return `<p class="meta"><b>Bestätigung erhalten – noch nicht geprüft.</b> ${esc(ANTWORT_TEXT[b.antwort] || b.antwort)} · ${b.von === "ki-agent" ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(b.name)} (${esc(b.rolle)}, ${esc(b.firma)}${b.verantwortlich ? ", verantwortlich: " + esc(b.verantwortlich) : ""}) am ${esc(b.datum)}${b.kommentar ? ": „" + esc(b.kommentar) + "“" : ""}</p>`;
 }
+// Prüfobjekt eines Eintrags: feste Kurzzeile unter dem Siegel (nie eingeklappt), Details darunter einklappbar.
+// Maßgeblich ist die signierte Fassung im Bericht; die Kopie unter "pruefung" dient nur als Rückfall. Alle Texte werden escaped.
+function poKurzliste(liste, max) {
+  const t = []; let n = 0;
+  for (const x of liste) { if (n + x.length > max && t.length) break; t.push(x); n += x.length + 2; }
+  return t.join("; ") + (t.length < liste.length ? "… (+" + (liste.length - t.length) + " weitere, siehe Details)" : "");
+}
+function pruefobjektHtml(e) {
+  const b = e.pruefbericht;
+  if (!b) return ""; // Eintrag ohne Bericht (S1): keine Zeile
+  // Form der Antwort: pruefbericht.version und (bei Version 3) pruefbericht.pruefobjekt; Rückfall auf inhalt/pruefung (Profil-Hülle)
+  const ver = b.version || (b.inhalt && b.inhalt.version) || 0;
+  const po = b.pruefobjekt || (b.inhalt && b.inhalt.pruefobjekt) || (e.pruefung && e.pruefung.pruefobjekt) || null;
+  if (!po && ver !== 2) return ""; // Version unbekannt: nichts behaupten
+  if (!po || typeof po !== "object") return `<p class="po-zeile po-alt meta">Der Umfang der Prüfung ist nicht angegeben (Bericht vor Format 0.5).</p>`;
+  const umfang = Array.isArray(po.umfang_geprueft) ? po.umfang_geprueft.map(String) : [];
+  const nicht = Array.isArray(po.nicht_geprueft) ? po.nicht_geprueft.map(String) : [];
+  const nichtText = po.nichts_ausgeschlossen === true ? "Nichts ausgeschlossen (vom Prüfer ausdrücklich bestätigt)" : poKurzliste(nicht, 110);
+  const liste = (l, leer) => l.length ? `<ul>${l.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : `<p class="meta">${leer}</p>`;
+  return `<div class="po-zeile">
+      <p class="po-kurz"><b>Geprüft:</b> ${esc(poKurzliste(umfang, 110))} (Stand: ${esc(po.version_stand)}). <b>Nicht geprüft:</b> ${esc(nichtText)}.</p>
+      <details class="po-details"><summary>Details zur Prüfung</summary>
+        <dl><dt>Gegenstand</dt><dd>${esc(po.gegenstand)}</dd><dt>Stand</dt><dd>${esc(po.version_stand)}</dd><dt>Methode</dt><dd>${esc(po.methode)}</dd></dl>
+        <p class="po-kopf">Geprüft</p>${liste(umfang, "–")}
+        <p class="po-kopf">Nicht geprüft</p>${po.nichts_ausgeschlossen === true ? `<p class="meta">Nichts ausgeschlossen (vom Prüfer ausdrücklich bestätigt)</p>` : liste(nicht, "–")}
+      </details>
+    </div>`;
+}
+// Teile eines Eintrags (Schritt D3): Gesamtstufe als feste Zeile, Liste der Teile einklappbar. Nur escaped Text.
+const TEIL_TYP_TEXT = { produkt: "Produkt", prozess: "Prozess", dienstleistung: "Dienstleistung", dokument: "Dokument", abschluss: "Abschluss", sonstiges: "Sonstiges" };
+const TEIL_BEZ_TEXT = { nach_ende: "zeitlich nach Ende von", nach_start: "zeitlich nach Start von", gleichzeitig: "zeitlich gleichzeitig mit", gleicher_ort: "am gleichen Ort wie", anderer_ort: "an einem anderen Ort als",
+  setzt_voraus: "setzt voraus:", nutzt: "nutzt:", ersetzt: "ersetzt:", ist_variante_von: "ist Variante von" };
+// Wirksame Stufe eines Teils: ohne gültigen Bericht S1
+const teilStufe = t => (t.pruefbericht && t.gueltig !== false && (t.stufe === 2 || t.stufe === 3)) ? t.stufe : 1;
+function teileGesamtHtml(e) {
+  if (!Array.isArray(e.teile) || !e.teile.length || !e.gesamt) return "";
+  const g = e.gesamt, st = [1, 2, 3].includes(g.stufe) ? g.stufe : 1;
+  const titel = id => ((e.teile.find(t => t.id === id) || {}).titel) || id;
+  const bg = Array.isArray(g.begrenzt_durch) ? g.begrenzt_durch.map(titel) : [];
+  const zusatz = [g.abgeleitet ? "abgeleitet aus den Teilen" : "mit eigener Prüfung des Ganzen", bg.length ? "begrenzt durch " + bg.join(", ") : ""].filter(Boolean).join("; ");
+  return `<p class="te-gesamt"><b>Gesamtstufe: S${st}</b> (${esc(STUFEN[st].siegel)}; ${esc(zusatz)}). Sie ist die niedrigste Stufe der Pflichtteile.</p>`;
+}
+function teileListeHtml(e) {
+  if (!Array.isArray(e.teile) || !e.teile.length) return "";
+  const titel = id => ((e.teile.find(t => t.id === id) || {}).titel) || id;
+  const li = e.teile.map(t => {
+    const st = teilStufe(t);
+    const ab = (t.abhaengig_von || []).map(d => `${esc(TEIL_BEZ_TEXT[d.art] || d.art)} ${esc(titel(d.teil))}`).join("; ");
+    return `<li class="te-teil"><p class="te-kopf"><span class="badge b${st}" title="${esc(STUFEN[st].text)}">${STUFEN[st].siegel}</span> <b>${esc(t.titel)}</b>
+        <span class="meta">${esc(TEIL_TYP_TEXT[t.typ] || t.typ)} · ${t.pflicht === false ? "optional (senkt die Gesamtstufe nicht)" : "Pflichtteil"}${t.ort ? " · " + esc(t.ort) : ""}</span></p>
+      ${ab ? `<p class="meta te-ab">Abhängig: ${ab}</p>` : ""}
+      ${t.pruefbericht && t.gueltig === false ? `<p class="meta te-ab">Der Prüfbericht dieses Teils ist abgelaufen und zählt als S1.</p>` : ""}
+      ${t.pruefbericht ? pruefobjektHtml(t) : `<p class="meta te-ab">Kein gültiger Prüfbericht: zählt als S1.</p>`}</li>`;
+  }).join("");
+  return `<details class="te-details"><summary>Teile (${e.teile.length})</summary><ul class="te-liste">${li}</ul></details>`;
+}
+// Prozess (D4): Beobachtungszeitraum im Siegelbereich (nur mit Bericht) und Prozessdaten am Eintrag. Nur escaped Text.
+const PROZESS_WEG_NAME = { prozess_dokumentation: "Verfahrensdokument gegen Beobachtung", prozess_stichprobe: "Stichprobe aus Prozessprotokollen", prozess_bestaetigung: "Bestätigung durch Prozessverantwortliche" };
+const NACHWEIS_TEXT = { dokumentation: "Verfahrensdokumentation", protokolle: "Protokolle der Vorgänge", beobachtung: "Beobachtung vor Ort", kennzahlen: "Kennzahlen", audit_fremd: "Fremdes Audit" };
+function prozessZeitraumHtml(e, st) {
+  if (e.kategorie !== "Prozess" || !e.zeitraum || !e.pruefbericht || st === 1) return "";
+  const weg = PROZESS_WEG_NAME[e.pruefbericht.pruefweg] || (window.PRUEFWEGE && (PRUEFWEGE[e.pruefbericht.pruefweg] || {}).name) || e.pruefbericht.pruefweg || "";
+  return `<p class="pz-zeile"><b>Beobachtungszeitraum:</b> ${esc(e.zeitraum)}. Im Zeitraum ${esc(e.zeitraum)} wurde nach diesem Verfahren gearbeitet, geprüft: ${esc(weg)}.</p>`;
+}
+function prozessDatenHtml(e) {
+  const p = e.prozess; if (e.kategorie !== "Prozess" || !p || typeof p !== "object") return "";
+  const dl = [["Ziel", p.ziel], ["Auslöser", p.ausloeser], ["Ergebnis", p.ergebnis], ["Beobachtungszeitraum", e.zeitraum]].filter(([, v]) => v).map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
+  const rollen = (p.rollen || []).length ? `<p class="meta">Rollen: ${p.rollen.map(esc).join(", ")}</p>` : "";
+  const kz = (p.kennzahlen || []).length ? `<p class="meta">Kennzahlen (Angaben der Person, nicht geprüft):</p><ul>${p.kennzahlen.map(k => `<li>${esc(k.name)}: ${esc(k.wert)}${k.einheit ? " " + esc(k.einheit) : ""}${k.zeitraum ? ", " + esc(k.zeitraum) : ""}${k.quelle ? " (Quelle: " + esc(k.quelle) + ")" : ""}</li>`).join("")}</ul>` : "";
+  const nw = (p.nachweisart || []).length ? `<p class="meta">Nachweisart: ${p.nachweisart.map(a => esc(NACHWEIS_TEXT[a] || a)).join(", ")}</p>` : "";
+  return `<div class="pz-daten"><dl>${dl}</dl>${rollen}${kz}${nw}</div>`;
+}
 // Eintrag eines selbst angelegten Profils (immer Stufe 1)
 function serverEintragHtml(e, i) {
-  const st = (e.stufe === 2 || e.stufe === 3) && e.pruefbericht ? e.stufe : 1; // Stufe 2/3 nur mit Prüfbericht (signiert vom Server)
+  const mitTeilen = Array.isArray(e.teile) && e.teile.length && e.gesamt;
+  // Stufe 2/3 nur mit Prüfbericht (signiert vom Server); bei Teilen zählt die berechnete Gesamtstufe
+  const st = mitTeilen ? ([2, 3].includes(e.gesamt.stufe) ? e.gesamt.stufe : 1) : (e.stufe === 2 || e.stufe === 3) && e.pruefbericht ? e.stufe : 1;
   const belege = (e.belege || []).map(u => sichereUrl(u)
     ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow ugc">${esc(urlKurz(u))}</a>` : esc(u)).join(" · ");
   return `
@@ -173,9 +247,12 @@ function serverEintragHtml(e, i) {
       <span class="lt-titel">${esc(e.titel)}</span>
       <span class="lt-zeit">${esc(e.zeitraum || "")}</span>
     </button>
+    ${pruefobjektHtml(e)}${prozessZeitraumHtml(e, st)}${teileGesamtHtml(e)}
     <div class="lt-detail" id="d-${i}" hidden>
       ${e.text ? `<p class="mehrzeilig">${esc(e.text)}</p>` : ""}
-      <p class="meta"><b>${esc(STUFEN[st].titel)}.</b> ${st === 1 ? "Selbst eingetragen, von abgeklopft.de nicht geprüft." : `Prüfbericht ${esc(e.pruefbericht.kennung)}, ausgestellt ${esc(e.pruefbericht.ausgestellt)}, gültig bis ${esc(e.pruefbericht.gueltigBis)}.${e.pruefbericht.beispiel ? " Pilot-Testschlüssel: nur Vorführung des Verfahrens, keine echte Prüfung." : ""} Nachrechnen: <a href="/verify.html">verify.html</a>.`}</p>
+      ${prozessDatenHtml(e)}
+      ${teileListeHtml(e)}
+      <p class="meta"><b>${esc(STUFEN[st].titel)}.</b> ${st === 1 ? "Selbst eingetragen, von abgeklopft.de nicht geprüft." : !e.pruefbericht ? `Gesamtstufe aus den Berichten der Teile berechnet. Nachrechnen: <a href="/verify.html">verify.html</a>.` : `Prüfbericht ${esc(e.pruefbericht.kennung)}, ausgestellt ${esc(e.pruefbericht.ausgestellt)}, gültig bis ${esc(e.pruefbericht.gueltigBis)}.${e.pruefbericht.beispiel ? " Pilot-Testschlüssel: nur Vorführung des Verfahrens, keine echte Prüfung." : ""} Nachrechnen: <a href="/verify.html">verify.html</a>.`}</p>
       ${(e.bestaetigungen || []).map(bestaetigungHtml).join("")}
       <p class="meta">Links der Person: ${belege || "keine"}</p>
       <div>${(e.faehigkeiten || []).map(s => `<span class="tag">${esc(s)}</span>`).join("")}</div>

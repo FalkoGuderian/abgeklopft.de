@@ -24,6 +24,13 @@
   .pb th,.pb td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);overflow-wrap:anywhere;vertical-align:top}
   .pb .tabelle{overflow-x:auto}
   .pb [hidden]{display:none!important}
+  .pb .zaehler{display:block;font-size:.78rem;color:var(--muted);margin-top:3px;text-align:right}
+  .pb .zaehler.ueber{color:var(--bad);font-weight:600}
+  .pb .po-std{border:1px solid var(--line);background:var(--sunk);border-radius:10px;padding:8px 12px;margin:6px 0 8px;font-size:.9rem}
+  .pb .po-std ul{margin:4px 0 0;padding-left:1.2em}
+  .pb .po-klartext{background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:12px 0}
+  .pb .po-klartext p{margin:4px 0;color:var(--ink)} .pb .po-klartext ul{margin:2px 0 6px;padding-left:1.2em}
+  .pb #po-offen{margin:10px 0 0}
   .pb .reiter-leiste{display:flex;gap:4px 6px;flex-wrap:wrap;margin:22px 0 4px;border-bottom:1px solid var(--line)}
   .pb .reiter-leiste button{background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:10px 12px 9px;font:600 .92rem/1.2 var(--text);color:var(--muted);cursor:pointer;border-radius:0}
   .pb .reiter-leiste button:hover{color:var(--ink)}
@@ -37,6 +44,10 @@
   .pb .kontext.frei{border-left-color:var(--signal)}
   .pb textarea{width:100%;min-height:90px;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);box-sizing:border-box}
   .pb .stufe{font:700 .8rem/1 var(--mono);padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--sunk)}
+.teile-liste{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.teile-liste li{border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.teile-liste .t-stufe{font-weight:700}
+.offen-hinweis{margin-top:6px}
 </style>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
@@ -136,11 +147,21 @@
           <dt>Belege</dt><dd id="e-belege"></dd>
           <dt>Stufe heute</dt><dd id="e-stufe"></dd>
         </dl>
+        <div id="e-prozess-box" hidden>
+          <h3 style="margin:16px 0 4px">Prozess</h3>
+          <p class="meta">Ein Prozess-Siegel sagt etwas über einen Zeitraum, nicht über die Qualität des Prozesses. Die Kennzahlen sind Angaben der Person.</p>
+          <dl class="kv" id="e-prozess"></dl>
+        </div>
+        <div id="e-teile-box" hidden>
+          <h3 style="margin:16px 0 4px">Teile</h3>
+          <p class="meta" id="e-gesamt"></p>
+          <ul class="teile-liste" id="e-teile"></ul>
+        </div>
         <h3 style="margin:16px 0 4px">Bestätigungsantworten</h3>
         <div id="e-anfragen"></div>
         <div id="e-bericht" hidden>
           <h3 style="margin:16px 0 4px">Vorhandener Prüfbericht</h3>
-          <dl class="kv"><dt>Kennung</dt><dd id="b-kennung"></dd><dt>Stufe</dt><dd id="b-stufe"></dd><dt>Prüfweg</dt><dd id="b-weg"></dd><dt>Ausgestellt</dt><dd id="b-ausgestellt"></dd><dt>Gültig bis</dt><dd id="b-bis"></dd><dt>Prüfsumme</dt><dd id="b-summe"></dd><dt>Vermerk</dt><dd id="b-vermerk"></dd></dl>
+          <dl class="kv"><dt>Kennung</dt><dd id="b-kennung"></dd><dt>Stufe</dt><dd id="b-stufe"></dd><dt>Prüfweg</dt><dd id="b-weg"></dd><dt>Ausgestellt</dt><dd id="b-ausgestellt"></dd><dt>Gültig bis</dt><dd id="b-bis"></dd><dt>Prüfsumme</dt><dd id="b-summe"></dd><dt>Prüfobjekt</dt><dd id="b-po"></dd><dt>Vermerk</dt><dd id="b-vermerk"></dd></dl>
         </div>
       </div>
     </section>
@@ -148,6 +169,11 @@
     <!-- 3. Auswahl und Vorschau -->
     <section class="card" id="s-auswahl" hidden>
       <h2>Prüfung wählen</h2>
+      <div id="ziel-zeile" hidden>
+        <label for="ziel">Was wird geprüft? (Ganzes oder ein Teil)</label>
+        <select id="ziel"></select>
+        <p class="meta" id="ziel-hinweis"></p>
+      </div>
       <div class="zeile">
         <div><label for="stufe">Stufe</label><select id="stufe"><option value="S2">S2 · Geprüft</option><option value="S3">S3 · Geprüft und von Dritten bestätigt</option></select></div>
         <div><label for="weg">Prüfweg</label><select id="weg"></select></div>
@@ -157,13 +183,32 @@
         <label>Bestätigungen für diesen Bericht (nur „ja“ und „teilweise“)</label>
         <div id="bestaetigungen-liste"></div>
       </div>
+      <h2 style="margin-top:26px">Prüfobjekt</h2>
+      <p class="meta">Pflicht für jeden Bericht. Es steht unter der Signatur und sagt dem Leser, was das Siegel umfasst und was nicht. Jeder Punkt steht in einer eigenen Zeile.</p>
+      <div class="zeile">
+        <div><label for="po-gegenstand">Gegenstand (was genau wurde geprüft?)</label><input id="po-gegenstand" autocomplete="off"><span class="zaehler" id="z-gegenstand"></span></div>
+        <div><label for="po-version">Version / Stand</label><input id="po-version" autocomplete="off"><span class="zaehler" id="z-version"></span></div>
+      </div>
+      <label for="po-umfang">Was wurde geprüft?</label>
+      <textarea id="po-umfang" rows="4"></textarea><span class="zaehler" id="z-umfang"></span>
+      <label for="po-nicht">Was wurde ausdrücklich NICHT geprüft?</label>
+      <div class="po-std" id="po-std" hidden><b>Gilt immer (nicht entfernbar):</b><ul id="po-std-liste"></ul></div>
+      <textarea id="po-nicht" rows="3"></textarea><span class="zaehler" id="z-nicht"></span>
+      <label class="check" id="po-nichts-zeile" hidden><input type="checkbox" id="po-nichts"><span>Nichts ausgeschlossen (ausdrücklich bestätigen)</span></label>
+      <label for="po-methode">Methode (wie wurde geprüft?)</label>
+      <textarea id="po-methode" rows="3"></textarea><span class="zaehler" id="z-methode"></span>
+      <p class="meta" id="po-hinweis"></p>
+      <div class="knoepfe" style="margin-top:8px"><button class="btn ghost" type="button" id="b-vorlage">Vorlage einsetzen</button></div>
+      <div id="m-po" role="status" aria-live="polite"></div>
       <label for="vermerk">Vermerk (optional, höchstens 200 Zeichen, steht nicht unter der Signatur)</label>
       <input id="vermerk" maxlength="200">
-      <div class="knoepfe"><button class="btn" type="button" id="b-vorschau">Vorschau erzeugen</button></div>
+      <div class="knoepfe"><button class="btn" type="button" id="b-vorschau" disabled>Vorschau erzeugen</button></div>
+      <p class="meta" id="po-offen"></p>
       <div id="m-auswahl" role="status" aria-live="polite"></div>
 
       <div id="vorschau" hidden>
         <div class="result warn" id="v-status"><b>Noch nichts signiert.</b> Das ist nur die Vorschau. Gelesen und geprüft? Dann unten bestätigen.</div>
+        <div class="po-klartext" id="v-po"></div>
         <dl class="kv"><dt>Kennung</dt><dd id="v-kennung"></dd><dt>Prüfsumme</dt><dd id="v-summe"></dd><dt>Signierschlüssel</dt><dd id="v-kid"></dd></dl>
         <details open><summary>Inhalt des Berichts</summary><pre id="v-inhalt"></pre></details>
         <div id="ersetzen-zeile" hidden><label class="check"><input type="checkbox" id="ersetzen"><span>Der Eintrag hat schon einen Prüfbericht. Ich will ihn durch diesen ersetzen.</span></label></div>
@@ -180,6 +225,7 @@
     <!-- 4. Widerrufen -->
     <section class="card" id="s-widerruf" hidden>
       <h2>Bericht widerrufen</h2>
+      <div id="w-ziel-zeile" hidden><label for="w-ziel">Welcher Bericht? (Ganzes oder ein Teil)</label><select id="w-ziel"></select></div>
       <p class="meta">Der Eintrag fällt sofort auf S1 zurück. Die öffentliche Widerrufsliste (Format abgeklopft-widerruf/2) auf der Webseite ändert sich dadurch nicht von selbst: Kennung und Prüfsumme gehören danach in widerruf_eingabe.json, dann signiert widerruf_signieren.mjs die Liste neu (siehe Hinweis nach dem Widerruf).</p>
       <label for="w-grund">Grund (kurz, höchstens 200 Zeichen, wird nicht gespeichert)</label>
       <input id="w-grund" maxlength="200">
@@ -231,7 +277,7 @@ const API = (() => {
   return "https://abgeklopft-api.falko-guderian.workers.dev";
 })();
 const LOKAL = API.startsWith("http://localhost");
-const WEGE = { inhaberschaft: "Inhaberschaft", aussteller: "Abgleich beim Aussteller", auftraggeber: "Bestätigung durch Auftraggeber", fachgespraech: "Fachgespräch", betreiber: "Betreiber geprüft", probeaufgabe: "Probeaufgabe" };
+const WEGE = { inhaberschaft: "Inhaberschaft", aussteller: "Abgleich beim Aussteller", auftraggeber: "Bestätigung durch Auftraggeber", fachgespraech: "Fachgespräch", betreiber: "Betreiber geprüft", probeaufgabe: "Probeaufgabe", prozess_dokumentation: "Verfahrensdokument gegen Beobachtung", prozess_stichprobe: "Stichprobe aus Prozessprotokollen", prozess_bestaetigung: "Bestätigung durch Prozessverantwortliche" };
 const STATUS = { angefragt: "angefragt, noch keine Antwort", ja: "Ja", teilweise: "Teilweise", nein: "Nein" };
 
 let schluessel = "";            // nur im Arbeitsspeicher
@@ -313,6 +359,7 @@ function ansichtFuellen(j) {
   $("e-meta").textContent = e.kategorie + " · Eintrag " + e.id;
   $("e-profil").textContent = p.name + " (" + (p.art === "ki-agent" ? "KI-Agent" : "Person") + ", abgeklopft.de/" + p.adresse + ")" + (p.art === "ki-agent" && p.betreiber ? ", Betreiber: " + p.betreiber.name : "");
   $("e-zeitraum").textContent = e.zeitraum || "–";
+  prozessAnsicht(e);
   $("e-text").textContent = e.text || "–";
   $("e-faehig").textContent = (e.faehigkeiten || []).join(", ") || "–";
   const bel = $("e-belege"); bel.replaceChildren();
@@ -338,7 +385,7 @@ function ansichtFuellen(j) {
   if (b) {
     const i = b.inhalt;
     $("b-kennung").textContent = i.kennung; $("b-stufe").textContent = stufeText(i.stufe); $("b-weg").textContent = WEGE[i.pruefweg] || i.pruefweg;
-    $("b-ausgestellt").textContent = datum(i.ausgestellt); $("b-bis").textContent = i.gueltigBis || "–"; $("b-summe").textContent = b.pruefsumme; $("b-vermerk").textContent = b.vermerk_ohne_signatur || "–";
+    $("b-ausgestellt").textContent = datum(i.ausgestellt); $("b-bis").textContent = i.gueltigBis || "–"; $("b-summe").textContent = b.pruefsumme; $("b-po").textContent = i.pruefobjekt ? poKurz(i.pruefobjekt) : "nicht angegeben (Bericht vor Format 0.5)"; $("b-vermerk").textContent = b.vermerk_ohne_signatur || "–";
   }
   // Auswahl
   const wg = $("weg"); wg.replaceChildren();
@@ -354,11 +401,13 @@ function ansichtFuellen(j) {
     bl.appendChild(l);
   }
   $("stufe").value = "S2"; $("vermerk").value = "";
+  poNeu(j.auswahl);
+  teileAnsicht(j); zielNeu(j);
   stufeGewechselt();
   vorschauZuruecksetzen();
-  $("s-auswahl").hidden = false; $("s-widerruf").hidden = !b;
+  const teilBerichte = (j.teile || []).some(x => x.bericht);
+  $("s-auswahl").hidden = false; $("s-widerruf").hidden = !(b || teilBerichte);
   $("w-bestaetigt").checked = false; $("b-widerruf").disabled = true; $("w-grund").value = "";
-  $("ersetzen-zeile").hidden = !b;
   $("ansicht").hidden = false;
 }
 async function eintragLaden(still) {
@@ -376,6 +425,166 @@ async function eintragLaden(still) {
 }
 $("f-eintrag").addEventListener("submit", ev => { ev.preventDefault(); eintragLaden(false); });
 
+// ---- Prozess (Schritt D4) ----
+const NACHWEIS = { dokumentation: "Verfahrensdokumentation", protokolle: "Protokolle der Vorgänge", beobachtung: "Beobachtung vor Ort", kennzahlen: "Kennzahlen", audit_fremd: "Fremdes Audit" };
+function prozessAnsicht(e) {
+  const p = e.prozess, dl = $("e-prozess"); dl.replaceChildren();
+  $("e-prozess-box").hidden = !(e.kategorie === "Prozess");
+  if (e.kategorie !== "Prozess") return;
+  const z = (t, v) => { if (v === undefined || v === null || v === "") return; dl.appendChild(el("dt", t)); dl.appendChild(el("dd", v)); };
+  z("Beobachtungszeitraum", e.zeitraum || "nicht angegeben");
+  if (!p) { z("Prozessdaten", "keine angegeben"); return; }
+  z("Ziel", p.ziel); z("Auslöser", p.ausloeser); z("Ergebnis", p.ergebnis);
+  z("Rollen", (p.rollen || []).join(", "));
+  z("Kennzahlen", (p.kennzahlen || []).map(k => k.name + ": " + k.wert + (k.einheit ? " " + k.einheit : "") + (k.zeitraum ? ", " + k.zeitraum : "") + (k.quelle ? " (Quelle: " + k.quelle + ")" : "")).join("; "));
+  z("Nachweisart", (p.nachweisart || []).map(a => NACHWEIS[a] || a).join(", "));
+}
+
+// ---- Teile (Schritt D3) ----
+const TYP_TEXT = { produkt: "Produkt", prozess: "Prozess", dienstleistung: "Dienstleistung", dokument: "Dokument", abschluss: "Abschluss", sonstiges: "Sonstiges" };
+const teileDes = () => (geladen && Array.isArray(geladen.teile) && geladen.teile.length) ? geladen.teile : [];
+const teilById = id => teileDes().find(t => t.id === id) || null;
+const zielTeil = () => $("ziel").value || "";                   // "" = Ganzes, sonst Teil-Id
+const teilTitel = id => { const t = teilById(id); return t ? t.titel + " (" + id + ")" : id; };
+// Wirksame Stufe eines Teils: ohne gültigen Bericht S1
+const teilStufeNr = t => (t.bericht && t.gueltig !== false && (t.stufe === 2 || t.stufe === 3)) ? t.stufe : 1;
+function gesamtText(g) {
+  if (!g) return "";
+  const bg = (g.begrenzt_durch || []).map(teilTitel);
+  return "Gesamtstufe: S" + g.stufe + (g.abgeleitet ? " (abgeleitet aus den Pflichtteilen)" : " (mit eigener Prüfung des Ganzen)") + (bg.length ? ", begrenzt durch " + bg.join(", ") : "") + ". Regel: niedrigste Stufe der Pflichtteile.";
+}
+function teileAnsicht(j) {
+  const t = Array.isArray(j.teile) ? j.teile : [];
+  $("e-teile-box").hidden = !t.length;
+  const ul = $("e-teile"); ul.replaceChildren();
+  $("e-gesamt").textContent = t.length ? gesamtText(j.gesamt) : "";
+  for (const x of t) {
+    const li = el("li");
+    li.appendChild(el("b", x.titel));
+    li.appendChild(document.createTextNode(" (" + x.id + ") · " + (TYP_TEXT[x.typ] || x.typ) + " · " + (x.pflicht === false ? "optional" : "Pflichtteil") + " · "));
+    li.appendChild(el("span", "S" + teilStufeNr(x) + (x.bericht ? (x.gueltig === false ? " (Bericht abgelaufen, zählt S1)" : "") : " (kein Bericht)"), { class: "t-stufe" }));
+    if ((x.abhaengig_von || []).length) li.appendChild(el("div", "Abhängig von: " + x.abhaengig_von.map(d => teilTitel(d.teil) + " [" + d.beziehung + ": " + d.art + "]").join("; "), { class: "meta" }));
+    ul.appendChild(li);
+  }
+}
+// Auswahl „Ganzes“ oder Teil für Prüfung und Widerruf
+let gegenstandAngefasst = false;
+function zielNeu(j) {
+  const t = Array.isArray(j.teile) ? j.teile : [];
+  const z = $("ziel"); z.replaceChildren();
+  $("ziel-zeile").hidden = !t.length;
+  if (t.length) {
+    for (const x of t) z.appendChild(el("option", "Teil: " + x.titel + " (" + x.id + ")" + (x.pflicht === false ? " · optional" : "") + " · S" + teilStufeNr(x), { value: x.id }));
+    z.appendChild(el("option", "Ganzes (der Eintrag insgesamt)", { value: "" }));
+    const offen = t.find(x => x.pflicht !== false && teilStufeNr(x) < 2) || t[0];
+    z.value = offen.id;
+  }
+  gegenstandAngefasst = false;
+  zielGewechselt();
+  const w = $("w-ziel"); w.replaceChildren();
+  const mitB = [...(j.bericht ? [{ id: "", n: "Ganzes (der Eintrag insgesamt)" }] : []), ...t.filter(x => x.bericht).map(x => ({ id: x.id, n: "Teil: " + x.titel + " (" + x.id + ")" }))];
+  $("w-ziel-zeile").hidden = !t.length;
+  for (const o of mitB) w.appendChild(el("option", o.n, { value: o.id }));
+}
+function zielGewechselt() {
+  const id = zielTeil(), t = id ? teilById(id) : null;
+  $("ziel-hinweis").textContent = t ? "Prüfobjekt und Bericht gelten nur für diesen Teil. Die Gesamtstufe zeigt der Server nach dem Signieren." + (t.pflicht === false ? " Dieser Teil ist optional: Er senkt die Gesamtstufe nicht, und Sie können ihn ablehnen." : "")
+    : (teileDes().length ? "Der Bericht gilt für den Eintrag als Ganzes. Die Gesamtstufe bleibt durch die Pflichtteile begrenzt." : "");
+  if (!gegenstandAngefasst) $("po-gegenstand").value = t ? "Teil „" + t.titel + "“ (" + t.id + ") von „" + geladen.eintrag.titel + "“" : "";
+  const hat = t ? !!t.bericht : !!(geladen && geladen.bericht);
+  $("ersetzen-zeile").hidden = !hat; $("ersetzen").checked = false;
+  poAktualisieren();
+}
+
+// ---- Prüfobjekt (Berichtsversion 3) ----
+let grenzen = { max_text: 500, max_liste: 20 };
+let vorlagen = {};          // Prüfweg -> Vorlage vom Server (auswahl.vorlagen)
+let poAngefasst = false;    // der Prüfer hat in den Listenfeldern selbst getippt: Vorlagen überschreiben dann nichts
+const PO_CODES = ["pruefobjekt_fehlt", "pruefobjekt_unvollstaendig", "pruefobjekt_zu_gross", "unbekanntes_feld"];
+const PO_FEHLER = { pruefobjekt_fehlt: "Das Prüfobjekt fehlt.", pruefobjekt_unvollstaendig: "Das Prüfobjekt ist unvollständig.", pruefobjekt_zu_gross: "Das Prüfobjekt ist zu lang.", unbekanntes_feld: "Das Prüfobjekt enthält ein unbekanntes Feld." };
+const zeilen = s => String(s).split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+const poStd = () => ((vorlagen[$("weg").value] || {}).standardausschluesse) || [];
+function poKoerper() {
+  const o = { gegenstand: $("po-gegenstand").value.trim(), version_stand: $("po-version").value.trim(), umfang_geprueft: zeilen($("po-umfang").value), methode: $("po-methode").value.trim() };
+  if ($("po-nichts").checked && !$("po-nichts-zeile").hidden) o.nichts_ausgeschlossen = true; else o.nicht_geprueft = zeilen($("po-nicht").value);
+  return o;
+}
+// Liste der noch offenen oder zu großen Angaben (leer = alles in Ordnung)
+function poProbleme() {
+  const o = poKoerper(), g = grenzen, p = [];
+  const text = (n, v) => { if (!v) p.push(n + " fehlt"); else if (v.length > g.max_text) p.push(n + " ist zu lang"); };
+  text("Gegenstand", o.gegenstand); text("Version/Stand", o.version_stand); text("Methode", o.methode);
+  if (!o.umfang_geprueft.length) p.push("„Was wurde geprüft?“ braucht mindestens einen Punkt");
+  else if (o.umfang_geprueft.length > g.max_liste) p.push("„Was wurde geprüft?“ hat mehr als " + g.max_liste + " Punkte");
+  else if (o.umfang_geprueft.some(x => x.length > g.max_text)) p.push("ein Punkt bei „Was wurde geprüft?“ ist zu lang");
+  if (!o.nichts_ausgeschlossen) {
+    const n = o.nicht_geprueft;
+    if (!n.length && !poStd().length) p.push("„Nicht geprüft“ braucht mindestens einen Punkt oder die Bestätigung „Nichts ausgeschlossen“");
+    if (n.length + poStd().length > g.max_liste) p.push("„Nicht geprüft“ hat mehr als " + g.max_liste + " Punkte (mit den festen Zeilen)");
+    else if (n.some(x => x.length > g.max_text)) p.push("ein Punkt bei „Nicht geprüft“ ist zu lang");
+  }
+  return p;
+}
+function poAktualisieren() {
+  const o = poKoerper(), g = grenzen, std = poStd().length;
+  const z = (id, n, max, einheit) => { const e = $(id); e.textContent = n + " / " + max + einheit; e.classList.toggle("ueber", n > max); };
+  z("z-gegenstand", $("po-gegenstand").value.trim().length, g.max_text, " Zeichen"); z("z-version", $("po-version").value.trim().length, g.max_text, " Zeichen");
+  z("z-methode", $("po-methode").value.trim().length, g.max_text, " Zeichen");
+  z("z-umfang", o.umfang_geprueft.length, g.max_liste, " Punkte");
+  z("z-nicht", zeilen($("po-nicht").value).length + std, g.max_liste, " Punkte" + (std ? " (mit den festen Zeilen)" : ""));
+  $("po-nicht").disabled = !!o.nichts_ausgeschlossen;
+  const pr = poProbleme();
+  $("b-vorschau").disabled = !!pr.length;
+  $("po-offen").textContent = pr.length ? "Noch offen: " + pr.join("; ") + "." : "";
+}
+// Feste Zeilen (Standardausschlüsse), Option „nichts ausgeschlossen“ und Hinweis für den gewählten Prüfweg; Vorschläge eintragen, solange der Prüfer nichts getippt hat
+function poWegGewechselt() {
+  const v = vorlagen[$("weg").value] || {}, std = v.standardausschluesse || [];
+  const ul = $("po-std-liste"); ul.replaceChildren();
+  for (const t of std) ul.appendChild(el("li", t));
+  $("po-std").hidden = !std.length;
+  $("po-nichts-zeile").hidden = std.length > 0;
+  if (std.length) $("po-nichts").checked = false;
+  $("po-hinweis").textContent = v.hinweis ? "Hinweis zu diesem Prüfweg: " + v.hinweis : "";
+  if (!poAngefasst) { $("po-umfang").value = (v.vorschlag_umfang || []).join("\n"); $("po-nicht").value = (v.vorschlag_nicht || []).join("\n"); }
+  poAktualisieren();
+}
+// Knopf „Vorlage einsetzen“: hängt fehlende Vorschläge an, überschreibt nie, was schon dasteht
+function poVorlage() {
+  const v = vorlagen[$("weg").value] || {};
+  const dazu = (id, neu) => { const alt = zeilen($(id).value), klein = alt.map(x => x.toLowerCase()); const add = (neu || []).filter(x => !klein.includes(String(x).toLowerCase())); $(id).value = alt.concat(add).join("\n"); };
+  dazu("po-umfang", v.vorschlag_umfang); dazu("po-nicht", v.vorschlag_nicht);
+  poAngefasst = true;
+}
+function poNeu(auswahl) {
+  grenzen = auswahl.pruefobjekt_grenzen || { max_text: 500, max_liste: 20 };
+  vorlagen = {}; for (const v of auswahl.vorlagen || []) vorlagen[v.pruefweg] = v;
+  for (const id of ["po-gegenstand", "po-version", "po-umfang", "po-nicht", "po-methode"]) $(id).value = "";
+  $("po-nichts").checked = false; poAngefasst = false; meldung("m-po");
+  poWegGewechselt();
+}
+function poKurz(po) {
+  const nicht = po.nichts_ausgeschlossen ? "nichts ausgeschlossen (vom Prüfer bestätigt)" : (po.nicht_geprueft || []).join("; ");
+  return "Geprüft: " + (po.umfang_geprueft || []).join("; ") + " (Stand: " + po.version_stand + "). Nicht geprüft: " + nicht + ".";
+}
+// Vorschau oben als Klartext aus dem vom Server NORMALISIERTEN Prüfobjekt (nur textContent)
+function poKlartext(po) {
+  const k = $("v-po"); k.replaceChildren();
+  if (!po) return;
+  const p1 = el("p"); p1.appendChild(el("b", "Geprüft wurde: ")); p1.appendChild(document.createTextNode(po.gegenstand)); k.appendChild(p1);
+  const u1 = el("ul"); for (const t of po.umfang_geprueft || []) u1.appendChild(el("li", t)); k.appendChild(u1);
+  const p2 = el("p"); p2.appendChild(el("b", "Nicht geprüft: ")); k.appendChild(p2);
+  if (po.nichts_ausgeschlossen) p2.appendChild(document.createTextNode("Nichts ausgeschlossen (vom Prüfer ausdrücklich bestätigt)."));
+  else { const u2 = el("ul"); for (const t of po.nicht_geprueft || []) u2.appendChild(el("li", t)); k.appendChild(u2); }
+  const p3 = el("p"); p3.appendChild(el("b", "Stand: ")); p3.appendChild(document.createTextNode(po.version_stand)); k.appendChild(p3);
+  const p4 = el("p"); p4.appendChild(el("b", "Methode: ")); p4.appendChild(document.createTextNode(po.methode)); k.appendChild(p4);
+}
+// Serverfehler zum Prüfobjekt stehen am Prüfobjekt (m-po), alle anderen an der angegebenen Stelle
+function fehlerAnzeigen(ziel, e) {
+  if (PO_CODES.includes(e.code)) meldung("m-po", "bad", (PO_FEHLER[e.code] || "Prüfobjekt: Fehler.") + " " + (e.meldung || ""));
+  else meldung(ziel, "bad", fehlerText(e));
+}
+
 // ---- 3. Auswahl, Vorschau, Signieren, Ablehnen ----
 // Pfad der Prüf-Aktionen: aus dem Auftrag, oder (nur Administratoren) ohne Auftrag über Adresse und Eintragskennung
 const basis = () => modus.typ === "auftrag" ? "/v1/pruefer/auftraege/" + modus.id : "/v1/pruefer/eintraege/" + encodeURIComponent(geladen.profil.adresse) + "/" + geladen.eintrag.id;
@@ -387,13 +596,17 @@ function auswahl() {
   const o = { stufe: s, pruefweg: $("weg").value, gueltig_tage: Number($("tage").value) };
   if (s === "S3") o.bestaetigungen = [...document.querySelectorAll('input[name="best"]:checked')].map(c => c.value);
   const v = $("vermerk").value.trim(); if (v) o.vermerk = v;
+  if (teileDes().length && zielTeil()) o.teil = zielTeil();
   return o;
 }
 function stufeGewechselt() { $("bestaetigungen").hidden = $("stufe").value !== "S3"; }
 function vorschauZuruecksetzen() {
-  vorschau = null; $("vorschau").hidden = true; $("bestaetigt").checked = false; $("ersetzen").checked = false; $("b-signieren").disabled = true; meldung("m-signieren"); meldung("m-auswahl");
+  vorschau = null; $("vorschau").hidden = true; $("bestaetigt").checked = false; $("ersetzen").checked = false; $("b-signieren").disabled = true; meldung("m-signieren"); meldung("m-auswahl"); meldung("m-po");
 }
-for (const id of ["stufe", "weg", "tage", "vermerk"]) $(id).addEventListener("input", () => { if (id === "stufe") stufeGewechselt(); vorschauZuruecksetzen(); });
+$("ziel").addEventListener("change", () => { zielGewechselt(); vorschauZuruecksetzen(); });
+for (const id of ["stufe", "weg", "tage", "vermerk"]) $(id).addEventListener("input", () => { if (id === "stufe") stufeGewechselt(); if (id === "weg") poWegGewechselt(); vorschauZuruecksetzen(); });
+for (const id of ["po-gegenstand", "po-version", "po-umfang", "po-nicht", "po-methode", "po-nichts"]) $(id).addEventListener("input", () => { if (id === "po-umfang" || id === "po-nicht") poAngefasst = true; if (id === "po-gegenstand") gegenstandAngefasst = true; poAktualisieren(); vorschauZuruecksetzen(); });
+$("b-vorlage").addEventListener("click", () => { poVorlage(); poAktualisieren(); vorschauZuruecksetzen(); });
 $("bestaetigungen-liste").addEventListener("change", vorschauZuruecksetzen);
 $("bestaetigt").addEventListener("change", () => { $("b-signieren").disabled = !($("bestaetigt").checked && vorschau); });
 
@@ -401,13 +614,17 @@ $("b-vorschau").addEventListener("click", async () => {
   if (!geladen) return;
   vorschauZuruecksetzen();
   const o = auswahl();
+  if (poProbleme().length) { poAktualisieren(); return; }
+  o.pruefobjekt = poKoerper();
   try {
     const v = await api("POST", basis() + "/vorschau", o);
     vorschau = { v, o };
+    poKlartext(v.pruefobjekt);
+    $("v-status").replaceChildren(el("b", "Noch nichts signiert."), document.createTextNode(" Das ist nur die Vorschau" + (v.teil ? " für den Teil „" + teilTitel(v.teil) + "“" : (teileDes().length ? " für das Ganze" : "")) + ". Gelesen und geprüft? Dann unten bestätigen."));
     $("v-kennung").textContent = v.kennung; $("v-summe").textContent = v.pruefsumme; $("v-kid").textContent = v.kid;
     $("v-inhalt").textContent = JSON.stringify(v.inhalt, null, 2);
     $("vorschau").hidden = false;
-  } catch (e) { meldung("m-auswahl", "bad", fehlerText(e)); }
+  } catch (e) { fehlerAnzeigen("m-auswahl", e); }
 });
 $("b-signieren").addEventListener("click", async () => {
   if (!vorschau || !$("bestaetigt").checked) return;
@@ -417,16 +634,23 @@ $("b-signieren").addEventListener("click", async () => {
   try {
     const r = await api("POST", basis() + "/signieren", body);
     await neuLaden();
+    if (r.teil || r.gesamt) {
+      let t = "Signiert" + (r.teil ? " (Teil „" + teilTitel(r.teil) + "“)" : " (Ganzes)") + ": " + r.stufe + ", Kennung " + r.kennung + ", gültig bis " + r.gueltigBis + ". Protokoll-Nr. " + r.protokoll.lfd + ". " + gesamtText(r.gesamt);
+      if (r.auftrag_offen) t += " Offene Pflichtteile: " + (r.offene_pflichtteile || []).map(teilTitel).join(", ") + ". Der Auftrag bleibt „In Prüfung“.";
+      rueckmeldung("ok", t);
+    } else
     rueckmeldung("ok", "Signiert: " + r.stufe + ", Kennung " + r.kennung + ", gültig bis " + r.gueltigBis + ". Protokoll-Nr. " + r.protokoll.lfd + ". Der Eintrag ist jetzt " + stufeText(r.stufe === "S3" ? 3 : 2) + ".");
   } catch (e) {
     $("b-signieren").disabled = !$("bestaetigt").checked;
-    meldung("m-signieren", "bad", e.code === "bereits_signiert" ? "Der Eintrag hat schon einen Bericht. Setzen Sie das Häkchen „ersetzen“, wenn Sie ihn überschreiben wollen." : fehlerText(e));
+    if (PO_CODES.includes(e.code)) fehlerAnzeigen("m-signieren", e);
+    else meldung("m-signieren", "bad", e.code === "bereits_signiert" ? "Der Eintrag hat schon einen Bericht. Setzen Sie das Häkchen „ersetzen“, wenn Sie ihn überschreiben wollen." : fehlerText(e));
   }
 });
 $("b-ablehnen").addEventListener("click", async () => {
   if (!geladen) return;
   try {
     const o = auswahl(); if (modus.typ === "auftrag") o.grund = $("a-grund").value;
+    if (!poProbleme().length) o.pruefobjekt = poKoerper();   // beim Ablehnen entsteht kein Bericht: Prüfobjekt nur mitsenden, wenn vollständig
     const r = await api("POST", basis() + "/ablehnen", o);
     if (modus.typ === "auftrag") await neuLaden();
     rueckmeldung("ok", "Abgelehnt und im Protokoll vermerkt (Kennung " + r.kennung + ", Nr. " + r.protokoll.lfd + "). Der Eintrag bleibt unverändert.");
@@ -439,12 +663,13 @@ $("b-widerruf").addEventListener("click", async () => {
   if (!geladen || !$("w-bestaetigt").checked) return;
   $("b-widerruf").disabled = true;
   const body = { bestaetigt: true }; const g = $("w-grund").value.trim(); if (g) body.grund = g;
+  if (teileDes().length && $("w-ziel").value) body.teil = $("w-ziel").value;
   try {
     const r = await api("POST", basis() + "/widerrufen", body);
     await neuLaden();
     const m = $("m-eintrag"); m.replaceChildren();
     const d = el("div", undefined, { class: "result ok" });
-    d.appendChild(el("b", "Widerrufen. Der Eintrag ist wieder S1."));
+    d.appendChild(el("b", r.teil ? "Widerrufen (Teil „" + teilTitel(r.teil) + "“)." + (r.gesamt ? " " + gesamtText(r.gesamt) : "") : "Widerrufen. Der Eintrag ist wieder S1."));
     d.appendChild(el("div", "Kennung " + r.kennung + " · Prüfsumme " + r.pruefsumme + " · Protokoll-Nr. " + r.protokoll.lfd));
     d.appendChild(el("div", r.widerrufsliste.hinweis, { class: "meta" }));
     m.appendChild(d);
@@ -566,7 +791,7 @@ function auftragAnzeigen(a) {
   if (a.pruefung) {
     geladen = a.pruefung; ansichtFuellen(a.pruefung);
     $("s-auswahl").hidden = a.zustand !== "in_pruefung";
-    $("s-widerruf").hidden = !(a.zustand === "geprueft" && a.pruefung.bericht);
+    $("s-widerruf").hidden = !(a.zustand === "geprueft" && (a.pruefung.bericht || (a.pruefung.teile || []).some(x => x.bericht)));
   } else { geladen = null; $("ansicht").hidden = true; $("s-auswahl").hidden = true; $("s-widerruf").hidden = true; }
   if (a.zustand === "zugewiesen") meldung("m-eintrag", "warn", "Lesen Sie den Eintrag. Mit „Prüfung beginnen“ starten Sie die Prüfung, erst danach können Sie eine Vorschau erzeugen.");
   else if (a.zustand === "rueckfrage") meldung("m-eintrag", "warn", "Der Einreicher ist am Zug. Bis zu seiner Antwort ist keine Vorschau und kein Signieren möglich.");
