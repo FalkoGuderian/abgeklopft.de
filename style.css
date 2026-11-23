@@ -461,7 +461,7 @@ nav.profilwahl{display:flex;flex-wrap:wrap;gap:var(--sp-2);justify-content:cente
 
 /* ===== Profil-Symbol im Hauptmenü (nav-profil.js, 2026-11-23) ===== */
 .profil-wrap{display:inline-flex;align-items:center}
-@media (min-width:761px){header.top .profil-wrap{margin-left:-4px}}
+@media (min-width:761px){header.top .profil-wrap{margin-left:-6px}}
 .profilknopf{display:inline-grid;place-items:center;width:36px;height:36px;padding:0;border-radius:8px;border:0;background:none;color:var(--muted);cursor:pointer;transition:color .15s,background .15s}
 .profilknopf:hover{color:var(--ink);background:var(--sunk)}
 .profilknopf:focus-visible{border-radius:8px}
@@ -480,6 +480,9 @@ nav.schritte a:hover{border-color:var(--ink);background:var(--surface);color:var
 nav.schritte a[aria-current]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,var(--surface));color:var(--brand)}
 /* T11: am Handy 2x2 statt waagerechtem Scrollen; sonst bei Überlänge Fortsetzungs-Maske (.quer, gleiche Regel wie Hauptmenü) */
 nav.schritte.quer{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent)}
+/* Fix Pillenleiste: ab 481 px umbrechen statt scrollen, keine Scrollbar, keine Maske, gleiche Abstände */
+@media (min-width:481px){nav.schritte[data-schritte]{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none}nav.schritte[data-schritte] a{flex:1 1 auto;min-width:0;padding:var(--sp-2) var(--sp-3);text-align:center;align-items:center}}
+@media (min-width:481px) and (max-width:760px){nav.schritte[data-schritte]{position:static;margin-left:0;margin-right:0;padding-left:0;padding-right:0}}
 @media (max-width:480px){
   nav.schritte{position:static;display:grid;grid-template-columns:1fr 1fr;overflow:visible;-webkit-mask-image:none;mask-image:none}
   nav.schritte a{min-width:0;white-space:normal}
@@ -495,14 +498,14 @@ nav.schritte a[aria-current] .sz b{color:var(--brand)}
 .abschnitt{padding:var(--sp-6) 0 var(--sp-1)}
 .abschnitt-kopf{margin-bottom:var(--sp-4)}
 .abschnitt-kopf h2{display:flex;align-items:center;gap:var(--sp-3);margin:0;font-size:var(--fs-xl);line-height:1.15}
-.abschnitt-kopf .untertitel{margin:var(--sp-1) 0 0 var(--sp-7);color:var(--muted);font-size:var(--fs-s)}
+.abschnitt-kopf .untertitel{margin:var(--sp-1) 0 0 0;color:var(--muted);font-size:var(--fs-s)}
 .abschnitt-kasten{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:var(--sp-4) var(--sp-5)}
 .abschnitt-kasten > :first-child{margin-top:0}
 .erklaer{margin:0 0 var(--sp-4);border:1px solid var(--line);border-radius:12px;background:var(--sunk);padding:0 var(--sp-4)}
 .erklaer:first-of-type{border-top:1px solid var(--line)}
 .erklaer summary{font-size:var(--fs-s);font-weight:600;padding:var(--sp-2) 0;justify-content:flex-start;color:var(--muted)}
 .erklaer p{margin:0 0 var(--sp-3);font-size:var(--fs-s)}
-@media (max-width:480px){.abschnitt{padding-top:var(--sp-5)}.abschnitt-kasten{padding:var(--sp-4)}.abschnitt-kopf .untertitel{margin-left:0}}
+@media (max-width:480px){.abschnitt{padding-top:var(--sp-5)}.abschnitt-kasten{padding:var(--sp-4)}}
 .eintrag-zeile{padding:var(--sp-3) 0}
 /* T21: am Handy Aktionszeile unter dem Eintrag, Hauptaktion doppelt so breit wie bearbeiten/löschen */
 @media (max-width:480px){.eintrag-zeile .knoepfe{flex:1 1 100%;display:grid;grid-template-columns:2fr 1fr 1fr;gap:var(--sp-2)}.eintrag-zeile .knoepfe .btn{min-width:0;padding-left:var(--sp-2);padding-right:var(--sp-2)}}
@@ -607,3 +610,11 @@ nav.schritte a[aria-current] .sz b{color:var(--brand)}
 .platzhalter.mittel{width:65%}
 .platzhalter.avatar{width:88px;height:88px;margin:0;border-radius:50%;flex:none}
 .platzhalter.kachel{height:64px;margin:0}
+#laedt[hidden]{display:none}
+/* Fix Pillenleiste (Präzisierung): auf allen Breiten umbrechen, nie scrollen; Kacheln nach Inhalt (nur Textknopf-Leisten mit data-schritte) */
+nav.schritte[data-schritte],nav.schritte[data-schritte].quer{display:flex;flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none;position:static;margin-left:0;margin-right:0;padding-left:0;padding-right:0;gap:var(--sp-2)}
+nav.schritte[data-schritte] a{flex:0 1 auto;width:auto;min-width:0;padding:var(--sp-2) var(--sp-3);white-space:nowrap;align-items:center;text-align:center}
+/* Schrittmenü teilen.html (T22): 4 gleich breite Kacheln, linksbündig, kein Scrollen */
+nav.schritte#schritte{display:grid;grid-template-columns:repeat(4,1fr);align-items:stretch;overflow:visible;-webkit-mask-image:none;mask-image:none;position:static;margin-left:0;margin-right:0;padding-left:0;padding-right:0}
+nav.schritte#schritte a{min-width:0;white-space:normal;text-align:left;align-items:flex-start}
+@media (max-width:480px){nav.schritte#schritte{grid-template-columns:1fr 1fr}}

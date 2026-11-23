@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://abgeklopft-api.falko-guderian.workers.dev http://localhost:8787; base-uri 'none'; object-src 'none'">
 <meta name="robots" content="noindex">
 <title>Einreichen · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css?v=11c44e01">
+<link rel="stylesheet" href="style.css?v=19dfe4d4">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
@@ -48,7 +48,7 @@
           <label for="bversion">Version des Agenten</label><input id="bversion" maxlength="40" placeholder="z. B. 2.3">
           <p class="meta">Ein Agentenprofil ist immer sichtbar als KI-Agent gekennzeichnet. Vertragspartner ist der Betreiber.</p>
         </div>
-        <label class="wahl"><input type="checkbox" id="dsok" required> Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen. Mein Profil wird auf dem Server von abgeklopft.de gespeichert.</label>
+        <label class="wahl"><input type="checkbox" id="dsok" required> <span>Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen. Mein Profil wird auf dem Server von abgeklopft.de gespeichert.</span></label>
         <div class="row"><button class="btn" type="submit">Profil anlegen</button></div>
       </form>
       <form id="geraet" autocomplete="off" class="card">
@@ -304,7 +304,7 @@ $("geraet").addEventListener("submit", e => {
 async function laden() {
   still();
   if (!konto) { zeige("ohne"); return; }
-  $("laedt").hidden = false;
+  if ($("mit").hidden) $("laedt").hidden = false;
   try {
     stand = await api("GET", "/v1/profile/" + konto.id, undefined, konto.schluessel);
     // Prüfaufträge: fehlt der Pfad auf dem Server (noch nicht eingespielt) oder schlägt er fehl, bleibt der Rest der Seite benutzbar
@@ -821,7 +821,8 @@ function kennzahlen() {
   window.schrittNeu = neuBerechnen; neuBerechnen();
 })();
 // Alte Lesezeichen teilen.html#profil führen zur Seite „Mein Profil“
-if (location.hash === "#profil") location.replace("mein-profil.html");
+function altesProfilAnker() { if (location.hash === "#profil") location.replace("mein-profil.html"); }
+altesProfilAnker(); window.addEventListener("hashchange", altesProfilAnker);
 
 // Abmelden, Löschen
 // Die Abmelden-Funktion liegt im Profilmenü des Hauptmenüs (nav-profil.js, Abfrage "Ohne Code kein Zurück. Abmelden?")

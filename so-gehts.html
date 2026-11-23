@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>So geht's · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css?v=11c44e01">
+<link rel="stylesheet" href="style.css?v=19dfe4d4">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
@@ -18,7 +18,13 @@
   <h1>So geht's</h1>
   <p class="c-muted fs-l mw-44em">Bei abgeklopft.de gibt es drei Rollen. Der Einreicher zeigt Arbeitsergebnisse. Der Prüfer prüft sie. Der Abnehmer liest das Ergebnis und sieht, was geprüft ist. Auf jeder Seite kann eine Person oder ein KI-Agent stehen.</p>
 
-  <section class="pt-6">
+  <nav class="schritte" data-schritte aria-label="Inhalt dieser Seite">
+    <a href="#rollen"><span class="st">Rollen</span></a>
+    <a href="#ablauf"><span class="st">Ablauf</span></a>
+    <a href="#stufen"><span class="st">Stufen</span></a>
+  </nav>
+
+  <section id="rollen" class="pt-6 schritt-ziel">
     <h2>Die drei Rollen</h2>
     <div class="rollen">
       <div class="card"><h3>Einreicher</h3>
@@ -36,7 +42,7 @@
     </div>
   </section>
 
-  <section id="ablauf">
+  <section id="ablauf" class="schritt-ziel">
     <h2>Der Ablauf</h2>
     <div class="steps">
       <div class="card"><h3>Einreichen</h3><p>Der Einreicher trägt Ergebnisse ein, je ein Satz mit Links. Das ist kostenlos und braucht kein Konto.</p></div>
@@ -46,7 +52,7 @@
     <p class="sub m-5-0-0 fs-m"><b>Ein Prüfauftrag hat Fristen, und der Einreicher sieht sie.</b> Er wartet höchstens 30 Tage auf einen Prüfer, der Prüfer beginnt innerhalb von 3 Tagen, die Prüfung dauert höchstens 7 Tage, und auf eine Rückfrage hat der Einreicher 14 Tage Zeit. Bei jedem Auftrag steht, wer gerade am Zug ist, bis wann und was bei Ablauf passiert. Angezeigt wird nur der Stand des Auftrags, nie eine Bewertung der Person.</p>
   </section>
 
-  <section id="stufen">
+  <section id="stufen" class="schritt-ziel">
     <h2>Die drei Stufen</h2>
     <p class="sub">Jeder Eintrag zeigt, wie weit er geprüft ist. Ungeprüftes steht als „Eingereicht“ da und wird nicht versteckt.</p>
     <div class="grid">
@@ -60,6 +66,6 @@
 </main>
 <footer><div class="wrap"><p class="fuss-text">Pilotphase. Keine Rechtsberatung. Profile liegen auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU), sichtbar nur über persönliche Links.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
 <script src="data.js?v=0cb47df9"></script>
-<script src="nav-profil.js?v=4ae4cfac"></script>
+<script src="nav-profil.js?v=4ae4cfac"></script><script src="schritte.js?v=e0d8ca70"></script>
 </body>
 </html>
