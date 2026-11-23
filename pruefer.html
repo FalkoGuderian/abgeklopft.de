@@ -441,7 +441,7 @@ function prozessAnsicht(e) {
 }
 
 // ---- Teile (Schritt D3) ----
-const TYP_TEXT = { produkt: "Produkt", prozess: "Prozess", dienstleistung: "Dienstleistung", dokument: "Dokument", abschluss: "Abschluss", sonstiges: "Sonstiges" };
+const TYP_TEXT = { produkt: "Produkt", prozess: "Prozess", dienstleistung: "Dienstleistung", dokument: "Dokument", daten: "Daten", abschluss: "Abschluss", sonstiges: "Sonstiges" };
 const teileDes = () => (geladen && Array.isArray(geladen.teile) && geladen.teile.length) ? geladen.teile : [];
 const teilById = id => teileDes().find(t => t.id === id) || null;
 const zielTeil = () => $("ziel").value || "";                   // "" = Ganzes, sonst Teil-Id

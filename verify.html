@@ -300,8 +300,8 @@ function anzeige(r, kx) {
 }
 
 // ===== Teile (Schritt D1): gleiche Regeln wie scripts/pruefen.mjs. Es zählt immer die berechnete Stufe, nie die behauptete. =====
-const TEIL_TYPEN = ["produkt", "prozess", "dienstleistung", "dokument", "abschluss", "sonstiges"];
-const TEIL_TYP_NAME = { produkt: "Produkt", prozess: "Prozess", dienstleistung: "Dienstleistung", dokument: "Dokument", abschluss: "Abschluss", sonstiges: "Sonstiges" };
+const TEIL_TYPEN = ["produkt", "prozess", "dienstleistung", "dokument", "daten", "abschluss", "sonstiges"];
+const TEIL_TYP_NAME = { produkt: "Produkt", prozess: "Prozess", dienstleistung: "Dienstleistung", dokument: "Dokument", daten: "Daten", abschluss: "Abschluss", sonstiges: "Sonstiges" };
 const TEIL_ARTEN = { zeitlich: ["nach_ende", "nach_start", "gleichzeitig"], raeumlich: ["gleicher_ort", "anderer_ort"], logisch: ["setzt_voraus", "nutzt", "ersetzt", "ist_variante_von"] };
 const TEILE_MAX = 12, STUFE_NR = { S1: 1, S2: 2, S3: 3 };
 const istObj = o => o !== null && typeof o === "object" && !Array.isArray(o);

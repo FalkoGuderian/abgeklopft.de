@@ -190,7 +190,7 @@ function pruefobjektHtml(e) {
     </div>`;
 }
 // Teile eines Eintrags (Schritt D3): Gesamtstufe als feste Zeile, Liste der Teile einklappbar. Nur escaped Text.
-const TEIL_TYP_TEXT = { produkt: "Produkt", prozess: "Prozess", dienstleistung: "Dienstleistung", dokument: "Dokument", abschluss: "Abschluss", sonstiges: "Sonstiges" };
+const TEIL_TYP_TEXT = { produkt: "Produkt", prozess: "Prozess", dienstleistung: "Dienstleistung", dokument: "Dokument", daten: "Daten", abschluss: "Abschluss", sonstiges: "Sonstiges" };
 const TEIL_BEZ_TEXT = { nach_ende: "zeitlich nach Ende von", nach_start: "zeitlich nach Start von", gleichzeitig: "zeitlich gleichzeitig mit", gleicher_ort: "am gleichen Ort wie", anderer_ort: "an einem anderen Ort als",
   setzt_voraus: "setzt voraus:", nutzt: "nutzt:", ersetzt: "ersetzt:", ist_variante_von: "ist Variante von" };
 // Wirksame Stufe eines Teils: ohne gültigen Bericht S1
