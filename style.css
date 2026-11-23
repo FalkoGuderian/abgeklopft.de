@@ -620,3 +620,10 @@ nav.schritte#schritte a{min-width:0;white-space:normal;text-align:left;align-ite
 @media (max-width:480px){nav.schritte#schritte{grid-template-columns:1fr 1fr}}
 /* Fieldsets (Teile, Prozess-Kennzahlen) dürfen schmaler als ihr Inhalt werden, sonst scrollt die Seite am Handy waagerecht (Gesamttest 2026-11-23) */
 .tf-teil,.tf-ab,.pz-kz{min-width:0}
+/* So geht's: Knöpfe der drei Rollenkarten auf gleicher Höhe (Unterraster); Fallback: Knöpfe am Kartenende */
+.rollen .card{display:flex;flex-direction:column}
+.rollen .card .row{margin-top:auto;padding-top:var(--sp-4);align-items:flex-start}
+@supports (grid-template-rows:subgrid){
+  .rollen .card{display:grid;grid-template-rows:subgrid;grid-row:span 4;row-gap:0}
+  .rollen .card .row{margin-top:0}
+}
