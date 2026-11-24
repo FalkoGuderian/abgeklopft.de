@@ -11,11 +11,13 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
+<a class="sprung" href="#haupt">Zum Inhalt springen</a>
 <div class="proto">Bestätigungsanfrage · abgeklopft.de</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="index.html">abge<span>klopft</span><small class="claim">Nachprüfbare Ergebnisse</small></a>
 </div></header>
-<main class="wrap schmal">
+<main id="haupt" tabindex="-1" class="wrap schmal">
+  <h1>Können Sie dieses Ergebnis bestätigen?</h1>
   <div id="inhalt"><p class="meta">Lädt …</p></div>
 </main>
 <footer><div class="wrap"><p class="fuss-text">Ihre Antwort wird am Eintrag gezeigt, für alle, denen der Inhaber einen persönlichen Link schickt. Eine „Nein“-Antwort sieht nur der Inhaber.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
@@ -34,7 +36,6 @@ else api("GET", "/v1/a/" + aid).then(a => {
   const ag = a.profil.art === "ki-agent", e = a.eintrag;
   const belege = (e.belege || []).filter(sichereUrl).map(u => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow ugc">${esc(urlKurz(u))}</a>`).join(" · ");
   $("inhalt").innerHTML = `
-    <h1>Können Sie dieses Ergebnis bestätigen?</h1>
     <p>Guten Tag ${esc(a.an)}, ${ag
       ? `der Betreiber des KI-Agenten <b>${esc(a.profil.name)}</b> (${esc(a.profil.betreiber.name)}) bittet Sie um eine kurze Bestätigung einer Arbeit des Agenten.`
       : `<b>${esc(a.profil.name)}</b> bittet Sie um eine kurze Bestätigung.`} Es dauert etwa eine Minute.</p>
