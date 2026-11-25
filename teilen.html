@@ -342,7 +342,8 @@ function ssBlock(e) {
       <form class="ss-form mt-2" id="ssf-${esc(e.id)}" data-ssf="${esc(e.id)}" hidden autocomplete="off">
         <label for="ssd-${esc(e.id)}">Manifest als Datei (skill-satz.json, vom Werkzeug „referenzlauf manifest“)</label><input type="file" id="ssd-${esc(e.id)}" accept=".json,application/json">
         <label for="sst-${esc(e.id)}">oder Manifest hier einfügen</label><textarea id="sst-${esc(e.id)}" spellcheck="false" class="mono" placeholder='{"format":"abgeklopft-skillsatz/1", …}'></textarea>
-        <div class="knoepfe"><button class="btn klein" type="submit">Manifest melden</button></div>
+        <label class="wahl"><input type="checkbox" id="ssk-${esc(e.id)}" data-ssok="${esc(e.id)}"> <span>Ich bestätige: Der Skill-Satz enthält keine Personennamen oder Kundendaten.</span></label>
+        <div class="knoepfe"><button class="btn klein" type="submit" id="ssb-${esc(e.id)}" disabled>Manifest melden</button></div>
       </form>
     </div>`;
 }
@@ -355,6 +356,11 @@ document.addEventListener("click", e => {
   if (k) { const w = k.dataset.sskopie; (navigator.clipboard ? navigator.clipboard.writeText(w) : Promise.reject()).then(() => erfolg("Kopiert."), () => fehler("Kopieren war nicht möglich. Markieren Sie den Hash von Hand.")); }
   if (f) { const form = $("ssf-" + f.dataset.ssform); form.hidden = !form.hidden; f.setAttribute("aria-expanded", String(!form.hidden)); }
 });
+// Pflicht-Häkchen beim Melden (Datenschutz, nur Oberfläche, keine Server-Sperre): ohne Häkchen bleibt der Knopf gesperrt
+document.addEventListener("change", e => {
+  if (!e.target.matches("input[data-ssok]")) return;
+  $("ssb-" + e.target.dataset.ssok).disabled = !e.target.checked;
+});
 document.addEventListener("change", e => {
   if (!e.target.matches('input[type=file][id^="ssd-"]')) return;
   const dat = e.target.files[0]; if (!dat) return;
@@ -365,6 +371,7 @@ document.addEventListener("submit", e => {
   const form = e.target.closest("form[data-ssf]"); if (!form) return;
   e.preventDefault(); still();
   const eid = form.dataset.ssf; let m;
+  if (!$("ssk-" + eid).checked) { fehler("Bitte bestätigen Sie zuerst, dass der Skill-Satz keine Personennamen oder Kundendaten enthält."); return; }
   try { m = JSON.parse($("sst-" + eid).value); } catch { fehler("Das Manifest ist kein gültiges JSON. Laden Sie die Datei skill-satz.json oder fügen Sie ihren Inhalt ein."); return; }
   mitSperre(e.submitter, async () => {
     try {

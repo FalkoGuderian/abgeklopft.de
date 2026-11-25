@@ -332,7 +332,7 @@ $("f-anmelden").addEventListener("submit", async ev => {
     $("a-kid").textContent = j.signierschluessel ? j.signierschluessel.kid + " (" + (j.signierschluessel.modus === "pilot" ? "Pilot-Testschlüssel, Berichte tragen „beispiel“" : j.signierschluessel.modus) + ")" : "keiner eingerichtet, Signieren nicht möglich";
     $("schluessel").value = ""; $("f-anmelden").hidden = true; $("angemeldet").hidden = false; AKProfilMenue.setzen({ label: "Prüferbereich", name: j.pruefer.name, abmelden: abmelden }); $("hauptteil").hidden = false; $("reiter").hidden = false; $("inhalt").className = "wrap mittel";
     meldung("m-anmelden", "ok", "Angemeldet.");
-    $("t-frei").hidden = j.admin !== true; $("t-verw").hidden = j.admin !== true;
+    $("t-frei").hidden = j.admin !== true; $("t-verw").hidden = j.admin !== true; $("t-prot").hidden = j.admin !== true;   // Protokoll nur für Administratoren (Server: 403 für andere)
     zeige("t-warte"); warteLaden();
     if (j.admin === true) verwaltungLaden();
   } catch (e) { schluessel = ""; meldung("m-anmelden", "bad", e.status === 401 ? "Der Schlüssel stimmt nicht. Bitte prüfen Sie ihn und versuchen Sie es erneut." : fehlerText(e)); }
