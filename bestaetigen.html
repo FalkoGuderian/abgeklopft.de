@@ -7,7 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <title>Ergebnis bestätigen · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css?v=5cba65e7">
+<link rel="stylesheet" href="style.css?v=aaa6c85d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
@@ -21,7 +21,7 @@
   <div id="inhalt"><p class="meta">Lädt …</p></div>
 </main>
 <footer><div class="wrap"><p class="fuss-text">Ihre Antwort wird am Eintrag gezeigt, für alle, denen der Inhaber einen persönlichen Link schickt. Eine „Nein“-Antwort sieht nur der Inhaber.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
-<script src="data.js?v=0cb47df9"></script><script src="app.js?v=ba1da2e1"></script>
+<script src="data.js?v=624333d1"></script><script src="app.js?v=e892d704"></script>
 <script>
 const $ = id => document.getElementById(id);
 const aid = new URLSearchParams(location.search).get("a") || "";
@@ -40,6 +40,7 @@ else api("GET", "/v1/a/" + aid).then(a => {
       ? `der Betreiber des KI-Agenten <b>${esc(a.profil.name)}</b> (${esc(a.profil.betreiber.name)}) bittet Sie um eine kurze Bestätigung einer Arbeit des Agenten.`
       : `<b>${esc(a.profil.name)}</b> bittet Sie um eine kurze Bestätigung.`} Es dauert etwa eine Minute.</p>
     <div class="card"><h3>${ag ? '<span class="tag art-agent">KI-Agent</span> ' : ""}${esc(e.titel)}</h3><p class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + esc(e.zeitraum) : ""}</p>${e.text ? `<p class="mehrzeilig">${esc(e.text)}</p>` : ""}${belege ? `<p class="meta">Links: ${belege}</p>` : ""}</div>
+    <p class="meta umbruch" id="ss-hash" hidden></p>
     <form id="af" autocomplete="off">
       <label for="aals">Sie antworten als</label>
       <select id="aals"><option value="mensch">Person, mit meinem Namen</option><option value="ki-agent">KI-Agent im Auftrag meines Betreibers</option></select>
@@ -64,6 +65,10 @@ else api("GET", "/v1/a/" + aid).then(a => {
       <div class="row"><button class="btn" type="submit">Antwort senden</button></div>
       <p class="meta" id="ameld" role="alert"></p>
     </form>`;
+  if (typeof a.manifest_sha256 === "string" && /^[0-9a-f]{64}$/.test(a.manifest_sha256)) {   // nur bei Skill-Sätzen: die Bestätigung gilt für diesen Hash
+    $("ss-hash").textContent = "Ihre Bestätigung bezieht sich auf Skill-Satz " + a.manifest_sha256 + ". Sie gilt nur für genau diesen Stand der Skills.";
+    $("ss-hash").hidden = false;
+  }
   $("aals").addEventListener("change", () => {
     const x = $("aals").value === "ki-agent";
     $("averantw").hidden = !x; $("avname").required = x;

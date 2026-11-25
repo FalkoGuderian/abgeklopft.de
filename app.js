@@ -168,7 +168,7 @@ function poKurzliste(liste, max) {
   for (const x of liste) { if (n + x.length > max && t.length) break; t.push(x); n += x.length + 2; }
   return t.join("; ") + (t.length < liste.length ? "… (+" + (liste.length - t.length) + " weitere, siehe Details)" : "");
 }
-function pruefobjektHtml(e) {
+function pruefobjektHtml(e, ohneKurz = false) {
   const b = e.pruefbericht;
   if (!b) return ""; // Eintrag ohne Bericht (S1): keine Zeile
   // Form der Antwort: pruefbericht.version und (bei Version 3) pruefbericht.pruefobjekt; Rückfall auf inhalt/pruefung (Profil-Hülle)
@@ -181,7 +181,7 @@ function pruefobjektHtml(e) {
   const nichtText = po.nichts_ausgeschlossen === true ? "Nichts ausgeschlossen (vom Prüfer ausdrücklich bestätigt)" : poKurzliste(nicht, 110);
   const liste = (l, leer) => l.length ? `<ul>${l.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : `<p class="meta">${leer}</p>`;
   return `<div class="po-zeile">
-      <p class="po-kurz"><b>Geprüft:</b> ${esc(poKurzliste(umfang, 110))} (Stand: ${esc(po.version_stand)}). <b>Nicht geprüft:</b> ${esc(nichtText)}.</p>
+      ${ohneKurz ? "" : `<p class="po-kurz"><b>Geprüft:</b> ${esc(poKurzliste(umfang, 110))} (Stand: ${esc(po.version_stand)}). <b>Nicht geprüft:</b> ${esc(nichtText)}.</p>`}
       <details class="po-details"><summary>Details zur Prüfung</summary>
         <dl><dt>Gegenstand</dt><dd>${esc(po.gegenstand)}</dd><dt>Stand</dt><dd>${esc(po.version_stand)}</dd><dt>Methode</dt><dd>${esc(po.methode)}</dd></dl>
         <p class="po-kopf">Geprüft</p>${liste(umfang, "–")}
@@ -233,6 +233,40 @@ function prozessDatenHtml(e) {
   const nw = (p.nachweisart || []).length ? `<p class="meta">Nachweisart: ${p.nachweisart.map(a => esc(NACHWEIS_TEXT[a] || a)).join(", ")}</p>` : "";
   return `<div class="pz-daten"><dl>${dl}</dl>${rollen}${kz}${nw}</div>`;
 }
+// Skill-Satz (V4 Schritt 3): feste Zeilen unter dem Siegel, nie eingeklappt. Hash-Status, Zusatzzeile „Referenzlauf“, Kennzahlen, „Nicht geprüft“ mit den
+// Standardausschlüssen, „frühere Version geprüft“. Der Bericht gilt nur für seinen Hash. Alle Texte werden escaped; agent_version ist nur Freitext.
+const SS_WEG_NAME = { referenzlauf: "Referenzlauf mit Auswertung durch den Prüfer", referenzlauf_abnahme: "Referenzlauf mit Abnahme", probeaufgabe: "Probeaufgabe" };
+const ssKurz = h => String(h || "").slice(0, 12) + "…";
+const ssProzent = v => String(Number((Number(v) * 100).toFixed(1))).replace(".", ",");
+function skillFruehHtml(f) {
+  if (!f || typeof f !== "object" || !f.manifest_sha256) return "";
+  return `<p class="po-kurz ss-frueh"><b>Frühere Version geprüft</b> (Hash <span class="mono" title="${esc(f.manifest_sha256)}">${esc(ssKurz(f.manifest_sha256))}</span>, Stufe ${esc(f.stufe)}${f.ausgestellt ? ", ausgestellt " + esc(datumDe(f.ausgestellt)) : ""}). Das gilt für den aktuell gemeldeten Skill-Satz nicht.</p>`;
+}
+function skillSatzHtml(e, st) {
+  if (e.kategorie !== "Skill-Satz") return "";
+  const ss = e.skill_satz, pb = e.pruefbericht;
+  if (!ss || !ss.manifest_sha256) return `<div class="po-zeile ss-zeile" data-hashstatus="nicht_gemeldet"><p class="po-kurz"><b>Skill-Satz:</b> noch nicht gemeldet. Hash-Status: nicht gemeldet. Nichts ist geprüft.</p></div>`;
+  const hash = `<span class="mono" title="${esc(ss.manifest_sha256)}">${esc(ssKurz(ss.manifest_sha256))}</span>`;
+  const stand = `Stand laut Betreiber${ss.gemeldet ? ": gemeldet am " + esc(datumDe(ss.gemeldet)) : ""}`;
+  const ver = ss.agent_version ? `, Version ${esc(ss.agent_version)} (Freitext des Betreibers, maßgeblich ist der Hash)` : "";
+  const bh = pb && ((pb.skill_satz && pb.skill_satz.manifest_sha256) || (pb.inhalt && pb.inhalt.skill_satz && pb.inhalt.skill_satz.manifest_sha256));
+  const gueltig = st >= 2 && pb && (pb.version === 4 || (pb.inhalt && pb.inhalt.version === 4));
+  if (!gueltig) return `<div class="po-zeile ss-zeile" data-hashstatus="gemeldet_ungeprueft">
+      <p class="po-kurz"><b>Skill-Satz eingereicht, nicht geprüft.</b> Hash ${hash}${ver}. Hash-Status: gemeldet, ohne gültigen Bericht. ${stand}.</p>${skillFruehHtml(ss.frueher_geprueft)}</div>`;
+  const passt = bh ? bh === ss.manifest_sha256 : ss.geprueft === true;
+  const status = passt ? "passt (der Bericht gehört zu diesem Hash)" : "weicht ab (der Bericht gehört nicht zu diesem Hash)";
+  const po = pb.pruefobjekt || (pb.inhalt && pb.inhalt.pruefobjekt) || {}, rf = pb.referenz || (pb.inhalt && pb.inhalt.referenz), er = pb.ergebnis || (pb.inhalt && pb.inhalt.ergebnis);
+  const nicht = Array.isArray(po.nicht_geprueft) ? po.nicht_geprueft.map(String) : [];
+  const kenn = rf && er && typeof er === "object"
+    ? `<p class="po-kurz"><b>Geprüft:</b> ${esc(rf.faelle_geheim)} geheime und ${esc(rf.faelle_oeffentlich)} öffentliche Referenzfälle, Trefferquote ${esc(ssProzent(er.trefferquote))} % (mit 95 % Sicherheit mindestens ${esc(ssProzent(er.untergrenze_95))} %), ${esc(er.kritische_fehler)} kritische Fehler, Skill-Satz ${hash}${ver}.</p>`
+    : `<p class="po-kurz"><b>Geprüft:</b> gegen Referenzfälle, Skill-Satz ${hash}${ver}. Quote, Untergrenze und Fallzahl stehen im Prüfbericht (nachrechnen: <a href="/verify.html">verify.html</a>).</p>`;
+  const ki = (pb.pruefer_art || (pb.inhalt && pb.inhalt.pruefer_art)) === "ki" ? ` <span class="tag">KI</span> geprüft von einer KI (nicht menschlich).` : "";
+  return `<div class="po-zeile ss-zeile" data-hashstatus="${passt ? "passt" : "weicht_ab"}">
+      <p class="po-kurz"><span class="ss-zusatz">Referenzlauf</span> · ${esc(SS_WEG_NAME[pb.pruefweg] || pb.pruefweg || "")}${ki}. Hash-Status: <b>${status}</b>. ${stand}.</p>
+      ${kenn}
+      <p class="po-kurz"><b>Nicht geprüft:</b></p>${nicht.length ? `<ul class="ss-nicht">${nicht.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : `<p class="meta">–</p>`}
+      <p class="po-kurz">Das Siegel gilt nur für diesen Skill-Satz und diese Referenzfälle, nicht für den Agenten im Betrieb.</p>${skillFruehHtml(ss.frueher_geprueft)}</div>`;
+}
 // Eintrag eines selbst angelegten Profils (immer Stufe 1)
 function serverEintragHtml(e, i) {
   const mitTeilen = Array.isArray(e.teile) && e.teile.length && e.gesamt;
@@ -247,7 +281,7 @@ function serverEintragHtml(e, i) {
       <span class="lt-titel">${esc(e.titel)}</span>
       <span class="lt-zeit">${esc(e.zeitraum || "")}</span>
     </button>
-    ${pruefobjektHtml(e)}${prozessZeitraumHtml(e, st)}${teileGesamtHtml(e)}
+    ${skillSatzHtml(e, st)}${pruefobjektHtml(e, e.kategorie === "Skill-Satz")}${prozessZeitraumHtml(e, st)}${teileGesamtHtml(e)}
     <div class="lt-detail" id="d-${i}" hidden>
       ${e.text ? `<p class="mehrzeilig">${esc(e.text)}</p>` : ""}
       ${prozessDatenHtml(e)}

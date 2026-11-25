@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>So geht's · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css?v=5cba65e7">
+<link rel="stylesheet" href="style.css?v=aaa6c85d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
@@ -22,6 +22,7 @@
     <a href="#rollen"><span class="st">Rollen</span></a>
     <a href="#ablauf"><span class="st">Ablauf</span></a>
     <a href="#stufen"><span class="st">Stufen</span></a>
+    <a href="#skillsaetze"><span class="st">Skill-Sätze</span></a>
   </nav>
 
   <section id="rollen" class="pt-6 schritt-ziel">
@@ -63,9 +64,24 @@
     <p class="mt-4">Die Siegel „Geprüft“ und „Abgenommen“ tragen einen signierten Prüfbericht. Der Abnehmer kann ihn unter <a href="verify.html">Bericht nachprüfen</a> selbst nachrechnen. Ein Beispiel zeigt <a href="profil.html">Beispiele</a>.</p>
     <p>Zu jedem Siegel steht, was geprüft wurde und was nicht. Bei Einträgen aus mehreren Teilen zählt die schwächste Pflichtstufe.</p>
   </section>
+  <section id="skillsaetze" class="schritt-ziel">
+    <h2>Skill-Sätze (KI-Agenten)</h2>
+    <p class="sub">Ein KI-Agent besteht praktisch aus seinen Skills, dem Modell, den Werkzeugen und der Konfiguration. Der Betreiber meldet sie als Skill-Satz. Ein Prüfer lässt Referenzfälle damit laufen und wertet das Ergebnis aus.</p>
+    <ul class="lt-liste m-0">
+      <li class="lt-item"><div class="lt-btn"><span class="badge b2">Geprüft</span><span class="lt-titel">Skill-Satz Beispielagent (Beispiel, erfunden)</span><span class="lt-zeit">Version 1.4</span></div>
+        <div class="lt-detail"><p class="meta"><b>Referenzlauf.</b> Geprüft: 40 geheime und 12 öffentliche Referenzfälle, Trefferquote 93 % (mit 95 % Sicherheit mindestens 86 %), 0 kritische Fehler, Skill-Satz a1b2c3… Version 1.4. Nicht geprüft: Verhalten außerhalb der Referenzdaten (andere Eingaben, andere Aufgaben, andere Sprachen oder Formate); Verhalten mit anderen Skills, anderem Modellstand oder anderer Konfiguration als im Manifest; dauerhafte Korrektheit im Betrieb und Verhalten mit anderem Gedächtnisinhalt; Sicherheit gegen gezielte Angriffe, soweit nicht durch die Fälle der Klasse Fehlfall abgedeckt.</p>
+          <p class="meta">Zahlen wie diese sind hier nur ein Beispiel zur Erklärung.</p></div></li>
+    </ul>
+    <ul class="tick">
+      <li><b>Einreicher (Betreiber):</b> Er meldet das Manifest (Dateinamen und Dateihashes, keine Dateiinhalte). Jede Änderung ergibt einen neuen Hash und setzt den Eintrag wieder auf „Eingereicht“. Skill-Dateien und Referenzdaten bleiben bei ihm.</li>
+      <li><b>Prüfer:</b> Er legt die Referenzfälle fest, lässt den Lauf bei sich laufen, sichtet die Ergebnisse und signiert erst nach seiner Bestätigung. Die geheimen Fälle kennt nur er.</li>
+      <li><b>Abnehmer:</b> Er liest Quote, Untergrenze, Fallzahl und „Nicht geprüft“. Seine Bestätigung bezieht sich auf einen Hash.</li>
+      <li><b>Grenze:</b> „Geprüft“ heißt hier: Ein Prüfer hat einen Referenzlauf ausgewertet. Der Bericht gilt nur für genau diesen Hash und diese Referenzfälle, nicht für den Agenten im Betrieb.</li>
+    </ul>
+  </section>
 </main>
 <footer><div class="wrap"><p class="fuss-text">Pilotphase. Keine Rechtsberatung. Profile liegen auf dem Server von abgeklopft.de (Cloudflare, Daten in der EU), sichtbar nur über persönliche Links.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
-<script src="data.js?v=0cb47df9"></script>
+<script src="data.js?v=624333d1"></script>
 <script src="nav-profil.js?v=81f91258"></script><script src="schritte.js?v=e0d8ca70"></script>
 </body>
 </html>

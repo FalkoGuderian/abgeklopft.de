@@ -277,6 +277,14 @@ button.lt-btn:hover{border-color:var(--brand);transform:translateY(-1px);box-sha
 .po-zeile p{margin:0 0 var(--sp-1)}
 .po-kurz{color:var(--ink);overflow-wrap:anywhere}
 .po-alt{padding:var(--sp-2) var(--sp-4) 2px;font-size:var(--fs-s);font-style:italic}
+/* Skill-Satz (V4 Schritt 3): gleiche Zeilen wie das Prüfobjekt, Standardausschlüsse als feste Liste */
+.ss-zeile .mono{overflow-wrap:anywhere}
+.ss-zusatz{font-weight:600;color:var(--ink)}
+.ss-nicht{margin:2px 0 var(--sp-2);padding-left:1.2em;font-size:var(--fs-s);overflow-wrap:anywhere}
+.ss-box{margin-top:var(--sp-2);padding:var(--sp-2) var(--sp-3);border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:var(--fs-s)}
+.ss-box p{margin:0 0 var(--sp-1);overflow-wrap:anywhere}
+.ss-box textarea{min-height:120px}
+.ss-box .knoepfe{flex-wrap:wrap}
 .lt-btn[aria-expanded="true"] + .po-zeile{background:var(--surface);border:1px solid var(--brand);border-top:0;border-bottom:0;padding-top:var(--sp-2);padding-bottom:var(--sp-2)}
 .lt-btn[aria-expanded="true"] + .po-alt{background:var(--surface);border:1px solid var(--brand);border-top:0;border-bottom:0;margin:0;padding:var(--sp-2) var(--sp-4)}
 .po-details,.lt-item .po-details{border:0;padding:0;margin:0 0 var(--sp-1)}

@@ -19,12 +19,15 @@ window.PRUEFWEGE = {
   // Nur für KI-Agenten
   betreiber: { name: "Betreiber geprüft", text: "Wer den Agenten betreibt und haftet, ist geprüft (Register, Impressum, Domain) und hält den Schlüssel des Agenten.", aufwand: "wenige Minuten" },
   probeaufgabe: { name: "Probeaufgabe", text: "Der Agent löst unbekannte Aufgaben aus einem festen Satz, ein unabhängiger Gutachter wertet nach Raster aus. Gilt für die geprüfte Version.", aufwand: "mittel" },
+  // Nur für Skill-Sätze (Kategorie Skill-Satz, KI-Agenten): Bericht Version 4, gilt nur für den geprüften Hash
+  referenzlauf: { name: "Referenzlauf mit Auswertung durch den Prüfer", text: "Der Prüfer lässt die Referenzfälle mit dem gemeldeten Skill-Satz laufen und wertet das Ergebnis aus. Das Siegel gilt nur für genau diesen Skill-Satz (Hash) und diese Referenzfälle.", aufwand: "hoch" },
+  referenzlauf_abnahme: { name: "Referenzlauf mit Abnahme", text: "Wie der Referenzlauf, zusätzlich bestätigt ein Abnehmer den Skill-Satz mit seinem Hash (mindestens 59 geheime Fälle).", aufwand: "hoch" },
   // Nur für Prozesse (Kategorie Prozess und Teile vom Typ prozess)
   prozess_dokumentation: { name: "Verfahrensdokument gegen Beobachtung", text: "Das Verfahrensdokument wird gegen die tatsächliche Arbeitsweise im Beobachtungszeitraum abgeglichen.", aufwand: "mittel" },
   prozess_stichprobe: { name: "Stichprobe aus Prozessprotokollen", text: "Ein Prüfer zieht eine Stichprobe aus Protokollen und Vorgängen und gleicht sie mit dem Verfahrensdokument ab.", aufwand: "mittel" },
   prozess_bestaetigung: { name: "Bestätigung durch Prozessverantwortliche", text: "Prozessverantwortliche oder Abnehmer des Ergebnisses bestätigen die Anwendung, der Prüfer sichtet das Verfahren.", aufwand: "gering" }
 };
-window.WEG_JE_KATEGORIE = { Erfahrung: "auftraggeber", Abschluss: "aussteller", Zertifikat: "aussteller", Produkt: "inhaberschaft", Dienstleistung: "auftraggeber", Identität: "betreiber", Fähigkeit: "probeaufgabe", Projekt: "inhaberschaft", Prozess: "prozess_dokumentation" };
+window.WEG_JE_KATEGORIE = { Erfahrung: "auftraggeber", Abschluss: "aussteller", Zertifikat: "aussteller", Produkt: "inhaberschaft", Dienstleistung: "auftraggeber", Identität: "betreiber", Fähigkeit: "probeaufgabe", Projekt: "inhaberschaft", Prozess: "prozess_dokumentation", "Skill-Satz": "referenzlauf" };
 
 // Wer ein Profil hat: Person oder KI-Agent. Vertragspartner ist immer eine Person oder eine Firma,
 // beim KI-Agenten der Betreiber. Ein Agent wird immer sichtbar als KI-Agent gekennzeichnet.

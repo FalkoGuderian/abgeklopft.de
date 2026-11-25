@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Abnehmen · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css?v=5cba65e7">
+<link rel="stylesheet" href="style.css?v=aaa6c85d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
@@ -22,6 +22,7 @@
     <a href="#a-lesen"><span class="st">So lesen</span></a>
     <a href="#a-nutzen"><span class="st">Nutzen</span></a>
     <a href="#a-agent"><span class="st">KI-Agent</span></a>
+    <a href="#a-skillsatz"><span class="st">Skill-Satz</span></a>
     <a href="#a-beispiel"><span class="st">Beispiel</span></a>
     <a href="#a-assistent"><span class="st">KI prüft</span></a>
     <a href="#skills"><span class="st">Skill</span></a>
@@ -58,6 +59,22 @@
       <tr><td>Probeaufgabe</td><td>Der Agent hat unbekannte Aufgaben gelöst, ein Gutachter hat ausgewertet.</td><td>Passt der Aufgabensatz zu Ihrer Arbeit? Sonst eine eigene Probe verlangen.</td></tr>
     </table></div>
     <p class="meta">Fiktives <a href="profil.html?p=belegleser">Beispiel: KI-Agent „Belegassistent“</a>.</p>
+  </section>
+
+  <section id="a-skillsatz" class="schritt-ziel"><h2>Skill-Sätze (KI-Agenten)</h2>
+    <p class="sub">Ein Eintrag der Kategorie „Skill-Satz“ beschreibt die Skills, das Modell, die Werkzeuge und die Konfiguration eines KI-Agenten als Ganzes. Ein Prüfer hat dafür einen Referenzlauf ausgewertet:</p>
+    <ul class="lt-liste m-0">
+      <li class="lt-item"><div class="lt-btn"><span class="badge b2">Geprüft</span><span class="lt-titel">Skill-Satz Beispielagent (Beispiel, erfunden)</span><span class="lt-zeit">Version 1.4</span></div>
+        <div class="lt-detail"><p class="meta"><b>Referenzlauf.</b> Geprüft: 40 geheime und 12 öffentliche Referenzfälle, Trefferquote 93 % (mit 95 % Sicherheit mindestens 86 %), 0 kritische Fehler, Skill-Satz a1b2c3… Version 1.4. Nicht geprüft: Verhalten außerhalb der Referenzdaten (andere Eingaben, andere Aufgaben, andere Sprachen oder Formate); Verhalten mit anderen Skills, anderem Modellstand oder anderer Konfiguration als im Manifest; dauerhafte Korrektheit im Betrieb und Verhalten mit anderem Gedächtnisinhalt; Sicherheit gegen gezielte Angriffe, soweit nicht durch die Fälle der Klasse Fehlfall abgedeckt.</p>
+          <p class="meta">Zahlen wie diese sind hier nur ein Beispiel zur Erklärung.</p></div></li>
+    </ul>
+    <ul class="tick">
+      <li><b>Geprüft heißt:</b> Ein Prüfer hat einen Referenzlauf ausgewertet. Es heißt nicht, dass der Skill sicher, korrekt oder zuverlässig ist.</li>
+      <li><b>Der Bericht gilt nur für einen Hash.</b> Der Hash ist die Kennung genau dieses Skill-Satzes. Ändert der Betreiber etwas, steht der Eintrag wieder auf „Eingereicht“, und die Seite weist darauf hin, dass eine frühere Version geprüft wurde.</li>
+      <li><b>Quote immer mit Untergrenze und Fallzahl lesen.</b> „93 %“ bei 40 Fällen ist weniger sicher als bei 400 Fällen.</li>
+      <li><b>Bestätigen Sie als Abnehmer,</b> bezieht sich Ihre Antwort auf den angezeigten Hash. Sie gilt nur für diesen Stand der Skills.</li>
+      <li><b>Nachrechnen:</b> Haben Sie den Skill-Ordner selbst, rechnet das Prüfskript den Hash nach (<code>pruefen --skills &lt;ordner&gt;</code>). Beim Betreiber bleiben Skill-Dateien und Referenzdaten; bei abgeklopft.de liegen nur Hashes, das Manifest und die signierten Berichte.</li>
+    </ul>
   </section>
 
   <section id="a-beispiel" class="schritt-ziel"><h2>Beispiel: ein bestätigter Eintrag</h2>

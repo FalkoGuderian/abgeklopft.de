@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://abgeklopft-api.falko-guderian.workers.dev http://localhost:8787; base-uri 'none'; object-src 'none'">
 <meta name="robots" content="noindex">
 <title>Einreichen · abgeklopft.de</title>
-<link rel="stylesheet" href="style.css?v=5cba65e7">
+<link rel="stylesheet" href="style.css?v=aaa6c85d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
@@ -229,7 +229,7 @@
   </section>
 </main>
 <footer><div class="wrap"><p class="fuss-text">Pilotphase: Einladungscode von kontakt@abgeklopft.de · Ihre Angaben werden verschlüsselt übertragen und in der EU gespeichert.</p><ul class="fuss"><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li></ul></div></footer>
-<script src="data.js?v=0cb47df9"></script><script src="app.js?v=ba1da2e1"></script><script src="nav-profil.js?v=81f91258"></script>
+<script src="data.js?v=624333d1"></script><script src="app.js?v=e892d704"></script><script src="nav-profil.js?v=81f91258"></script>
 <script>
 const $ = id => document.getElementById(id);
 const basis = location.href.replace(/[#?].*$/, "").replace(/[^/]*$/, "");
@@ -318,10 +318,68 @@ async function laden() {
     } else { zeige(null); fehler(err, laden); }
   }
 }
+// ---------- Skill-Satz (V4 Schritt 3): Manifest melden, Hash-Status ----------
+const SS_FRUEHER = {};   // Eintrags-Id -> frueher_geprueft aus der letzten Meldung dieser Sitzung (der Server liefert es in der Antwort auf PUT)
+// ssKurz (Hash kurz) kommt aus app.js
+function ekatOptionen(agent) {   // „Skill-Satz“ nur für KI-Agenten (wie der Server)
+  const sel = $("ekat"), da = [...sel.options].some(o => o.value === "Skill-Satz");
+  if (agent && !da) { const o = document.createElement("option"); o.textContent = "Skill-Satz"; o.value = "Skill-Satz"; sel.appendChild(o); }
+  if (!agent && da) [...sel.options].filter(o => o.value === "Skill-Satz").forEach(o => o.remove());
+}
+function ssBlock(e) {
+  if (e.kategorie !== "Skill-Satz") return "";
+  const s = e.skill_satz, fr = (s && s.frueher_geprueft) || SS_FRUEHER[e.id];
+  const status = !s ? "Noch kein Skill-Satz gemeldet. Ohne Skill-Satz kann nichts geprüft werden."
+    : (s.geprueft && e.stufe > 1) ? `Geprüft für diesen Hash (${STUFEN[e.stufe].siegel}, Zusatzzeile „Referenzlauf“).` : "Eingereicht, nicht geprüft für diesen Hash.";
+  const hashZeile = s ? `<p class="meta"><b>Hash:</b> <span class="mono" title="${esc(s.manifest_sha256)}">${esc(ssKurz(s.manifest_sha256))}</span> (ganz: <span class="mono">${esc(s.manifest_sha256)}</span>)
+      <br>${esc(s.dateien_anzahl)} Dateien · ${esc(s.modell.anbieter)}/${esc(s.modell.id)} · Version ${esc(s.agent_version)} (Freitext) · Stand laut Betreiber: gemeldet am ${esc(datumDe(s.gemeldet))}</p>
+      <div class="knoepfe"><button class="btn ghost klein" type="button" data-sskopie="${esc(s.manifest_sha256)}">Hash kopieren</button><button class="btn ghost klein" type="button" data-sskopie="${esc(s.ni)}">ni:-URI kopieren</button></div>` : "";
+  const frueh = fr && fr.manifest_sha256 ? `<p class="meta"><b>Frühere Version geprüft</b> (Hash ${esc(ssKurz(fr.manifest_sha256))}, Stufe ${esc(fr.stufe)}). Das gilt für den aktuell gemeldeten Skill-Satz nicht; der Eintrag steht wieder auf „Eingereicht“.</p>` : "";
+  return `<div class="ss-box" data-ss="${esc(e.id)}">
+      <p class="meta"><b>Skill-Satz:</b> ${status}</p>${hashZeile}${frueh}
+      <p class="meta">Jede Änderung am Skill-Satz (eine Datei, das Modell, die Werkzeuge) ergibt einen neuen Hash und setzt die Stufe wieder auf S1. Ein Prüfbericht gilt nur für den Hash, für den er ausgestellt wurde. Wir sehen nie Ihre Dateien, nur das Manifest mit den Hashes.</p>
+      <button class="btn ghost klein" type="button" data-ssform="${esc(e.id)}" aria-expanded="false" aria-controls="ssf-${esc(e.id)}">${s ? "Neuen Stand melden" : "Skill-Satz melden"}</button>
+      <form class="ss-form mt-2" id="ssf-${esc(e.id)}" data-ssf="${esc(e.id)}" hidden autocomplete="off">
+        <label for="ssd-${esc(e.id)}">Manifest als Datei (skill-satz.json, vom Werkzeug „referenzlauf manifest“)</label><input type="file" id="ssd-${esc(e.id)}" accept=".json,application/json">
+        <label for="sst-${esc(e.id)}">oder Manifest hier einfügen</label><textarea id="sst-${esc(e.id)}" spellcheck="false" class="mono" placeholder='{"format":"abgeklopft-skillsatz/1", …}'></textarea>
+        <div class="knoepfe"><button class="btn klein" type="submit">Manifest melden</button></div>
+      </form>
+    </div>`;
+}
+function ssFehlerText(err) {
+  if (err && err.code === "skill_satz_ungueltig") return "Das Manifest ist nicht zulässig. " + (err.message || "");
+  return err;
+}
+document.addEventListener("click", e => {
+  const k = e.target.closest("[data-sskopie]"), f = e.target.closest("[data-ssform]");
+  if (k) { const w = k.dataset.sskopie; (navigator.clipboard ? navigator.clipboard.writeText(w) : Promise.reject()).then(() => erfolg("Kopiert."), () => fehler("Kopieren war nicht möglich. Markieren Sie den Hash von Hand.")); }
+  if (f) { const form = $("ssf-" + f.dataset.ssform); form.hidden = !form.hidden; f.setAttribute("aria-expanded", String(!form.hidden)); }
+});
+document.addEventListener("change", e => {
+  if (!e.target.matches('input[type=file][id^="ssd-"]')) return;
+  const dat = e.target.files[0]; if (!dat) return;
+  if (dat.size > 30000) { fehler("Die Datei ist größer als 30 KB: Das ist kein Manifest."); e.target.value = ""; return; }
+  const r = new FileReader(); r.onload = () => { $("sst-" + e.target.id.slice(4)).value = String(r.result || ""); }; r.readAsText(dat);
+});
+document.addEventListener("submit", e => {
+  const form = e.target.closest("form[data-ssf]"); if (!form) return;
+  e.preventDefault(); still();
+  const eid = form.dataset.ssf; let m;
+  try { m = JSON.parse($("sst-" + eid).value); } catch { fehler("Das Manifest ist kein gültiges JSON. Laden Sie die Datei skill-satz.json oder fügen Sie ihren Inhalt ein."); return; }
+  mitSperre(e.submitter, async () => {
+    try {
+      const r = await api("PUT", `/v1/profile/${konto.id}/eintraege/${eid}/skill-satz`, { manifest: m }, konto.schluessel);
+      SS_FRUEHER[eid] = r.frueher_geprueft || null;
+      await laden();
+      erfolg(r.geaendert ? `Skill-Satz gemeldet: Hash ${ssKurz(r.manifest_sha256)}. Der Eintrag ist ${r.stufe > 1 ? "für diesen Hash geprüft" : "eingereicht, noch nicht geprüft"}.${r.frueher_geprueft ? " Eine frühere Version war geprüft; das gilt für diesen neuen Hash nicht." : ""}` : "Dieser Skill-Satz war schon gemeldet. Es hat sich nichts geändert.");
+    } catch (err) { fehler(ssFehlerText(err)); }
+  });
+});
 const titelVon = id => ((stand.eintraege.find(e => e.id === id) || {}).titel) || "(gelöschter Eintrag)";
 function zeichnen() {
   const p = stand.profil, ag = p.art === "ki-agent";
   AKProfilMenue.name(p.name);
+  ekatOptionen(ag);
   $("madr").innerHTML = p.adresse
     ? `Ihre Adresse: <b>abgeklopft.de/${esc(p.adresse)}</b>. Ihre Links bestehen aus dieser Adresse und einer Kennung je Empfänger. Name, Adresse und Art ändern Sie unter <a href="mein-profil.html">Mein Profil</a>.`
     : `Sie haben noch keine Adresse. Sie wird beim Erstellen des ersten Links aus Ihrem Namen abgeleitet. Eine eigene tragen Sie unter <a href="mein-profil.html">Mein Profil</a> ein.`;
@@ -330,6 +388,7 @@ function zeichnen() {
   const E = stand.eintraege;
   $("eliste").innerHTML = E.length ? E.map(e => `<div class="eintrag-zeile">
       <div class="flex-1 minw-200"><span class="badge b1">${STUFEN[1].siegel}</span> <b>${esc(e.titel)}</b> <span class="meta">${esc(e.kategorie)}${e.zeitraum ? " · " + (e.kategorie === "Prozess" ? "Beobachtungszeitraum " : "") + esc(e.zeitraum) : ""}</span>${e.teile && e.gesamt ? `<br><span class="meta">${e.teile.length} Teile (${e.teile.filter(t => t.pflicht !== false).length} Pflicht) · Gesamtstufe S${esc(e.gesamt.stufe)}${e.gesamt.abgeleitet ? " (abgeleitet)" : ""}</span>` : ""}
+        ${ssBlock(e)}
         ${e.bestaetigungen.filter(b => b.status === "erhalten").map(b => `<br><span class="meta">Bestätigung erhalten – noch nicht geprüft: ${esc(ANTWORT_TEXT[b.antwort])} von ${esc(b.name)}</span>`).join("")}</div>
       <div class="knoepfe">${pruefKnopf(e)}<button class="btn ghost klein" type="button" data-bearb="${esc(e.id)}">bearbeiten</button><button class="btn ghost klein" type="button" data-eweg="${esc(e.id)}">löschen</button></div>
     </div>`).join("") : `<p class="meta">Noch keine Einträge. Fügen Sie Ihren ersten Eintrag hinzu.</p>`;
@@ -392,6 +451,7 @@ function pruefKnopf(e) {
   const a = offenerAuftrag(e.id);
   if (a) return `<a class="btn ghost klein" href="#auftrag-${esc(a.id)}">Prüfung: ${esc(a.zustand_anzeige)}</a>`;
   if (e.stufe && e.stufe > 1) return "";
+  if (e.kategorie === "Skill-Satz" && !e.skill_satz) return `<span class="meta">Zuerst den Skill-Satz melden</span>`;
   return `<button class="btn klein" type="button" data-pruef="${esc(e.id)}">Prüfung beantragen</button>`;
 }
 function zeitleiste(a) {
